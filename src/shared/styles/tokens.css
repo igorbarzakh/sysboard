@@ -1,0 +1,75 @@
+:root {
+  --bg-base:     #FFFFFF;
+  --bg-canvas:   #F8F9FA;
+  --bg-surface:  #F1F3F5;
+  --bg-elevated: #FFFFFF;
+  --bg-overlay:  #FFFFFF;
+
+  --border-faint:   #F1F3F5;
+  --border-subtle:  #E9ECEF;
+  --border-default: #DEE2E6;
+  --border-strong:  #ADB5BD;
+
+  --accent:        #5C7CFA;
+  --accent-bright: #748FFC;
+  --accent-dim:    rgba(92, 124, 250, 0.12);
+  --accent-glow:   rgba(92, 124, 250, 0.06);
+
+  --node-service:  #4263EB;
+  --node-database: #7950F2;
+  --node-queue:    #E67700;
+  --node-cache:    #2F9E44;
+  --node-cdn:      #C2255C;
+
+  --text-primary:   #1C1C1E;
+  --text-secondary: #6B7280;
+  --text-muted:     #9CA3AF;
+  --text-accent:    #5C7CFA;
+  --text-on-accent: #FFFFFF;
+
+  --font-body: 'Onest', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+
+  --text-2xs:  9px;
+  --text-xs:   10px;
+  --text-sm:   12px;
+  --text-base: 14px;
+  --text-md:   15px;
+  --text-lg:   17px;
+  --text-xl:   21px;
+  --text-2xl:  28px;
+  --text-3xl:  38px;
+
+  --sp-1: 4px;   --sp-2: 8px;   --sp-3: 12px;
+  --sp-4: 16px;  --sp-5: 20px;  --sp-6: 24px;
+  --sp-8: 32px;  --sp-10: 40px; --sp-12: 48px;
+
+  --r-xs: 2px;  --r-sm: 4px;
+  --r-md: 6px;  --r-lg: 9px;  --r-xl: 13px;
+
+  --shadow-node:
+    0 1px 3px rgba(0,0,0,.08),
+    0 4px 12px rgba(0,0,0,.06),
+    0 0 0 1px var(--border-default);
+
+  --shadow-selected:  0 0 0 2px var(--accent);
+
+  --shadow-panel:
+    1px 0 0 var(--border-subtle),
+    4px 0 16px rgba(0,0,0,.04);
+
+  --shadow-toolbar:
+    0 2px 12px rgba(0,0,0,.08),
+    0 0 0 1px var(--border-subtle);
+
+  --shadow-elevated:
+    0 4px 24px rgba(0,0,0,.10),
+    0 0 0 1px var(--border-subtle);
+
+  --ease-snap:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --grid-size:  20px;
+  --grid-dot:   1px;
+  --grid-color: #DEE2E6;
+}
