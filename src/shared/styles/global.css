@@ -1,9 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
 @import './tokens.css';
-@import './fonts.css';
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-html, body { height: 100%; }
+html, body {
+  height: 100%;
+}
 
 body {
   background: var(--bg-base);

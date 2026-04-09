@@ -1,19 +1,18 @@
 import type { Metadata } from 'next'
 import '@/shared/styles/global.css'
+import { NextAuthSessionProvider } from './session-provider'
 
 export const metadata: Metadata = {
   title: 'System Design Board',
   description: 'Collaborative diagramming tool for software architects',
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <NextAuthSessionProvider>{children}</NextAuthSessionProvider>
+      </body>
     </html>
   )
 }
