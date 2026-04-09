@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@/shared/lib/auth'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/shared/lib/auth'
 import { prisma } from '@/shared/lib/db'
 import { MAX_BOARDS_PER_USER } from '@/shared/lib/constants'
 
 export async function GET(): Promise<NextResponse> {
-  const session = await auth()
+  const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -26,7 +27,7 @@ export async function GET(): Promise<NextResponse> {
 }
 
 export async function POST(request: Request): Promise<NextResponse> {
-  const session = await auth()
+  const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }

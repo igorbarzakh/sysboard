@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@/shared/lib/auth'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/shared/lib/auth'
 import { prisma } from '@/shared/lib/db'
 
 type RouteContext = { params: Promise<{ id: string }> }
@@ -21,7 +22,7 @@ async function requireBoardAccess(boardId: string, userId: string) {
 }
 
 export async function GET(_request: Request, { params }: RouteContext): Promise<NextResponse> {
-  const session = await auth()
+  const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -36,7 +37,7 @@ export async function GET(_request: Request, { params }: RouteContext): Promise<
 }
 
 export async function PATCH(request: Request, { params }: RouteContext): Promise<NextResponse> {
-  const session = await auth()
+  const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -81,7 +82,7 @@ export async function PATCH(request: Request, { params }: RouteContext): Promise
 }
 
 export async function DELETE(_request: Request, { params }: RouteContext): Promise<NextResponse> {
-  const session = await auth()
+  const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }

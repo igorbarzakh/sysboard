@@ -35,41 +35,22 @@ export default function SignInPage() {
         </p>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)', width: '100%' }}>
-        <button
-          onClick={() => signIn('github')}
-          style={{
-            width: '100%',
-            padding: 'var(--sp-3) var(--sp-4)',
-            fontSize: 'var(--text-base)',
-            fontWeight: 500,
-            border: '1px solid var(--border-default)',
-            borderRadius: 'var(--r-md)',
-            background: 'var(--bg-surface)',
-            color: 'var(--text-primary)',
-            cursor: 'pointer',
-          }}
-        >
-          Continue with GitHub
-        </button>
-
-        <button
-          onClick={() => signIn('google')}
-          style={{
-            width: '100%',
-            padding: 'var(--sp-3) var(--sp-4)',
-            fontSize: 'var(--text-base)',
-            fontWeight: 500,
-            border: '1px solid var(--border-default)',
-            borderRadius: 'var(--r-md)',
-            background: 'var(--bg-surface)',
-            color: 'var(--text-primary)',
-            cursor: 'pointer',
-          }}
-        >
-          Continue with Google
-        </button>
-      </div>
+      <button
+        onClick={() => signIn('google')}
+        style={{
+          width: '100%',
+          padding: 'var(--sp-3) var(--sp-4)',
+          fontSize: 'var(--text-base)',
+          fontWeight: 500,
+          border: '1px solid var(--border-default)',
+          borderRadius: 'var(--r-md)',
+          background: 'var(--bg-surface)',
+          color: 'var(--text-primary)',
+          cursor: 'pointer',
+        }}
+      >
+        Continue with Google
+      </button>
     </div>
   )
 }

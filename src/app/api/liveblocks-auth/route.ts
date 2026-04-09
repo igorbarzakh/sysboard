@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@/shared/lib/auth'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/shared/lib/auth'
 import { prisma } from '@/shared/lib/db'
 import { liveblocks } from '@/shared/lib/liveblocks'
 import { MAX_USERS_PER_BOARD } from '@/shared/lib/constants'
 
 export async function POST(request: Request): Promise<NextResponse> {
-  const session = await auth()
+  const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
