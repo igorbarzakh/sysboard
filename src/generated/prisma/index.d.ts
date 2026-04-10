@@ -1377,6 +1377,7 @@ export namespace Prisma {
     emailVerified: Date | null
     name: string | null
     image: string | null
+    password: string | null
     createdAt: Date | null
   }
 
@@ -1386,6 +1387,7 @@ export namespace Prisma {
     emailVerified: Date | null
     name: string | null
     image: string | null
+    password: string | null
     createdAt: Date | null
   }
 
@@ -1395,6 +1397,7 @@ export namespace Prisma {
     emailVerified: number
     name: number
     image: number
+    password: number
     createdAt: number
     _all: number
   }
@@ -1406,6 +1409,7 @@ export namespace Prisma {
     emailVerified?: true
     name?: true
     image?: true
+    password?: true
     createdAt?: true
   }
 
@@ -1415,6 +1419,7 @@ export namespace Prisma {
     emailVerified?: true
     name?: true
     image?: true
+    password?: true
     createdAt?: true
   }
 
@@ -1424,6 +1429,7 @@ export namespace Prisma {
     emailVerified?: true
     name?: true
     image?: true
+    password?: true
     createdAt?: true
     _all?: true
   }
@@ -1506,6 +1512,7 @@ export namespace Prisma {
     emailVerified: Date | null
     name: string | null
     image: string | null
+    password: string | null
     createdAt: Date
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
@@ -1532,6 +1539,7 @@ export namespace Prisma {
     emailVerified?: boolean
     name?: boolean
     image?: boolean
+    password?: boolean
     createdAt?: boolean
     boards?: boolean | User$boardsArgs<ExtArgs>
     boardMembers?: boolean | User$boardMembersArgs<ExtArgs>
@@ -1546,6 +1554,7 @@ export namespace Prisma {
     emailVerified?: boolean
     name?: boolean
     image?: boolean
+    password?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["user"]>
 
@@ -1555,6 +1564,7 @@ export namespace Prisma {
     emailVerified?: boolean
     name?: boolean
     image?: boolean
+    password?: boolean
     createdAt?: boolean
   }
 
@@ -1581,6 +1591,7 @@ export namespace Prisma {
       emailVerified: Date | null
       name: string | null
       image: string | null
+      password: string | null
       createdAt: Date
     }, ExtArgs["result"]["user"]>
     composites: {}
@@ -1984,6 +1995,7 @@ export namespace Prisma {
     readonly emailVerified: FieldRef<"User", 'DateTime'>
     readonly name: FieldRef<"User", 'String'>
     readonly image: FieldRef<"User", 'String'>
+    readonly password: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
   }
     
@@ -7133,6 +7145,7 @@ export namespace Prisma {
     emailVerified: 'emailVerified',
     name: 'name',
     image: 'image',
+    password: 'password',
     createdAt: 'createdAt'
   };
 
@@ -7319,6 +7332,7 @@ export namespace Prisma {
     emailVerified?: DateTimeNullableFilter<"User"> | Date | string | null
     name?: StringNullableFilter<"User"> | string | null
     image?: StringNullableFilter<"User"> | string | null
+    password?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     boards?: BoardListRelationFilter
     boardMembers?: BoardMemberListRelationFilter
@@ -7332,6 +7346,7 @@ export namespace Prisma {
     emailVerified?: SortOrderInput | SortOrder
     name?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
+    password?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     boards?: BoardOrderByRelationAggregateInput
     boardMembers?: BoardMemberOrderByRelationAggregateInput
@@ -7348,6 +7363,7 @@ export namespace Prisma {
     emailVerified?: DateTimeNullableFilter<"User"> | Date | string | null
     name?: StringNullableFilter<"User"> | string | null
     image?: StringNullableFilter<"User"> | string | null
+    password?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     boards?: BoardListRelationFilter
     boardMembers?: BoardMemberListRelationFilter
@@ -7361,6 +7377,7 @@ export namespace Prisma {
     emailVerified?: SortOrderInput | SortOrder
     name?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
+    password?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -7376,6 +7393,7 @@ export namespace Prisma {
     emailVerified?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     name?: StringNullableWithAggregatesFilter<"User"> | string | null
     image?: StringNullableWithAggregatesFilter<"User"> | string | null
+    password?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
 
@@ -7688,6 +7706,7 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     name?: string | null
     image?: string | null
+    password?: string | null
     createdAt?: Date | string
     boards?: BoardCreateNestedManyWithoutOwnerInput
     boardMembers?: BoardMemberCreateNestedManyWithoutUserInput
@@ -7701,6 +7720,7 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     name?: string | null
     image?: string | null
+    password?: string | null
     createdAt?: Date | string
     boards?: BoardUncheckedCreateNestedManyWithoutOwnerInput
     boardMembers?: BoardMemberUncheckedCreateNestedManyWithoutUserInput
@@ -7714,6 +7734,7 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boards?: BoardUpdateManyWithoutOwnerNestedInput
     boardMembers?: BoardMemberUpdateManyWithoutUserNestedInput
@@ -7727,6 +7748,7 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boards?: BoardUncheckedUpdateManyWithoutOwnerNestedInput
     boardMembers?: BoardMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -7740,6 +7762,7 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     name?: string | null
     image?: string | null
+    password?: string | null
     createdAt?: Date | string
   }
 
@@ -7749,6 +7772,7 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -7758,6 +7782,7 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -8171,6 +8196,7 @@ export namespace Prisma {
     emailVerified?: SortOrder
     name?: SortOrder
     image?: SortOrder
+    password?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -8180,6 +8206,7 @@ export namespace Prisma {
     emailVerified?: SortOrder
     name?: SortOrder
     image?: SortOrder
+    password?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -8189,6 +8216,7 @@ export namespace Prisma {
     emailVerified?: SortOrder
     name?: SortOrder
     image?: SortOrder
+    password?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -9210,6 +9238,7 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     name?: string | null
     image?: string | null
+    password?: string | null
     createdAt?: Date | string
     boardMembers?: BoardMemberCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
@@ -9222,6 +9251,7 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     name?: string | null
     image?: string | null
+    password?: string | null
     createdAt?: Date | string
     boardMembers?: BoardMemberUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
@@ -9272,6 +9302,7 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boardMembers?: BoardMemberUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
@@ -9284,6 +9315,7 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boardMembers?: BoardMemberUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -9335,6 +9367,7 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     name?: string | null
     image?: string | null
+    password?: string | null
     createdAt?: Date | string
     boards?: BoardCreateNestedManyWithoutOwnerInput
     accounts?: AccountCreateNestedManyWithoutUserInput
@@ -9347,6 +9380,7 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     name?: string | null
     image?: string | null
+    password?: string | null
     createdAt?: Date | string
     boards?: BoardUncheckedCreateNestedManyWithoutOwnerInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
@@ -9404,6 +9438,7 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boards?: BoardUpdateManyWithoutOwnerNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
@@ -9416,6 +9451,7 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boards?: BoardUncheckedUpdateManyWithoutOwnerNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -9428,6 +9464,7 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     name?: string | null
     image?: string | null
+    password?: string | null
     createdAt?: Date | string
     boards?: BoardCreateNestedManyWithoutOwnerInput
     boardMembers?: BoardMemberCreateNestedManyWithoutUserInput
@@ -9440,6 +9477,7 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     name?: string | null
     image?: string | null
+    password?: string | null
     createdAt?: Date | string
     boards?: BoardUncheckedCreateNestedManyWithoutOwnerInput
     boardMembers?: BoardMemberUncheckedCreateNestedManyWithoutUserInput
@@ -9468,6 +9506,7 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boards?: BoardUpdateManyWithoutOwnerNestedInput
     boardMembers?: BoardMemberUpdateManyWithoutUserNestedInput
@@ -9480,6 +9519,7 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boards?: BoardUncheckedUpdateManyWithoutOwnerNestedInput
     boardMembers?: BoardMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -9492,6 +9532,7 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     name?: string | null
     image?: string | null
+    password?: string | null
     createdAt?: Date | string
     boards?: BoardCreateNestedManyWithoutOwnerInput
     boardMembers?: BoardMemberCreateNestedManyWithoutUserInput
@@ -9504,6 +9545,7 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     name?: string | null
     image?: string | null
+    password?: string | null
     createdAt?: Date | string
     boards?: BoardUncheckedCreateNestedManyWithoutOwnerInput
     boardMembers?: BoardMemberUncheckedCreateNestedManyWithoutUserInput
@@ -9532,6 +9574,7 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boards?: BoardUpdateManyWithoutOwnerNestedInput
     boardMembers?: BoardMemberUpdateManyWithoutUserNestedInput
@@ -9544,6 +9587,7 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boards?: BoardUncheckedUpdateManyWithoutOwnerNestedInput
     boardMembers?: BoardMemberUncheckedUpdateManyWithoutUserNestedInput
