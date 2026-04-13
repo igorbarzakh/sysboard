@@ -15,7 +15,6 @@ model User {
   emailVerified DateTime?
   name          String?
   image         String?
-  password      String?
   createdAt     DateTime  @default(now())
 
   boards       Board[]
