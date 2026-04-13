@@ -1,4 +1,4 @@
-# System Design Board
+# Sysboard
 
 Collaborative diagramming tool for software architects. Built with Next.js (fullstack), tldraw (canvas), Liveblocks (realtime), NextAuth.js (auth), Prisma + Postgres (data).
 
@@ -53,7 +53,6 @@ Widgets are compositional. They typically have 1-2 components and do not need su
 Widget slice structure:
   widget-name/
     WidgetName.tsx   — main component
-    WidgetName.css   — styles (if needed)
     index.ts         — re-export
 
 ### FSD slices
@@ -140,7 +139,7 @@ Models:
 ### Frontend Developer
 
 - Implements src/app pages, FSD layers: entities, features, widgets
-- Uses design tokens exclusively, no hardcoded colors or spacing
+- Uses Tailwind CSS v4 utility classes exclusively — no inline styles, no separate .css files
 - Respects FSD import rules strictly
 - Does not write API routes or Prisma queries directly
 
@@ -163,12 +162,81 @@ Models:
 - Async/await over callbacks
 - Errors are typed, never silently swallowed
 - Each file has single responsibility
-- CSS custom properties only — no hardcoded colors, spacing, or radii
+- Styling: Tailwind CSS v4 utility classes only. No inline styles. No separate .css files for components.
 
 ## Design system
 
-Tokens in src/shared/styles/tokens.css.
+Tokens defined in src/shared/styles/tokens.css (source of truth — CSS custom properties).
+Mapped to Tailwind v4 utilities in src/app/globals.css `@theme inline` block.
 Fonts: Onest (body, all UI), Fira Code (mono — IDs, props, technical data).
+
+Use Tailwind CSS v4 utility classes. Design tokens are defined in globals.css @theme block.
+
+## Tailwind token classes
+
+### Backgrounds
+| Class | Token | Value |
+|---|---|---|
+| `bg-bg-base` | `--bg-base` | #FFFFFF |
+| `bg-bg-canvas` | `--bg-canvas` | #F8F9FA |
+| `bg-bg-surface` | `--bg-surface` | #F1F3F5 |
+| `bg-bg-elevated` | `--bg-elevated` | #FFFFFF |
+
+### Accent
+| Class | Token | Value |
+|---|---|---|
+| `bg-accent` / `text-accent` | `--accent` | #5C7CFA (brand blue — overrides shadcn) |
+| `bg-accent-bright` | `--accent-bright` | #748FFC |
+| `bg-accent-dim` | `--accent-dim` | rgba(92,124,250,0.12) |
+| `bg-accent-glow` | `--accent-glow` | rgba(92,124,250,0.06) |
+
+### Text
+| Class | Token | Value |
+|---|---|---|
+| `text-text-primary` | `--text-primary` | #1C1C1E |
+| `text-text-secondary` | `--text-secondary` | #6B7280 |
+| `text-text-muted` | `--text-muted` | #9CA3AF |
+| `text-text-accent` | `--text-accent` | #5C7CFA |
+| `text-text-on-accent` | `--text-on-accent` | #FFFFFF |
+
+### Borders
+| Class | Token | Value |
+|---|---|---|
+| `border-border-faint` | `--border-faint` | #F1F3F5 |
+| `border-border-subtle` | `--border-subtle` | #E9ECEF |
+| `border-border-default` | `--border-default` | #DEE2E6 |
+| `border-border-strong` | `--border-strong` | #ADB5BD |
+
+### Border radius
+| Class | Token | Value |
+|---|---|---|
+| `rounded-xs` | `--r-xs` | 2px |
+| `rounded-sm` | `--r-sm` | 4px |
+| `rounded-md` | `--r-md` | 6px |
+| `rounded-lg` | `--r-lg` | 9px |
+| `rounded-xl` | `--r-xl` | 13px |
+
+### Shadows
+| Class | Token |
+|---|---|
+| `shadow-node` | `--shadow-node` |
+| `shadow-selected` | `--shadow-selected` |
+| `shadow-panel` | `--shadow-panel` |
+| `shadow-toolbar` | `--shadow-toolbar` |
+| `shadow-elevated` | `--shadow-elevated` |
+
+### Fonts
+| Class | Token | Value |
+|---|---|---|
+| `font-body` | `--font-body` | Onest, sans-serif |
+| `font-mono` | `--font-mono` | Fira Code, monospace |
+
+### Spacing
+Tailwind's default scale maps 1:1 to our `--sp-*` tokens (both are 4px × n):
+`p-4` = 16px = `var(--sp-4)`. Use standard Tailwind spacing utilities.
+
+### Node colors (for diagram elements)
+`bg-node-service`, `bg-node-database`, `bg-node-queue`, `bg-node-cache`, `bg-node-cdn`
 
 ## What we are NOT building (MVP)
 
