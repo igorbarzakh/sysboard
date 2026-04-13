@@ -1,15 +1,15 @@
 'use client'
 
-const SIZES = {
-  sm: 24,
-  md: 32,
-  lg: 40,
+const SIZE_CLASSES = {
+  sm: 'w-6 h-6 text-xs',
+  md: 'w-8 h-8 text-sm',
+  lg: 'w-10 h-10 text-base',
 } as const
 
 interface AvatarProps {
   name: string | null
   image: string | null
-  size?: keyof typeof SIZES
+  size?: keyof typeof SIZE_CLASSES
 }
 
 function getInitials(name: string | null): string {
@@ -22,46 +22,24 @@ function getInitials(name: string | null): string {
 }
 
 export function Avatar({ name, image, size = 'md' }: AvatarProps) {
-  const px = SIZES[size]
-  const fontSize = px <= 24 ? 'var(--text-xs)' : px <= 32 ? 'var(--text-sm)' : 'var(--text-base)'
-
-  const baseStyle: React.CSSProperties = {
-    width: px,
-    height: px,
-    borderRadius: '50%',
-    flexShrink: 0,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-    border: '1px solid var(--border-subtle)',
-  }
+  const sizeClass = SIZE_CLASSES[size]
+  const baseClass = `${sizeClass} rounded-full shrink-0 flex items-center justify-center overflow-hidden border border-border-subtle`
 
   if (image) {
     return (
-      <div style={baseStyle}>
+      <div className={baseClass}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={image}
           alt={name ?? 'User avatar'}
-          width={px}
-          height={px}
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          className="w-full h-full object-cover"
         />
       </div>
     )
   }
 
   return (
-    <div
-      style={{
-        ...baseStyle,
-        background: 'var(--accent-dim)',
-        color: 'var(--text-accent)',
-        fontSize,
-        fontWeight: 600,
-      }}
-    >
+    <div className={`${baseClass} bg-accent-dim text-text-accent font-semibold`}>
       {getInitials(name)}
     </div>
   )

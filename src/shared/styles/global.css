@@ -1,21 +1,2 @@
-@import url('https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
-@import './tokens.css';
-
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html, body {
-  height: 100%;
-}
-
-body {
-  background: var(--bg-base);
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: var(--text-base);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
+@import url("https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap");
+@import "./tokens.css";

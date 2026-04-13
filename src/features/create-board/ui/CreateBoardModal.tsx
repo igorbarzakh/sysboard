@@ -48,31 +48,17 @@ export function CreateBoardModal({ isOpen, onClose, onSuccess }: CreateBoardModa
       aria-modal="true"
       aria-labelledby="create-board-title"
       onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
-      style={{
-        position: 'fixed', inset: 0, zIndex: 50,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'rgba(0,0,0,0.3)',
-      }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
     >
-      <div
-        style={{
-          background: 'var(--bg-elevated)',
-          border: '1px solid var(--border-default)',
-          borderRadius: 'var(--r-xl)',
-          boxShadow: 'var(--shadow-elevated)',
-          padding: 'var(--sp-6)',
-          width: '100%',
-          maxWidth: 400,
-        }}
-      >
+      <div className="bg-bg-elevated border border-border-default rounded-xl shadow-elevated p-6 w-full max-w-100">
         <h2
           id="create-board-title"
-          style={{ fontSize: 'var(--text-lg)', fontWeight: 600, marginBottom: 'var(--sp-4)' }}
+          className="text-lg font-semibold mb-4"
         >
           New board
         </h2>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)' }}>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
             autoFocus
             type="text"
@@ -80,51 +66,25 @@ export function CreateBoardModal({ isOpen, onClose, onSuccess }: CreateBoardModa
             value={name}
             onChange={(e) => setName(e.target.value)}
             maxLength={100}
-            style={{
-              width: '100%',
-              padding: 'var(--sp-2) var(--sp-3)',
-              fontSize: 'var(--text-base)',
-              border: '1px solid var(--border-default)',
-              borderRadius: 'var(--r-md)',
-              background: 'var(--bg-surface)',
-              color: 'var(--text-primary)',
-              outline: 'none',
-            }}
+            className="w-full px-3 py-2 text-base border border-border-default rounded-md bg-bg-surface text-text-primary outline-none"
           />
 
           {error && (
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--node-cdn)' }}>{error}</p>
+            <p className="text-sm text-node-cdn">{error}</p>
           )}
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--sp-2)', marginTop: 'var(--sp-1)' }}>
+          <div className="flex justify-end gap-2 mt-1">
             <button
               type="button"
               onClick={handleClose}
-              style={{
-                padding: 'var(--sp-2) var(--sp-4)',
-                fontSize: 'var(--text-base)',
-                border: '1px solid var(--border-default)',
-                borderRadius: 'var(--r-md)',
-                background: 'none',
-                color: 'var(--text-secondary)',
-                cursor: 'pointer',
-              }}
+              className="px-4 py-2 text-base border border-border-default rounded-md bg-transparent text-text-secondary cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              style={{
-                padding: 'var(--sp-2) var(--sp-4)',
-                fontSize: 'var(--text-base)',
-                border: 'none',
-                borderRadius: 'var(--r-md)',
-                background: isLoading ? 'var(--accent-dim)' : 'var(--accent)',
-                color: 'var(--text-on-accent)',
-                cursor: isLoading ? 'not-allowed' : 'pointer',
-                fontWeight: 500,
-              }}
+              className={`px-4 py-2 text-base border-none rounded-md text-text-on-accent font-medium ${isLoading ? 'bg-accent-dim cursor-not-allowed' : 'bg-accent cursor-pointer'}`}
             >
               {isLoading ? 'Creating…' : 'Create'}
             </button>

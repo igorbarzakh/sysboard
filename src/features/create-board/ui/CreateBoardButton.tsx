@@ -20,22 +20,14 @@ export function CreateBoardButton({ boardCount, onSuccess }: CreateBoardButtonPr
         onClick={() => setIsOpen(true)}
         disabled={isAtLimit}
         title={isAtLimit ? 'Board limit reached' : 'Create a new board'}
-        style={{
-          padding: 'var(--sp-2) var(--sp-4)',
-          fontSize: 'var(--text-base)',
-          fontWeight: 500,
-          border: 'none',
-          borderRadius: 'var(--r-md)',
-          background: isAtLimit ? 'var(--bg-surface)' : 'var(--accent)',
-          color: isAtLimit ? 'var(--text-muted)' : 'var(--text-on-accent)',
-          cursor: isAtLimit ? 'not-allowed' : 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 'var(--sp-2)',
-        }}
+        className={`px-4 py-2 text-base font-medium border-none rounded-md flex items-center gap-2 ${
+          isAtLimit
+            ? 'bg-bg-surface text-text-muted cursor-not-allowed'
+            : 'bg-accent text-text-on-accent cursor-pointer'
+        }`}
       >
         <span>New board</span>
-        <span style={{ fontSize: 'var(--text-sm)', opacity: 0.75 }}>
+        <span className="text-sm opacity-75">
           {boardCount}/{MAX_BOARDS_PER_USER}
         </span>
       </button>
