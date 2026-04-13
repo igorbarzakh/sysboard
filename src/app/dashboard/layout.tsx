@@ -2,9 +2,9 @@ import { DashboardHeader } from '@/widgets/dashboard-header'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div className="flex flex-col h-full">
       <DashboardHeader />
-      <main style={{ flex: 1, overflow: 'auto' }}>{children}</main>
+      <main className="flex-1 overflow-auto">{children}</main>
     </div>
   )
 }
