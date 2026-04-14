@@ -14,24 +14,57 @@ model User {
   emailVerified DateTime?
   name          String?
   image         String?
+  plan          String    @default("free")
   createdAt     DateTime  @default(now())
 
-  boards       Board[]
-  boardMembers BoardMember[]
-  accounts     Account[]
-  sessions     Session[]
+  ownedWorkspaces  Workspace[]       @relation("WorkspaceOwner")
+  workspaceMembers WorkspaceMember[]
+  boardMembers     BoardMember[]
+  accounts         Account[]
+  sessions         Session[]
 }
 
-model Board {
+model Workspace {
   id        String   @id @default(cuid())
   name      String
+  slug      String   @unique
   ownerId   String
-  data      Json?
+  plan      String   @default("free")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  owner   User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  members BoardMember[]
+  owner   User              @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members WorkspaceMember[]
+  boards  Board[]
+
+  @@index([ownerId])
+}
+
+model WorkspaceMember {
+  workspaceId String
+  userId      String
+  role        String   @default("member")
+  joinedAt    DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([workspaceId, userId])
+  @@index([userId])
+}
+
+model Board {
+  id          String   @id @default(cuid())
+  name        String
+  workspaceId String
+  data        Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  members   BoardMember[]
+
+  @@index([workspaceId])
 }
 
 model BoardMember {
@@ -44,6 +77,7 @@ model BoardMember {
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([boardId, userId])
+  @@index([userId])
 }
 
 model Account {

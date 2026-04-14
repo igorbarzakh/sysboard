@@ -1,6 +1,8 @@
+export type BoardRole = 'editor'
+
 export interface BoardMember {
   userId: string
-  role: 'owner' | 'editor'
+  role: BoardRole
   joinedAt: string
   user: { id: string; name: string | null; image: string | null }
 }
@@ -8,10 +10,10 @@ export interface BoardMember {
 export interface Board {
   id: string
   name: string
-  ownerId: string
+  workspaceId: string
   data: unknown
   createdAt: string
   updatedAt: string
-  owner: { id: string; name: string | null; image: string | null }
+  workspace: { id: string; name: string; slug: string }
   members: BoardMember[]
 }

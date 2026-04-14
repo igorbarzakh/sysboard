@@ -10,13 +10,20 @@ async function requireBoardAccess(boardId: string, userId: string) {
     where: {
       id: boardId,
       OR: [
-        { ownerId: userId },
+        { workspace: { members: { some: { userId } } } },
         { members: { some: { userId } } },
       ],
     },
     include: {
-      members: { include: { user: { select: { id: true, name: true, email: true, image: true } } } },
-      owner: { select: { name: true } },
+      workspace: {
+        select: {
+          id: true,
+          members: { where: { userId }, select: { role: true } },
+        },
+      },
+      members: {
+        include: { user: { select: { id: true, name: true, email: true, image: true } } },
+      },
     },
   })
 }
@@ -73,11 +80,7 @@ export async function PATCH(request: Request, { params }: RouteContext): Promise
     updateData.data = payload.data as object
   }
 
-  const updated = await prisma.board.update({
-    where: { id },
-    data: updateData,
-  })
-
+  const updated = await prisma.board.update({ where: { id }, data: updateData })
   return NextResponse.json(updated)
 }
 
@@ -88,17 +91,20 @@ export async function DELETE(_request: Request, { params }: RouteContext): Promi
   }
 
   const { id } = await params
-  const board = await prisma.board.findUnique({ where: { id } })
+  const board = await requireBoardAccess(id, session.user.id)
 
   if (!board) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  if (board.ownerId !== session.user.id) {
-    return NextResponse.json({ error: 'Only the owner can delete this board' }, { status: 403 })
+  const memberRole = board.workspace.members[0]?.role
+  if (!memberRole || !['owner', 'admin'].includes(memberRole)) {
+    return NextResponse.json(
+      { error: 'Only workspace owners and admins can delete boards' },
+      { status: 403 },
+    )
   }
 
   await prisma.board.delete({ where: { id } })
-
   return new NextResponse(null, { status: 204 })
 }

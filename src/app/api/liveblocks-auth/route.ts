@@ -3,7 +3,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/shared/lib/auth'
 import { prisma } from '@/shared/lib/db'
 import { liveblocks } from '@/shared/lib/liveblocks'
-import { MAX_USERS_PER_BOARD } from '@/shared/lib/constants'
+import { PLAN_LIMITS } from '@/shared/lib/constants'
+import type { UserPlan } from '@/shared/lib/constants'
 
 export async function POST(request: Request): Promise<NextResponse> {
   const session = await getServerSession(authOptions)
@@ -23,20 +24,31 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   const roomId = (body as Record<string, unknown>).room as string
 
-  const member = await prisma.boardMember.findUnique({
-    where: { boardId_userId: { boardId: roomId, userId: session.user.id } },
+  const board = await prisma.board.findFirst({
+    where: {
+      id: roomId,
+      OR: [
+        { workspace: { members: { some: { userId: session.user.id } } } },
+        { members: { some: { userId: session.user.id } } },
+      ],
+    },
+    select: {
+      workspace: { select: { plan: true } },
+    },
   })
-  if (!member) {
+
+  if (!board) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
+  const limit = PLAN_LIMITS[board.workspace.plan as UserPlan].maxMembersPerBoard
   const { data: activeUsers } = await liveblocks.getActiveUsers(roomId)
   const isAlreadyConnected = activeUsers.some((u) => u.id === session.user.id)
 
-  if (!isAlreadyConnected && activeUsers.length >= MAX_USERS_PER_BOARD) {
+  if (!isAlreadyConnected && activeUsers.length >= limit) {
     return NextResponse.json(
-      { error: `Room is full (max ${MAX_USERS_PER_BOARD} users)` },
-      { status: 403 }
+      { error: `Room is full (max ${limit} users)` },
+      { status: 403 },
     )
   }
 

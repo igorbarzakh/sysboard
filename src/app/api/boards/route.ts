@@ -1,75 +1,90 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/shared/lib/auth";
-import { prisma } from "@/shared/lib/db";
-import { MAX_BOARDS_PER_USER } from "@/shared/lib/constants";
+import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/shared/lib/auth'
+import { prisma } from '@/shared/lib/db'
+import { PLAN_LIMITS } from '@/shared/lib/constants'
+import type { UserPlan } from '@/shared/lib/constants'
 
 export async function GET(): Promise<NextResponse> {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   const boards = await prisma.board.findMany({
     where: {
-      OR: [{ ownerId: session.user.id }, { members: { some: { userId: session.user.id } } }],
+      OR: [
+        { workspace: { members: { some: { userId: session.user.id } } } },
+        { members: { some: { userId: session.user.id } } },
+      ],
     },
     include: {
-      owner: { select: { name: true } },
+      workspace: { select: { id: true, name: true, slug: true } },
     },
-    orderBy: { updatedAt: "desc" },
-  });
+    orderBy: { updatedAt: 'desc' },
+  })
 
-  return NextResponse.json(boards);
+  return NextResponse.json(boards)
 }
 
 export async function POST(request: Request): Promise<NextResponse> {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const body: unknown = await request.json();
+  const body: unknown = await request.json()
   if (
-    typeof body !== "object" ||
+    typeof body !== 'object' ||
     body === null ||
-    !("name" in body) ||
-    typeof (body as Record<string, unknown>).name !== "string"
+    !('name' in body) ||
+    typeof (body as Record<string, unknown>).name !== 'string'
   ) {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
   }
 
-  const name = ((body as Record<string, unknown>).name as string).trim();
+  const name = ((body as Record<string, unknown>).name as string).trim()
   if (!name) {
-    return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    return NextResponse.json({ error: 'Name is required' }, { status: 400 })
   }
   if (name.length > 100) {
-    return NextResponse.json({ error: "Name must be 100 characters or fewer" }, { status: 400 });
+    return NextResponse.json({ error: 'Name must be 100 characters or fewer' }, { status: 400 })
   }
 
-  const boardCount = await prisma.board.count({
+  const workspace = await prisma.workspace.findFirst({
     where: { ownerId: session.user.id },
-  });
+    select: { id: true, plan: true },
+  })
 
-  if (boardCount >= MAX_BOARDS_PER_USER) {
+  if (!workspace) {
     return NextResponse.json(
-      { error: `You can only have ${MAX_BOARDS_PER_USER} boards` },
+      { error: 'No workspace found. Create a workspace first.' },
+      { status: 400 },
+    )
+  }
+
+  const limit = PLAN_LIMITS[workspace.plan as UserPlan].maxBoardsPerWorkspace
+  const boardCount = await prisma.board.count({ where: { workspaceId: workspace.id } })
+
+  if (boardCount >= limit) {
+    return NextResponse.json(
+      { error: `Workspace board limit reached (max ${limit})` },
       { status: 403 },
-    );
+    )
   }
 
   const board = await prisma.board.create({
     data: {
       name,
-      ownerId: session.user.id,
+      workspaceId: workspace.id,
       members: {
-        create: { userId: session.user.id, role: "owner" },
+        create: { userId: session.user.id, role: 'editor' },
       },
     },
     include: {
-      owner: { select: { name: true } },
+      workspace: { select: { id: true, name: true, slug: true } },
     },
-  });
+  })
 
-  return NextResponse.json(board, { status: 201 });
+  return NextResponse.json(board, { status: 201 })
 }

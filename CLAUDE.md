@@ -60,18 +60,23 @@ Widget slice structure:
 
 entities/
 board/ — Board type, BoardCard component, board API client
-user/ — User type, Avatar component, current user hook
+user/ — User type (incl. plan), Avatar component, current user hook
+workspace/ — Workspace/WorkspaceMember types, workspace API client
 
 features/
 create-board/ — create board form, mutation, validation
 delete-board/ — delete action, confirmation
 share-board/ — share modal, invite flow
 board-collab/ — Liveblocks presence, cursors, awareness UI
+create-workspace/ — create workspace form + mutation (slug auto-derived from name)
+invite-member/ — invite user to workspace/board; auto-creates WorkspaceMember on board invite
 
 widgets/
 board-list/ — composes entities/board + features/create-board + features/delete-board
 canvas-editor/ — composes tldraw + features/board-collab
 dashboard-header/ — top bar for dashboard
+workspace-switcher/ — header dropdown to switch active workspace + create new
+workspace-sidebar/ — left nav with workspace info, boards, members
 
 shared/
 ui/ — Button, Input, Modal, Avatar — no business logic
@@ -79,7 +84,7 @@ lib/
 auth.ts — NextAuth config
 db.ts — Prisma client singleton
 liveblocks.ts — Liveblocks server client
-constants.ts — MAX_BOARDS_PER_USER, MAX_USERS_PER_BOARD
+constants.ts — UserPlan, PlanLimits, FREE_PLAN, PRO_PLAN, PLAN_LIMITS
 styles/
 tokens.css — CSS custom properties (design tokens)
 global.css — reset and base styles
@@ -114,19 +119,41 @@ liveblocks-auth/route.ts — Liveblocks auth
 
 ## Database schema (Prisma)
 
-src/prisma/schema.prisma
+prisma/schema.prisma
 
 Models:
 
-- User: id, email, name, image, createdAt
-- Board: id, name, ownerId (→ User), data (Json, tldraw snapshot), createdAt, updatedAt
-- BoardMember: boardId (→ Board), userId (→ User), role (owner|editor), joinedAt
+- User: id, email, name, image, plan (free|pro), createdAt
+- Workspace: id, name, slug (unique, auto-derived from name), ownerId (→ User), plan (free|pro), createdAt, updatedAt
+- WorkspaceMember: workspaceId (→ Workspace), userId (→ User), role (owner|admin|member), joinedAt
+- Board: id, name, workspaceId (→ Workspace), data (Json, tldraw snapshot), createdAt, updatedAt
+- BoardMember: boardId (→ Board), userId (→ User), role (editor), joinedAt
+
+Ownership model:
+- Boards belong to workspaces, not users directly.
+- Workspace owner/admins have implicit access to all boards in the workspace.
+- BoardMember is an explicit per-board ACL for non-admin workspace members.
+- Inviting a user to a board auto-creates a WorkspaceMember (role: member) if not already present.
 
 ## Business constraints
 
-- Max 2 boards per user — enforced in POST /api/boards
-- Max 2 concurrent users per board — enforced in /api/liveblocks-auth
-- Limits are constants in shared/lib/constants.ts, never magic numbers
+Plan limits (defined in shared/lib/constants.ts, never magic numbers):
+
+FREE:
+- 1 workspace per user
+- 2 boards per workspace
+- 2 concurrent users per board
+
+PRO:
+- 5 workspaces per user
+- 10 boards per workspace
+- 10 concurrent users per board
+
+Enforcement:
+- User.plan gates workspace creation — enforced in POST /api/workspaces
+- Workspace.plan gates board creation — enforced in POST /api/workspaces/[slug]/boards
+- Workspace.plan gates board member count — enforced in /api/liveblocks-auth
+- Slug is auto-derived from workspace name (not user-editable)
 
 ## Agent roles
 
@@ -241,10 +268,8 @@ Tailwind's default scale maps 1:1 to our `--sp-*` tokens (both are 4px × n):
 
 ## What we are NOT building (MVP)
 
-- Subscription or payment logic
+- Subscription or payment logic (plan field exists, but no billing flow)
 - Mobile support
-- More than 2 boards per user
-- More than 2 concurrent users per board
 - Public sharing without auth
 
 ## Response style

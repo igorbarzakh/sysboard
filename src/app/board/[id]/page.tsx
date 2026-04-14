@@ -17,12 +17,12 @@ export default async function BoardPage({ params }: PageProps) {
     where: {
       id,
       OR: [
-        { ownerId: session.user.id },
+        { workspace: { members: { some: { userId: session.user.id } } } },
         { members: { some: { userId: session.user.id } } },
       ],
     },
     include: {
-      owner: { select: { id: true, name: true, image: true } },
+      workspace: { select: { id: true, name: true, slug: true } },
       members: {
         include: { user: { select: { id: true, name: true, image: true } } },
       },
@@ -37,7 +37,7 @@ export default async function BoardPage({ params }: PageProps) {
     updatedAt: row.updatedAt.toISOString(),
     members: row.members.map((m) => ({
       userId: m.userId,
-      role: m.role as 'owner' | 'editor',
+      role: m.role as 'editor',
       joinedAt: m.joinedAt.toISOString(),
       user: m.user,
     })),

@@ -2,6 +2,7 @@
 
 import { useSession } from 'next-auth/react'
 import type { CurrentUser } from '../model/types'
+import type { UserPlan } from '@/shared/lib/constants'
 
 export function useCurrentUser(): CurrentUser | null {
   const { data: session } = useSession()
@@ -12,5 +13,6 @@ export function useCurrentUser(): CurrentUser | null {
     name: session.user.name ?? null,
     email: session.user.email,
     image: session.user.image ?? null,
+    plan: (session.user.plan as UserPlan) ?? 'free',
   }
 }

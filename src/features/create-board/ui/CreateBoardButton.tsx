@@ -3,16 +3,21 @@
 import { useState } from 'react'
 import { CreateBoardModal } from './CreateBoardModal'
 import type { Board } from '@/entities/board'
-import { MAX_BOARDS_PER_USER } from '@/shared/lib/constants'
+import { FREE_PLAN } from '@/shared/lib/constants'
 
 interface CreateBoardButtonProps {
   boardCount: number
   onSuccess: (board: Board) => void
+  limit?: number
 }
 
-export function CreateBoardButton({ boardCount, onSuccess }: CreateBoardButtonProps) {
+export function CreateBoardButton({
+  boardCount,
+  onSuccess,
+  limit = FREE_PLAN.maxBoardsPerWorkspace,
+}: CreateBoardButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const isAtLimit = boardCount >= MAX_BOARDS_PER_USER
+  const isAtLimit = boardCount >= limit
 
   return (
     <>
