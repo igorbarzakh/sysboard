@@ -51,6 +51,10 @@
   --color-accent-dim: var(--accent-dim);
   --color-accent-glow: var(--accent-glow);
 
+  /* ── SDB: danger colors → text-danger / bg-danger-bg ───────────────────── */
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+
   /* ── SDB: text colors → text-text-* ─────────────────────────────────────── */
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);

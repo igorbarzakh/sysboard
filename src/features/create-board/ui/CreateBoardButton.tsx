@@ -17,19 +17,16 @@ export function CreateBoardButton({ boardCount, onSuccess }: CreateBoardButtonPr
   return (
     <>
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={() => !isAtLimit && setIsOpen(true)}
         disabled={isAtLimit}
         title={isAtLimit ? 'Board limit reached' : 'Create a new board'}
-        className={`px-4 py-2 text-base font-medium border-none rounded-md flex items-center gap-2 ${
+        className={`px-4 py-2 text-sm font-medium border-none rounded-md transition-opacity duration-150 ${
           isAtLimit
             ? 'bg-bg-surface text-text-muted cursor-not-allowed'
-            : 'bg-accent text-text-on-accent cursor-pointer'
+            : 'bg-accent text-text-on-accent cursor-pointer hover:opacity-85'
         }`}
       >
-        <span>New board</span>
-        <span className="text-sm opacity-75">
-          {boardCount}/{MAX_BOARDS_PER_USER}
-        </span>
+        New board
       </button>
 
       <CreateBoardModal

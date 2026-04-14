@@ -1,7 +1,8 @@
 "use client";
 
 import { signOut } from "next-auth/react";
-import { useCurrentUser } from "@/entities/user";
+import { ChevronDown, Settings, LogOut } from "lucide-react";
+import { useCurrentUser, Avatar } from "@/entities/user";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -9,77 +10,58 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/shared/ui/dropdown-menu";
-import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { Logo } from "@/shared/ui/logo";
-
-function getInitials(name: string | null | undefined): string {
-  if (!name) return "?";
-  return name
-    .split(" ")
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
-}
-
-function ChevronDownIcon() {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 14 14"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true">
-      <path
-        d="M3 5l4 4 4-4"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 export function DashboardHeader() {
   const user = useCurrentUser();
 
   return (
-    <header className="h-14 bg-bg-elevated border-b border-border-subtle flex items-center justify-between px-6 shrink-0">
+    <header className="h-[52px] bg-bg-elevated border-b border-border-default flex items-center justify-between px-6 shrink-0">
       <Logo />
 
       {user && (
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2 bg-transparent border border-transparent rounded-md px-2 py-1 cursor-pointer text-text-primary transition-[border-color,background] duration-[120ms]">
-            <Avatar size="sm">
-              <AvatarImage src={user.image ?? undefined} alt={user.name ?? "User avatar"} />
-              <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-            </Avatar>
-
-            <span className="text-sm font-medium text-text-primary max-w-40 truncate">
-              {user.name ?? user.email}
-            </span>
-
-            <span className="text-text-muted flex">
-              <ChevronDownIcon />
-            </span>
+          <DropdownMenuTrigger className="flex items-center gap-1 bg-transparent border-none cursor-pointer rounded-lg px-2 py-1 transition-colors duration-150 hover:bg-bg-surface group">
+            <div className="flex items-center gap-2">
+              <Avatar name={user.name} image={user.image} size="sm" />
+              <span className="text-[13px] font-medium text-text-primary max-w-40 truncate">
+                {user.name ?? user.email}
+              </span>
+            </div>
+            <ChevronDown size={14} className="text-text-primary" />
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent side="bottom" align="end" sideOffset={6}>
-            <div className="px-3 py-2 border-b border-border-faint mb-1">
-              <p className="text-sm font-medium text-text-primary truncate max-w-50">
-                {user.name ?? "User"}
-              </p>
-              <p className="text-xs text-text-muted truncate max-w-50">{user.email}</p>
+          <DropdownMenuContent
+            side="bottom"
+            align="end"
+            sideOffset={8}
+            className="w-55 rounded-xl bg-bg-elevated border border-border-default shadow-none p-0 overflow-hidden ring-0">
+            <div className="flex flex-col items-center gap-2 px-4 pt-4 pb-3">
+              <Avatar name={user.name} image={user.image} size="lg" />
+              <div className="flex flex-col items-center gap-0.5 text-center">
+                <p className="text-sm font-semibold text-text-primary truncate max-w-45">
+                  {user.name ?? "User"}
+                </p>
+                <p className="text-xs text-text-muted truncate max-w-45">{user.email}</p>
+              </div>
             </div>
 
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="bg-border-subtle mx-0" />
 
-            <DropdownMenuItem
-              onClick={() => signOut({ callbackUrl: "/" })}
-              className="cursor-pointer">
-              Sign out
-            </DropdownMenuItem>
+            <div className="p-1">
+              <DropdownMenuItem className="flex items-center gap-2.5 px-3 py-2 text-sm text-text-primary rounded-lg cursor-pointer transition-colors duration-150 focus:bg-bg-surface focus:text-text-primary">
+                <Settings size={16} />
+                Settings
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => signOut({ callbackUrl: "/" })}
+                className="flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg cursor-pointer transition-colors duration-150 text-text-primary hover:bg-danger-bg hover:text-danger focus:bg-danger-bg focus:text-danger focus:[&_svg]:text-danger">
+                <LogOut size={16} />
+                Log out
+              </DropdownMenuItem>
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
       )}

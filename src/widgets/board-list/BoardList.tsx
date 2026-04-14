@@ -3,20 +3,16 @@
 import { useEffect, useState } from "react";
 import { getBoards, BoardCard } from "@/entities/board";
 import type { Board } from "@/entities/board";
-import { useCurrentUser } from "@/entities/user";
 import { CreateBoardButton } from "@/features/create-board";
 import { useDeleteBoard } from "@/features/delete-board";
 
 function SkeletonCard() {
   return (
-    <div className="w-70 bg-bg-elevated border border-border-default rounded-lg overflow-hidden shadow-node">
+    <div className="w-full border border-border-default rounded-[10px] overflow-hidden">
       <div className="aspect-video bg-bg-surface animate-pulse" />
-      <div className="px-4 py-3 flex flex-col gap-3">
-        <div className="h-4 w-[65%] bg-bg-surface rounded-sm animate-pulse" />
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-bg-surface shrink-0 animate-pulse" />
-          <div className="h-3 w-[40%] bg-bg-surface rounded-sm animate-pulse" />
-        </div>
+      <div className="px-[14px] py-3 bg-white border-t border-border-subtle flex flex-col gap-2">
+        <div className="h-3.5 w-[55%] bg-bg-surface rounded-sm animate-pulse" />
+        <div className="h-3 w-[30%] bg-bg-surface rounded-sm animate-pulse" />
       </div>
     </div>
   );
@@ -30,7 +26,7 @@ function EmptyState({
   onCreated: (b: Board) => void;
 }) {
   return (
-    <div className="flex flex-col items-center gap-5 py-12 px-6 text-center">
+    <div className="flex flex-col items-center gap-5 py-16 px-6 text-center">
       <div className="w-14 h-14 rounded-lg bg-accent-dim flex items-center justify-center text-accent">
         <svg
           width="28"
@@ -52,9 +48,9 @@ function EmptyState({
         </svg>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <p className="text-md font-semibold text-text-primary">No boards yet</p>
-        <p className="text-base text-text-secondary">Create your first board to start designing</p>
+      <div className="flex flex-col gap-1.5">
+        <p className="text-sm font-semibold text-text-primary">No boards yet</p>
+        <p className="text-sm text-text-secondary">Create your first board to start designing</p>
       </div>
 
       <CreateBoardButton boardCount={boardCount} onSuccess={onCreated} />
@@ -65,7 +61,6 @@ function EmptyState({
 export function BoardList() {
   const [boards, setBoards] = useState<Board[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const user = useCurrentUser();
   const { deleteBoard } = useDeleteBoard();
 
   useEffect(() => {
@@ -88,16 +83,15 @@ export function BoardList() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-text-primary">My boards</h1>
-        {!isLoading && boards.length > 0 && (
+    <div className="flex flex-col gap-4">
+      {!isLoading && boards.length > 0 && (
+        <div className="flex justify-end">
           <CreateBoardButton boardCount={boards.length} onSuccess={handleCreated} />
-        )}
-      </div>
+        </div>
+      )}
 
       {isLoading ? (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4">
           <SkeletonCard />
           <SkeletonCard />
           <SkeletonCard />
@@ -105,14 +99,9 @@ export function BoardList() {
       ) : boards.length === 0 ? (
         <EmptyState boardCount={0} onCreated={handleCreated} />
       ) : (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4">
           {boards.map((board) => (
-            <BoardCard
-              key={board.id}
-              board={board}
-              currentUserId={user?.id ?? ""}
-              onDelete={handleDelete}
-            />
+            <BoardCard key={board.id} board={board} onDelete={handleDelete} />
           ))}
         </div>
       )}

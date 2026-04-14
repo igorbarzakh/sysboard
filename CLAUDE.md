@@ -11,6 +11,7 @@ Collaborative diagramming tool for software architects. Built with Next.js (full
 - ORM: Prisma
 - Database: Postgres (Supabase)
 - Deploy: Vercel (frontend + API) + Supabase (Postgres)
+- Icons: lucide-react
 
 ## Architecture: Feature-Sliced Design + Next.js App Router
 

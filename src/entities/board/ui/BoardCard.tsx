@@ -1,8 +1,24 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { MoreHorizontal } from "lucide-react";
 import type { Board } from "../model/types";
-import { Avatar } from "@/entities/user";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/shared/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/shared/ui/dialog";
+import { Button } from "@/shared/ui/button";
 
 function formatRelativeTime(dateStr: string): string {
   const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
@@ -18,105 +34,97 @@ function formatRelativeTime(dateStr: string): string {
   return rtf.format(diffDay, "day");
 }
 
-function getBoardGradient(id: string): string {
-  const hash = id.split("").reduce((acc, c) => (acc * 31 + c.charCodeAt(0)) | 0, 0);
-  const gradients = [
-    "linear-gradient(135deg, rgba(66,99,235,0.12) 0%, rgba(121,80,242,0.12) 100%)",
-    "linear-gradient(135deg, rgba(230,119,0,0.12) 0%, rgba(194,37,92,0.12) 100%)",
-    "linear-gradient(135deg, rgba(47,158,68,0.12) 0%, rgba(66,99,235,0.12) 100%)",
-    "linear-gradient(135deg, rgba(121,80,242,0.12) 0%, rgba(194,37,92,0.12) 100%)",
-    "linear-gradient(135deg, rgba(92,124,250,0.12) 0%, rgba(47,158,68,0.12) 100%)",
-  ];
-  return gradients[Math.abs(hash) % gradients.length];
-}
-
 interface BoardCardProps {
   board: Board;
-  currentUserId: string;
   onDelete: (id: string) => void;
 }
 
-export function BoardCard({ board, currentUserId, onDelete }: BoardCardProps) {
+export function BoardCard({ board, onDelete }: BoardCardProps) {
   const router = useRouter();
-  const isOwner = board.ownerId === currentUserId;
-
-  function handleDelete(e: React.MouseEvent) {
-    e.stopPropagation();
-    onDelete(board.id);
-  }
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   return (
-    <article
-      className="group/card w-70 bg-bg-elevated border border-border-default rounded-lg overflow-hidden flex flex-col shadow-node cursor-pointer transition-[box-shadow,transform] duration-150 hover:shadow-elevated hover:-translate-y-0.5"
-      onClick={() => router.push(`/board/${board.id}`)}>
-      {/* Preview */}
-      <div
-        className="aspect-video border-b border-border-faint flex items-center justify-center"
-        style={{ background: getBoardGradient(board.id) }}>
-        <svg
-          width="32"
-          height="32"
-          viewBox="0 0 32 32"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-          className="opacity-30">
-          <rect x="2" y="2" width="12" height="8" rx="2" fill="currentColor" />
-          <rect x="18" y="2" width="12" height="8" rx="2" fill="currentColor" />
-          <rect x="10" y="22" width="12" height="8" rx="2" fill="currentColor" />
-          <line x1="8" y1="10" x2="8" y2="16" stroke="currentColor" strokeWidth="1.5" />
-          <line x1="24" y1="10" x2="24" y2="16" stroke="currentColor" strokeWidth="1.5" />
-          <line x1="8" y1="16" x2="16" y2="22" stroke="currentColor" strokeWidth="1.5" />
-          <line x1="24" y1="16" x2="16" y2="22" stroke="currentColor" strokeWidth="1.5" />
-        </svg>
-      </div>
+    <>
+      <article
+        className="group/card w-full border border-border-default rounded-[10px] overflow-hidden cursor-pointer transition-[border-color] duration-150 hover:border-border-strong"
+        onClick={() => router.push(`/board/${board.id}`)}>
+        {/* Preview */}
+        <div
+          className="aspect-video bg-white"
+          style={{
+            backgroundImage: "radial-gradient(circle, #dee2e6 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+          }}
+        />
 
-      {/* Content */}
-      <div className="px-4 py-3 flex flex-col gap-2">
-        {/* Name row */}
-        <div className="flex items-center justify-between gap-2">
-          <h3 className="text-md font-semibold text-text-primary truncate flex-1 min-w-0">
-            {board.name}
-          </h3>
+        {/* Info bar */}
+        <div className="px-3.5 py-3 bg-white border-t border-border-subtle flex flex-col gap-1">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-sm font-semibold text-text-primary truncate flex-1 min-w-0">
+              {board.name}
+            </h3>
 
-          {isOwner && (
-            <button
-              className="opacity-0 pointer-events-none group-hover/card:opacity-100 group-hover/card:pointer-events-auto shrink-0 bg-transparent border-none cursor-pointer text-text-muted p-1 rounded-sm flex items-center justify-center transition-opacity duration-100"
-              onClick={handleDelete}
-              aria-label="Delete board">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true">
-                <path
-                  d="M2 3.5h10M5.5 3.5V2.5h3v1M5.833 6.5v4M8.167 6.5v4M3.5 3.5l.667 8h5.666l.667-8"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          )}
-        </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                onClick={(e) => e.stopPropagation()}
+                className="shrink-0 bg-transparent border-none cursor-pointer text-text-muted p-1.5 rounded-md flex items-center justify-center transition-colors duration-150 hover:text-text-secondary hover:bg-bg-surface">
+                <MoreHorizontal size={16} />
+              </DropdownMenuTrigger>
 
-        {/* Owner + time */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Avatar name={board.owner.name} image={board.owner.image} size="sm" />
-            <span className="text-sm text-text-secondary truncate max-w-30">
-              {board.owner.name ?? "Unknown"}
-            </span>
+              <DropdownMenuContent side="bottom" align="start" sideOffset={4} className="w-36">
+                <DropdownMenuItem
+                  onClick={(e) => { e.stopPropagation(); router.push(`/board/${board.id}`); }}
+                  className="cursor-pointer transition-colors duration-150 focus:bg-bg-surface focus:text-text-primary">
+                  Open
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer transition-colors duration-150 focus:bg-bg-surface focus:text-text-primary">
+                  Rename
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer transition-colors duration-150 focus:bg-bg-surface focus:text-text-primary">
+                  Share
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setConfirmOpen(true);
+                  }}
+                  className="cursor-pointer transition-colors duration-150 text-text-primary focus:bg-danger-bg focus:text-danger">
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
-          <time dateTime={board.updatedAt} className="text-xs text-text-muted shrink-0">
+          <time dateTime={board.updatedAt} className="text-xs text-text-muted">
             {formatRelativeTime(board.updatedAt)}
           </time>
         </div>
-      </div>
-    </article>
+      </article>
+
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent
+          showCloseButton={false}
+          className="bg-bg-elevated border border-border-default ring-0 max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{`Delete "${board.name}"?`}</DialogTitle>
+            <DialogDescription>This action cannot be undone.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="border-border-default">
+            <Button variant="outline" onClick={() => setConfirmOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                setConfirmOpen(false);
+                onDelete(board.id);
+              }}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

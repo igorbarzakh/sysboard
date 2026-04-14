@@ -1,12 +1,11 @@
-const SIZE = {
-  sm: 100,
-  md: 120,
-  lg: 150,
-};
+export function Logo({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
+  const widths = {
+    sm: 80,
+    md: 100,
+    lg: 120,
+  };
 
-function Logo({ size = "sm" }: { size?: "sm" | "md" | "lg" }) {
-  const width = SIZE[size];
-
+  const width = widths[size];
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={width} viewBox="0 0 314 82" fill="none">
       <path
@@ -17,5 +16,3 @@ function Logo({ size = "sm" }: { size?: "sm" | "md" | "lg" }) {
     </svg>
   );
 }
-
-export { Logo };
