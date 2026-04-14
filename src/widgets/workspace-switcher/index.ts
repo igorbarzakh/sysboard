@@ -1,1 +1,1 @@
-export {}
+export { WorkspaceSwitcher } from './WorkspaceSwitcher'

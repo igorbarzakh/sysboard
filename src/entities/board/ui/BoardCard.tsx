@@ -37,70 +37,91 @@ function formatRelativeTime(dateStr: string): string {
 interface BoardCardProps {
   board: Board;
   onDelete: (id: string) => void;
+  view?: "grid" | "list";
 }
 
-export function BoardCard({ board, onDelete }: BoardCardProps) {
+export function BoardCard({ board, onDelete, view = "grid" }: BoardCardProps) {
   const router = useRouter();
   const [confirmOpen, setConfirmOpen] = useState(false);
 
+  const menu = (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        onClick={(e) => e.stopPropagation()}
+        className="shrink-0 bg-transparent border-none cursor-pointer text-text-muted p-1.5 rounded-md flex items-center justify-center transition-all duration-250 ease-in-out hover:text-text-secondary hover:bg-bg-surface">
+        <MoreHorizontal size={16} />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent side="bottom" align="start" sideOffset={4} className="w-36">
+        <DropdownMenuItem
+          onClick={(e) => { e.stopPropagation(); router.push(`/board/${board.id}`); }}
+          className="cursor-pointer focus:bg-bg-surface focus:text-text-primary">
+          Open
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer focus:bg-bg-surface focus:text-text-primary">
+          Rename
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer focus:bg-bg-surface focus:text-text-primary">
+          Share
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={(e) => { e.stopPropagation(); setConfirmOpen(true); }}
+          className="cursor-pointer text-text-primary focus:bg-danger-bg focus:text-danger">
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
   return (
     <>
-      <article
-        className="group/card w-full border border-border-default rounded-[10px] overflow-hidden cursor-pointer transition-[border-color] duration-150 hover:border-border-strong"
-        onClick={() => router.push(`/board/${board.id}`)}>
-        {/* Preview */}
-        <div
-          className="aspect-video bg-white"
-          style={{
-            backgroundImage: "radial-gradient(circle, #dee2e6 1px, transparent 1px)",
-            backgroundSize: "20px 20px",
-          }}
-        />
-
-        {/* Info bar */}
-        <div className="px-3.5 py-3 bg-white border-t border-border-subtle flex flex-col gap-1">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="text-sm font-semibold text-text-primary truncate flex-1 min-w-0">
-              {board.name}
-            </h3>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                onClick={(e) => e.stopPropagation()}
-                className="shrink-0 bg-transparent border-none cursor-pointer text-text-muted p-1.5 rounded-md flex items-center justify-center transition-colors duration-150 hover:text-text-secondary hover:bg-bg-surface">
-                <MoreHorizontal size={16} />
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent side="bottom" align="start" sideOffset={4} className="w-36">
-                <DropdownMenuItem
-                  onClick={(e) => { e.stopPropagation(); router.push(`/board/${board.id}`); }}
-                  className="cursor-pointer transition-colors duration-150 focus:bg-bg-surface focus:text-text-primary">
-                  Open
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer transition-colors duration-150 focus:bg-bg-surface focus:text-text-primary">
-                  Rename
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer transition-colors duration-150 focus:bg-bg-surface focus:text-text-primary">
-                  Share
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  variant="destructive"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setConfirmOpen(true);
-                  }}
-                  className="cursor-pointer transition-colors duration-150 text-text-primary focus:bg-danger-bg focus:text-danger">
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+      {view === "grid" ? (
+        <article
+          className="group/card w-full border border-border-default rounded-[10px] overflow-hidden cursor-pointer transition-all duration-250 ease-in-out hover:border-border-strong"
+          onClick={() => router.push(`/board/${board.id}`)}>
+          <div
+            className="aspect-video bg-white"
+            style={{
+              backgroundImage: "radial-gradient(circle, #dee2e6 1px, transparent 1px)",
+              backgroundSize: "20px 20px",
+            }}
+          />
+          <div className="px-3.5 py-3 bg-white border-t border-border-subtle flex flex-col gap-1">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-sm font-semibold text-text-primary truncate flex-1 min-w-0">
+                {board.name}
+              </h3>
+              {menu}
+            </div>
+            <time dateTime={board.updatedAt} className="text-xs text-text-muted">
+              Edited {formatRelativeTime(board.updatedAt)}
+            </time>
           </div>
-
-          <time dateTime={board.updatedAt} className="text-xs text-text-muted">
+        </article>
+      ) : (
+        <article
+          className="group/card grid grid-cols-[1fr_180px_180px_40px] gap-2 items-center px-3 py-2 rounded-lg cursor-pointer transition-all duration-250 ease-in-out hover:bg-bg-surface"
+          onClick={() => router.push(`/board/${board.id}`)}>
+          <div className="flex items-center gap-3 min-w-0">
+            <div
+              className="w-[100px] h-[64px] rounded-md shrink-0 border border-border-default"
+              style={{
+                backgroundImage: "radial-gradient(circle, #dee2e6 1px, transparent 1px)",
+                backgroundSize: "8px 8px",
+                backgroundColor: "#fff",
+              }}
+            />
+            <h3 className="text-sm font-medium text-text-primary truncate">{board.name}</h3>
+          </div>
+          <time dateTime={board.updatedAt} className="text-sm text-text-primary">
             {formatRelativeTime(board.updatedAt)}
           </time>
-        </div>
-      </article>
+          <time dateTime={board.createdAt} className="text-sm text-text-primary">
+            {formatRelativeTime(board.createdAt)}
+          </time>
+          {menu}
+        </article>
+      )}
 
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <DialogContent
@@ -116,10 +137,7 @@ export function BoardCard({ board, onDelete }: BoardCardProps) {
             </Button>
             <Button
               variant="destructive"
-              onClick={() => {
-                setConfirmOpen(false);
-                onDelete(board.id);
-              }}>
+              onClick={() => { setConfirmOpen(false); onDelete(board.id); }}>
               Delete
             </Button>
           </DialogFooter>

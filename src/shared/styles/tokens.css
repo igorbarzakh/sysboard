@@ -2,6 +2,7 @@
   --bg-base: #ffffff;
   --bg-canvas: #fbfbfb;
   --bg-surface: #f1f3f5;
+  --bg-surface-hover: #e9ecef;
   --bg-elevated: #ffffff;
   --bg-overlay: #ffffff;
 
@@ -11,6 +12,7 @@
   --border-strong: #adb5bd;
 
   --accent: #5c7cfa;
+  --accent-dark: #4263eb;
   --accent-bright: #748ffc;
   --accent-dim: rgba(92, 124, 250, 0.12);
   --accent-glow: rgba(92, 124, 250, 0.06);

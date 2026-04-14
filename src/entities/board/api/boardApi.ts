@@ -19,14 +19,10 @@ export async function getBoards(): Promise<Board[]> {
   return res.json() as Promise<Board[]>
 }
 
-export async function createBoard(name: string): Promise<Board> {
-  const res = await fetch('/api/boards', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name }),
-  })
+export async function getBoardsByWorkspace(slug: string): Promise<Board[]> {
+  const res = await fetch(`/api/workspaces/${slug}/boards`)
   if (!res.ok) throw new Error(await parseError(res))
-  return res.json() as Promise<Board>
+  return res.json() as Promise<Board[]>
 }
 
 export async function deleteBoard(id: string): Promise<void> {
@@ -36,7 +32,7 @@ export async function deleteBoard(id: string): Promise<void> {
 
 export async function updateBoard(
   id: string,
-  patch: { name?: string; data?: unknown }
+  patch: { name?: string; data?: unknown },
 ): Promise<Board> {
   const res = await fetch(`/api/boards/${id}`, {
     method: 'PATCH',

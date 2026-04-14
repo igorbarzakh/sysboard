@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AuthModal } from "@/features/auth-modal";
 import { RootHeader } from "@/widgets/root-header/RootHeader";
+import { Button } from "@/shared/ui/button";
 
 export default function LandingPage() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -57,11 +58,9 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-col items-center gap-3 mt-8">
-            <button
-              onClick={() => setModalOpen(true)}
-              className="bg-accent text-white font-semibold text-lg px-10 py-4 rounded-xl cursor-pointer transition-colors duration-150 hover:bg-[#1C1C1E]">
+            <Button size="lg" onClick={() => setModalOpen(true)}>
               Get started
-            </button>
+            </Button>
           </div>
         </div>
       </section>

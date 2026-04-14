@@ -1,20 +1,25 @@
 /**
- * Phase 2 backfill: migrate boards from direct User ownership to Workspace ownership.
+ * Post-Phase-3 backfill: Board.ownerId no longer exists.
  *
- * This script is designed to run AFTER Phase 1 migration (workspaceId nullable)
- * and BEFORE Phase 3 migration (workspaceId NOT NULL). Once Phase 3 has been
- * applied, running this script is a safe no-op — it will find no unmigrated boards.
+ * Step 1 — Workspaces missing their owner membership:
+ *   Find every Workspace with no WorkspaceMember rows and create a
+ *   WorkspaceMember(role=owner) using workspace.ownerId.
+ *
+ * Step 2 — Users with no workspace at all:
+ *   Find every User who has no WorkspaceMember row (not a member of any
+ *   workspace), then create a default Workspace + WorkspaceMember(owner).
+ *
+ * Idempotent: safe to run multiple times.
  */
 
-import { PrismaClient, Prisma } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { customAlphabet } from 'nanoid'
 
 const prisma = new PrismaClient()
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 6)
 
-function deriveSlug(email: string, suffix: string): string {
-  const localPart = email.split('@')[0]
-  const base = localPart
+function deriveSlug(name: string, suffix: string): string {
+  const base = name
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
@@ -22,51 +27,52 @@ function deriveSlug(email: string, suffix: string): string {
   return `${base}-${suffix}`
 }
 
-interface UnmigratedBoard {
-  id: string
-  owner_id: string
-}
+async function fixOrphanedWorkspaces(): Promise<number> {
+  // Workspaces that exist but have no members at all.
+  const orphaned = await prisma.workspace.findMany({
+    where: { members: { none: {} } },
+    select: { id: true, name: true, slug: true, ownerId: true },
+  })
 
-interface BoardMemberRow {
-  user_id: string
-}
-
-async function main(): Promise<void> {
-  // Raw SQL: workspaceId IS NULL is only possible pre-Phase 3.
-  // Post-Phase 3, this returns empty and the script exits early.
-  const unmigratedBoards = await prisma.$queryRaw<UnmigratedBoard[]>(
-    Prisma.sql`SELECT id, "ownerId" AS owner_id FROM "Board" WHERE "workspaceId" IS NULL`,
-  )
-
-  if (unmigratedBoards.length === 0) {
-    console.log('No unmigrated boards found. Backfill is already complete.')
-    return
+  if (orphaned.length === 0) {
+    console.log('Step 1: No orphaned workspaces found.')
+    return 0
   }
 
-  const boardsByOwner = new Map<string, string[]>()
-  for (const board of unmigratedBoards) {
-    const list = boardsByOwner.get(board.owner_id) ?? []
-    list.push(board.id)
-    boardsByOwner.set(board.owner_id, list)
-  }
+  console.log(`Step 1: Found ${orphaned.length} workspace(s) with no members.`)
 
-  console.log(
-    `Found ${unmigratedBoards.length} unmigrated board(s) across ${boardsByOwner.size} user(s).`,
-  )
-
-  for (const [ownerId, boardIds] of boardsByOwner) {
-    const user = await prisma.user.findUnique({
-      where: { id: ownerId },
-      select: { id: true, email: true, name: true },
+  let created = 0
+  for (const ws of orphaned) {
+    await prisma.workspaceMember.upsert({
+      where: { workspaceId_userId: { workspaceId: ws.id, userId: ws.ownerId } },
+      create: { workspaceId: ws.id, userId: ws.ownerId, role: 'owner' },
+      update: {},
     })
+    console.log(`  Created WorkspaceMember(owner) for workspace "${ws.name}" (${ws.slug}), userId=${ws.ownerId}`)
+    created++
+  }
 
-    if (!user) {
-      console.warn(`  User ${ownerId} not found — skipping ${boardIds.length} board(s).`)
-      continue
-    }
+  return created
+}
 
-    const workspaceName = `${user.name ?? 'My'} Workspace`
-    const slug = deriveSlug(user.email, nanoid())
+async function createWorkspacesForMemberlessUsers(): Promise<number> {
+  // Users who are not a member of any workspace.
+  const users = await prisma.user.findMany({
+    where: { workspaceMembers: { none: {} } },
+    select: { id: true, email: true, name: true },
+  })
+
+  if (users.length === 0) {
+    console.log('Step 2: All users already have at least one workspace.')
+    return 0
+  }
+
+  console.log(`Step 2: Found ${users.length} user(s) with no workspace.`)
+
+  let created = 0
+  for (const user of users) {
+    const workspaceName = `${user.name || user.email}'s Workspace`
+    const slug = deriveSlug(workspaceName, nanoid())
 
     const workspace = await prisma.workspace.create({
       data: {
@@ -81,29 +87,22 @@ async function main(): Promise<void> {
     })
 
     console.log(`  Created workspace "${workspace.name}" (${workspace.slug}) for ${user.email}`)
-
-    const memberRows = await prisma.$queryRaw<BoardMemberRow[]>(
-      Prisma.sql`SELECT DISTINCT "userId" AS user_id FROM "BoardMember" WHERE "boardId" = ANY(${boardIds}::text[]) AND "userId" != ${user.id}`,
-    )
-
-    for (const row of memberRows) {
-      await prisma.workspaceMember.upsert({
-        where: { workspaceId_userId: { workspaceId: workspace.id, userId: row.user_id } },
-        create: { workspaceId: workspace.id, userId: row.user_id, role: 'member' },
-        update: {},
-      })
-    }
-
-    await prisma.$executeRaw(
-      Prisma.sql`UPDATE "Board" SET "workspaceId" = ${workspace.id} WHERE id = ANY(${boardIds}::text[])`,
-    )
-
-    console.log(
-      `  Migrated ${boardIds.length} board(s), ${memberRows.length} workspace member(s) added.`,
-    )
+    created++
   }
 
-  console.log('Backfill complete.')
+  return created
+}
+
+async function main(): Promise<void> {
+  const step1Count = await fixOrphanedWorkspaces()
+  const step2Count = await createWorkspacesForMemberlessUsers()
+
+  const total = step1Count + step2Count
+  if (total === 0) {
+    console.log('Backfill already complete — nothing to do.')
+  } else {
+    console.log(`Backfill complete. Created ${step1Count} owner membership(s), ${step2Count} workspace(s).`)
+  }
 }
 
 main()

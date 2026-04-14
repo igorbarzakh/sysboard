@@ -2,16 +2,19 @@
 
 import { useState } from 'react'
 import { CreateBoardModal } from './CreateBoardModal'
-import type { Board } from '@/entities/board'
+import type { WorkspaceBoard } from '@/entities/workspace'
 import { FREE_PLAN } from '@/shared/lib/constants'
+import { Button } from '@/shared/ui/button'
 
 interface CreateBoardButtonProps {
+  workspaceSlug: string
   boardCount: number
-  onSuccess: (board: Board) => void
+  onSuccess: (board: WorkspaceBoard) => void
   limit?: number
 }
 
 export function CreateBoardButton({
+  workspaceSlug,
   boardCount,
   onSuccess,
   limit = FREE_PLAN.maxBoardsPerWorkspace,
@@ -21,20 +24,16 @@ export function CreateBoardButton({
 
   return (
     <>
-      <button
+      <Button
         onClick={() => !isAtLimit && setIsOpen(true)}
         disabled={isAtLimit}
         title={isAtLimit ? 'Board limit reached' : 'Create a new board'}
-        className={`px-4 py-2 text-sm font-medium border-none rounded-md transition-opacity duration-150 ${
-          isAtLimit
-            ? 'bg-bg-surface text-text-muted cursor-not-allowed'
-            : 'bg-accent text-text-on-accent cursor-pointer hover:opacity-85'
-        }`}
       >
         New board
-      </button>
+      </Button>
 
       <CreateBoardModal
+        workspaceSlug={workspaceSlug}
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         onSuccess={(board) => {

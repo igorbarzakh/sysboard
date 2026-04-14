@@ -43,10 +43,12 @@
   --color-bg-base: var(--bg-base);
   --color-bg-canvas: var(--bg-canvas);
   --color-bg-surface: var(--bg-surface);
+  --color-bg-surface-hover: var(--bg-surface-hover);
   --color-bg-elevated: var(--bg-elevated);
   --color-bg-overlay: var(--bg-overlay);
 
   /* ── SDB: accent colors → bg-accent-* / text-accent-* ───────────────────── */
+  --color-accent-dark: var(--accent-dark);
   --color-accent-bright: var(--accent-bright);
   --color-accent-dim: var(--accent-dim);
   --color-accent-glow: var(--accent-glow);

@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/shared/lib/auth'
 import { prisma } from '@/shared/lib/db'
 import { CanvasEditor } from '@/widgets/canvas-editor'
-import type { Board } from '@/entities/board'
+import { TrackBoardVisit, type Board } from '@/entities/board'
 
 type PageProps = { params: Promise<{ id: string }> }
 
@@ -43,5 +43,10 @@ export default async function BoardPage({ params }: PageProps) {
     })),
   }
 
-  return <CanvasEditor board={board} />
+  return (
+    <>
+      <TrackBoardVisit id={board.id} name={board.name} workspaceSlug={board.workspace.slug} />
+      <CanvasEditor board={board} />
+    </>
+  )
 }

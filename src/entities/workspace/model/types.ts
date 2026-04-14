@@ -6,7 +6,7 @@ export interface WorkspaceMember {
   userId: string
   role: WorkspaceRole
   joinedAt: string
-  user: { id: string; name: string | null; image: string | null }
+  user: { id: string; name: string | null; email: string; image: string | null }
 }
 
 export interface Workspace {
@@ -17,7 +17,26 @@ export interface Workspace {
   plan: UserPlan
   createdAt: string
   updatedAt: string
-  owner: { id: string; name: string | null; image: string | null }
   members: WorkspaceMember[]
-  boardCount: number
+  _count: { boards: number }
+}
+
+/**
+ * Board as seen from the workspace entity.
+ * Mirrors entities/board Board — kept separate to respect FSD cross-slice rules.
+ */
+export interface WorkspaceBoard {
+  id: string
+  name: string
+  workspaceId: string
+  data: unknown
+  createdAt: string
+  updatedAt: string
+  workspace: { id: string; name: string; slug: string }
+  members: Array<{
+    userId: string
+    role: 'editor'
+    joinedAt: string
+    user: { id: string; name: string | null; image: string | null }
+  }>
 }

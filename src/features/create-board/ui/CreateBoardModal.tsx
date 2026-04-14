@@ -1,16 +1,23 @@
 'use client'
 
 import { useState } from 'react'
-import { createBoard } from '@/entities/board'
-import type { Board } from '@/entities/board'
+import { createWorkspaceBoard } from '@/entities/workspace'
+import type { WorkspaceBoard } from '@/entities/workspace'
+import { Button } from '@/shared/ui/button'
 
 interface CreateBoardModalProps {
+  workspaceSlug: string
   isOpen: boolean
   onClose: () => void
-  onSuccess: (board: Board) => void
+  onSuccess: (board: WorkspaceBoard) => void
 }
 
-export function CreateBoardModal({ isOpen, onClose, onSuccess }: CreateBoardModalProps) {
+export function CreateBoardModal({
+  workspaceSlug,
+  isOpen,
+  onClose,
+  onSuccess,
+}: CreateBoardModalProps) {
   const [name, setName] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -26,7 +33,7 @@ export function CreateBoardModal({ isOpen, onClose, onSuccess }: CreateBoardModa
     setError(null)
     setIsLoading(true)
     try {
-      const board = await createBoard(trimmed)
+      const board = await createWorkspaceBoard(workspaceSlug, trimmed)
       setName('')
       onSuccess(board)
     } catch (err) {
@@ -74,20 +81,12 @@ export function CreateBoardModal({ isOpen, onClose, onSuccess }: CreateBoardModa
           )}
 
           <div className="flex justify-end gap-2 mt-1">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="px-4 py-2 text-base border border-border-default rounded-md bg-transparent text-text-secondary cursor-pointer"
-            >
+            <Button type="button" variant="secondary" onClick={handleClose}>
               Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`px-4 py-2 text-base border-none rounded-md text-text-on-accent font-medium ${isLoading ? 'bg-accent-dim cursor-not-allowed' : 'bg-accent cursor-pointer'}`}
-            >
+            </Button>
+            <Button type="submit" disabled={isLoading}>
               {isLoading ? 'Creating…' : 'Create'}
-            </button>
+            </Button>
           </div>
         </form>
       </div>
