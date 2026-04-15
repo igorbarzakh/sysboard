@@ -1,22 +1,22 @@
 .popup {
   z-index: var(--z-dropdown);
-  min-width: 128px;
-  border-radius: var(--radius-lg);
-  background: var(--bg-elevated);
+  overflow: hidden;
   padding: var(--space-1);
+  min-width: 128px;
+  max-height: var(--available-height);
   color: var(--text-primary);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-elevated);
   outline: none;
-  overflow: hidden;
-  max-height: var(--available-height);
 
   &[data-open] {
     animation: menuIn var(--duration-fast) var(--ease-out);
   }
 
   &[data-closed] {
-    animation: menuOut var(--duration-fast) var(--ease-standard);
     overflow: hidden;
+    animation: menuOut var(--duration-fast) var(--ease-standard);
   }
 }
 
@@ -25,17 +25,17 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  border-radius: var(--radius-md);
   padding: var(--space-1) 6px;
-  font-size: var(--text-body);
   font-family: var(--font-body);
+  font-size: var(--text-body);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
   outline: none;
-  user-select: none;
   cursor: default;
+  user-select: none;
   transition:
     background var(--duration-fast) var(--ease-standard),
     color var(--duration-fast) var(--ease-standard);
-  color: var(--text-primary);
 
   &:focus {
     background: var(--bg-surface);
@@ -45,21 +45,21 @@
     color: var(--danger);
 
     &:focus {
-      background: var(--danger-soft);
       color: var(--danger);
+      background: var(--danger-soft);
     }
   }
 
   &[data-disabled] {
-    pointer-events: none;
     opacity: 0.5;
+    pointer-events: none;
   }
 
   svg {
-    pointer-events: none;
     flex-shrink: 0;
     width: 16px;
     height: 16px;
+    pointer-events: none;
   }
 }
 
@@ -96,8 +96,8 @@
 
 .positioner {
   z-index: var(--z-dropdown);
-  outline: none;
   isolation: isolate;
+  outline: none;
 }
 
 @keyframes menuIn {

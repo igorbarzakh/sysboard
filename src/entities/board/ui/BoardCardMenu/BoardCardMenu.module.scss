@@ -1,14 +1,14 @@
 .trigger {
-  flex-shrink: 0;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: var(--text-muted);
-  padding: 6px;
-  border-radius: var(--radius-md);
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  padding: 6px;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
   transition:
     background var(--duration-slow) var(--ease-standard),
     color var(--duration-slow) var(--ease-standard);
@@ -27,17 +27,17 @@
   cursor: pointer;
 
   &:focus {
-    background: var(--bg-surface);
     color: var(--text-primary);
+    background: var(--bg-surface);
   }
 }
 
 .itemDestructive {
-  cursor: pointer;
   color: var(--danger);
+  cursor: pointer;
 
   &:focus {
-    background: var(--danger-soft);
     color: var(--danger);
+    background: var(--danger-soft);
   }
 }

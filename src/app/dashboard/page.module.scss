@@ -10,13 +10,13 @@
 }
 
 .title {
-  color: var(--text-primary);
   font-size: var(--text-small);
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .subtitle {
   max-width: 320px;
-  color: var(--text-secondary);
   font-size: var(--text-small);
+  color: var(--text-secondary);
 }

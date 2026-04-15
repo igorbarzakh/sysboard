@@ -1,13 +1,18 @@
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 
 .skeletonCard {
+  overflow: hidden;
   width: 100%;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  overflow: hidden;
 }
 
 .skeletonCardPreview {
@@ -17,12 +22,12 @@
 }
 
 .skeletonCardBody {
-  padding: var(--space-3) 14px;
-  background: var(--bg-base);
-  border-top: 1px solid var(--bg-surface);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  padding: var(--space-3) 14px;
+  background: var(--bg-base);
+  border-top: 1px solid var(--bg-surface);
 }
 
 .skeletonLine {
@@ -51,9 +56,9 @@
 
 .skeletonRow {
   display: grid;
+  align-items: center;
   grid-template-columns: 1fr 180px 180px 40px;
   gap: var(--space-2);
-  align-items: center;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-lg);
 }
@@ -66,11 +71,11 @@
 }
 
 .skeletonRowThumb {
+  flex-shrink: 0;
   width: 100px;
   height: 64px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
   background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
   animation: pulse 2s var(--ease-standard) infinite;
-  flex-shrink: 0;
 }

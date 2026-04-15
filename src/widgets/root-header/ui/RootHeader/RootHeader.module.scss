@@ -1,12 +1,12 @@
 .header {
   position: absolute;
   top: 8px;
-  left: 0;
   right: 0;
-  height: 56px;
+  left: 0;
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
   padding: 0 32px;
-  flex-shrink: 0;
+  height: 56px;
 }

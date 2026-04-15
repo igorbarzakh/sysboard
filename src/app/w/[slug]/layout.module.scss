@@ -1,18 +1,18 @@
 .root {
   display: flex;
-  height: 100vh;
-  flex-direction: column;
   overflow: hidden;
+  flex-direction: column;
+  height: 100vh;
   background: var(--bg-canvas);
 }
 
 .body {
   display: flex;
-  flex: 1;
   overflow: hidden;
+  flex: 1;
 }
 
 .main {
-  flex: 1;
   overflow: auto;
+  flex: 1;
 }

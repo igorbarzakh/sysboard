@@ -1,22 +1,22 @@
 .avatar {
   position: relative;
-  border-radius: 50%;
-  flex-shrink: 0;
   display: flex;
+  overflow: hidden;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  border-radius: 50%;
 
   &[data-size='sm'] { width: 24px; height: 24px; font-size: 12px; }
   &[data-size='md'] { width: 32px; height: 32px; font-size: 14px; }
   &[data-size='lg'] { width: 40px; height: 40px; font-size: 16px; }
 
-  &[data-color='0'] { background: #fff3cc; color: #a07800; }
-  &[data-color='1'] { background: #ccfae8; color: #0a7a50; }
-  &[data-color='2'] { background: #d5e8ff; color: #1a55cc; }
-  &[data-color='3'] { background: #ffe4cc; color: #cc5c00; }
-  &[data-color='4'] { background: #ffd5d5; color: #cc2020; }
-  &[data-color='5'] { background: #edd5ff; color: #7020cc; }
+  &[data-color='0'] { color: #a07800; background: #fff3cc; }
+  &[data-color='1'] { color: #0a7a50; background: #ccfae8; }
+  &[data-color='2'] { color: #1a55cc; background: #d5e8ff; }
+  &[data-color='3'] { color: #cc5c00; background: #ffe4cc; }
+  &[data-color='4'] { color: #cc2020; background: #ffd5d5; }
+  &[data-color='5'] { color: #7020cc; background: #edd5ff; }
 }
 
 .initials {

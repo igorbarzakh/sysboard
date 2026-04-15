@@ -1,18 +1,18 @@
 .sidebar {
-  width: var(--shell-sidebar-width);
-  flex-shrink: 0;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  width: var(--shell-sidebar-width);
   height: 100%;
   background: var(--bg-canvas);
   border-right: 1px solid var(--border-subtle);
-  padding: var(--space-3);
-  gap: var(--space-1);
 }
 
 .switcher {
-  width: 100%;
   margin-bottom: var(--space-4);
+  width: 100%;
 
   button {
     width: 100%;
@@ -26,19 +26,19 @@
 }
 
 .navBtn {
-  width: 100%;
   display: flex;
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-2) 10px;
+  width: 100%;
   font-size: var(--text-body);
-  border-radius: var(--radius-lg);
-  border: none;
-  cursor: pointer;
+  font-weight: 400;
   text-align: left;
   color: var(--text-primary);
-  font-weight: 400;
   background: transparent;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
   transition:
     background var(--duration-slow) var(--ease-standard),
     color var(--duration-slow) var(--ease-standard);
@@ -48,9 +48,9 @@
   }
 
   &[data-active="true"] {
-    background: var(--accent-soft);
-    color: var(--text-accent);
     font-weight: 500;
+    color: var(--text-accent);
+    background: var(--accent-soft);
     cursor: default;
   }
 }
@@ -66,30 +66,30 @@
 }
 
 .navBtnBadge {
+  padding: 2px 6px;
   font-size: var(--text-caption);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
-  padding: 2px 6px;
-  border-radius: var(--radius-md);
-  background: var(--bg-surface);
   color: var(--text-secondary);
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
 }
 
 .recent {
-  margin-top: var(--space-4);
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
+  margin-top: var(--space-4);
 }
 
 .recentLabel {
-  font-size: var(--text-caption);
-  color: var(--text-muted);
-  padding: 0 10px;
   margin-bottom: 2px;
-  user-select: none;
-  text-transform: uppercase;
+  padding: 0 10px;
+  font-size: var(--text-caption);
   letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  user-select: none;
 }
 
 .recentItem {
@@ -98,16 +98,16 @@
   gap: 10px;
   padding: var(--space-2) 10px;
   font-size: var(--text-body);
+  color: var(--text-secondary);
   border-radius: var(--radius-lg);
   cursor: pointer;
-  color: var(--text-secondary);
   transition:
     background var(--duration-slow) var(--ease-standard),
     color var(--duration-slow) var(--ease-standard);
 
   &:hover {
-    background: var(--bg-surface);
     color: var(--text-primary);
+    background: var(--bg-surface);
 
     .recentRemove {
       opacity: 1;
@@ -121,28 +121,28 @@
 
 .recentName {
   overflow: hidden;
+  flex: 1;
   text-overflow: ellipsis;
   white-space: nowrap;
-  flex: 1;
 }
 
 .recentRemove {
   flex-shrink: 0;
   padding: 2px;
-  border-radius: var(--radius-md);
   color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
   opacity: 0;
   cursor: pointer;
-  border: none;
-  background: transparent;
   transition:
     background var(--duration-slow) var(--ease-standard),
     color var(--duration-slow) var(--ease-standard),
     opacity var(--duration-slow) var(--ease-standard);
 
   &:hover {
-    background: var(--bg-surface);
     color: var(--text-primary);
+    background: var(--bg-surface);
   }
 }
 
@@ -156,8 +156,8 @@
 }
 
 .planCard {
-  border-radius: var(--radius-lg);
   padding: var(--space-3);
+  border-radius: var(--radius-lg);
   user-select: none;
 
   &[data-plan="pro"] {
@@ -211,7 +211,7 @@
   }
 
   [data-plan="free"] & {
-    color: var(--text-muted);
     margin-bottom: 10px;
+    color: var(--text-muted);
   }
 }

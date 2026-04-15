@@ -8,14 +8,14 @@
 }
 
 .icon {
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-lg);
-  background: var(--accent-soft);
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 56px;
+  height: 56px;
   color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: var(--radius-lg);
 }
 
 .text {

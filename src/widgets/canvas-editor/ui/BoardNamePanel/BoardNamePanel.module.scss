@@ -1,9 +1,9 @@
 .panel {
   display: flex;
   align-items: center;
-  height: 100%;
   padding: 0 var(--space-3);
-  font-size: var(--text-small);
+  height: 100%;
   font-family: var(--font-body);
+  font-size: var(--text-small);
   color: var(--text-secondary);
 }

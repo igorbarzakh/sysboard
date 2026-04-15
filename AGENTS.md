@@ -165,6 +165,23 @@ Component styles belong next to the component as `ComponentName.module.scss`.
 
 Class names in JSX should come from CSS Modules, not utility strings.
 
+Stylelint enforces the project CSS property order. Write new CSS/SCSS in this order:
+
+```text
+1. Positioning
+2. Display and layout
+3. Flex and grid
+4. Box model
+5. Sizing
+6. Typography
+7. Visuals
+8. Interaction
+9. Motion and transforms
+10. Miscellaneous properties at the bottom, alphabetized by Stylelint
+```
+
+Run `npm run lint:styles:fix` after styling changes. VS Code is configured to apply Stylelint fixes on save through `.vscode/settings.json`; the recommended extension is listed in `.vscode/extensions.json`.
+
 ## Design Tokens
 
 The source of truth is `src/shared/styles/tokens.css`.
@@ -324,6 +341,7 @@ Default full verification:
 ```bash
 npx tsc --noEmit --pretty false
 npm run lint
+npm run lint:styles
 npm run build
 ```
 

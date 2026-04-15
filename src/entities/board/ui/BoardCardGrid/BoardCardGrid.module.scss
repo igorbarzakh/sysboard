@@ -1,8 +1,8 @@
 .card {
+  overflow: hidden;
   width: 100%;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
-  overflow: hidden;
   cursor: pointer;
   transition: border-color var(--duration-slow) var(--ease-standard);
 
@@ -19,12 +19,12 @@
 }
 
 .body {
-  padding: var(--space-3) 14px;
-  background: var(--bg-base);
-  border-top: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
+  padding: var(--space-3) 14px;
+  background: var(--bg-base);
+  border-top: 1px solid var(--border-subtle);
 }
 
 .row {
@@ -35,14 +35,14 @@
 }
 
 .name {
-  font-size: var(--text-body);
-  font-weight: 600;
-  color: var(--text-primary);
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   flex: 1;
   min-width: 0;
+  font-size: var(--text-body);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-primary);
 }
 
 .time {

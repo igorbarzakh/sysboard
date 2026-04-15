@@ -1,8 +1,8 @@
 .skeleton {
   width: 100%;
   height: 32px;
-  border-radius: var(--radius-lg);
   background: var(--bg-surface);
+  border-radius: var(--radius-lg);
   animation: pulse 2s var(--ease-standard) infinite;
 }
 
@@ -23,10 +23,10 @@
   padding: 6px var(--space-2);
   background: transparent;
   border: none;
-  cursor: pointer;
   border-radius: var(--radius-lg);
-  transition: background var(--duration-slow) var(--ease-standard);
   outline: none;
+  cursor: pointer;
+  transition: background var(--duration-slow) var(--ease-standard);
 
   &:hover {
     background: var(--bg-surface);
@@ -34,27 +34,27 @@
 }
 
 .triggerName {
-  font-size: var(--text-control);
-  line-height: 1.5;
-  font-weight: 500;
-  color: var(--text-primary);
-  max-width: 160px;
   overflow: hidden;
+  max-width: 160px;
+  font-size: var(--text-control);
+  font-weight: 500;
+  line-height: 1.5;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--text-primary);
 }
 
 .triggerChevron {
-  color: var(--text-primary);
   flex-shrink: 0;
+  color: var(--text-primary);
 }
 
 .content {
+  padding: var(--space-1);
   width: 224px;
-  border-radius: var(--radius-lg);
   background: var(--bg-elevated);
   border: 1px solid var(--border-default);
-  padding: var(--space-1);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-elevated);
 }
 
@@ -76,36 +76,36 @@
   }
 
   &[data-active="true"] {
-    cursor: default;
     pointer-events: none;
+    cursor: default;
   }
 }
 
 .itemIcon {
-  width: 20px;
-  height: 20px;
-  border-radius: var(--radius-sm);
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  width: 20px;
+  height: 20px;
   font-size: 10px;
   font-weight: 700;
   color: var(--text-primary);
-  flex-shrink: 0;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
 }
 
 .itemName {
-  flex: 1;
   overflow: hidden;
+  flex: 1;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .itemCheck {
-  color: var(--text-primary);
   flex-shrink: 0;
+  color: var(--text-primary);
 }
 
 .createItem {

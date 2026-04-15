@@ -25,10 +25,10 @@
 .viewToggle {
   display: flex;
   align-items: center;
-  background: var(--bg-surface);
-  padding: 2px;
-  border-radius: var(--radius-lg);
   gap: 2px;
+  padding: 2px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
 }
 
 .viewBtn {
@@ -37,22 +37,22 @@
   justify-content: center;
   width: 32px;
   height: 28px;
-  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  background: transparent;
   border: none;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition:
     background var(--duration-slow) var(--ease-standard),
     color var(--duration-slow) var(--ease-standard);
-  background: transparent;
-  color: var(--text-muted);
 
   &:hover {
     color: var(--text-primary);
   }
 
   &[data-active='true'] {
-    background: var(--bg-elevated);
     color: var(--text-primary);
+    background: var(--bg-elevated);
   }
 }
 

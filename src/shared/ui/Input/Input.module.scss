@@ -1,14 +1,14 @@
 .input {
-  height: 32px;
+  padding: var(--space-1) 10px;
   width: 100%;
   min-width: 0;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-default);
-  background: transparent;
-  padding: var(--space-1) 10px;
-  font-size: var(--text-body);
+  height: 32px;
   font-family: var(--font-body);
+  font-size: var(--text-body);
   color: var(--text-primary);
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
   outline: none;
   transition:
     border-color var(--duration-base) var(--ease-standard),
@@ -24,10 +24,10 @@
   }
 
   &:disabled {
-    pointer-events: none;
-    cursor: not-allowed;
     background: var(--bg-surface);
     opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
   }
 
   &[aria-invalid="true"] {
