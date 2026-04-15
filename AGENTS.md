@@ -359,6 +359,16 @@ git diff --check
 
 For UI behavior or visual work, run the app and verify in a browser when practical.
 
+## Communication
+
+Keep responses concise and action-oriented.
+
+- Do not write long explanations unless explicitly requested.
+- Default final responses should be 3-7 short lines.
+- Include only what changed, how it was verified, and any caveats or next step.
+- Avoid background context, praise, repetition, and broad summaries.
+- If detailed reasoning is needed, ask first or wait for an explicit request.
+
 ## Working Rules
 
 - Preserve existing user changes.
