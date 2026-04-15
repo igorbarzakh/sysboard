@@ -4,45 +4,45 @@
 }
 
 .body {
-  padding: 24px;
+  padding: var(--space-6);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--space-6);
 }
 
 .heading {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
   text-align: center;
 }
 
 .title {
-  font-size: 18px;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .subtitle {
-  font-size: 14px;
+  font-size: var(--text-body);
   color: var(--text-muted);
 }
 
 .providers {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .oauthBtn {
   width: 100%;
   height: 40px;
-  font-size: 14px;
+  font-size: var(--text-body);
   font-weight: 500;
   color: var(--text-primary);
   border-color: var(--border-default);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-2);
 }

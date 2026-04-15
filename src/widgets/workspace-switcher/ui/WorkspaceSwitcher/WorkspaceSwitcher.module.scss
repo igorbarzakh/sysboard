@@ -1,26 +1,31 @@
 .skeleton {
   width: 100%;
   height: 32px;
-  border-radius: var(--r-lg);
+  border-radius: var(--radius-lg);
   background: var(--bg-surface);
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulse 2s var(--ease-standard) infinite;
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 
 .trigger {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 8px;
+  padding: 6px var(--space-2);
   background: transparent;
   border: none;
   cursor: pointer;
-  border-radius: var(--r-lg);
-  transition: background 250ms ease-in-out;
+  border-radius: var(--radius-lg);
+  transition: background var(--duration-slow) var(--ease-standard);
   outline: none;
 
   &:hover {
@@ -29,7 +34,8 @@
 }
 
 .triggerName {
-  font-size: 13px;
+  font-size: var(--text-control);
+  line-height: 1.5;
   font-weight: 500;
   color: var(--text-primary);
   max-width: 160px;
@@ -45,23 +51,23 @@
 
 .content {
   width: 224px;
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   background: var(--bg-elevated);
   border: 1px solid var(--border-default);
-  padding: 4px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: var(--space-1);
+  box-shadow: var(--shadow-elevated);
 }
 
 .item {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 10px;
-  font-size: 13px;
+  padding: var(--space-2) 10px;
+  font-size: var(--text-control);
   color: var(--text-primary);
-  border-radius: 7px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background 250ms ease-in-out;
+  transition: background var(--duration-slow) var(--ease-standard);
 
   &:hover,
   &:focus {
@@ -69,7 +75,7 @@
     outline: none;
   }
 
-  &[data-active='true'] {
+  &[data-active="true"] {
     cursor: default;
     pointer-events: none;
   }
@@ -78,7 +84,7 @@
 .itemIcon {
   width: 20px;
   height: 20px;
-  border-radius: var(--r-sm);
+  border-radius: var(--radius-sm);
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   display: flex;
@@ -106,12 +112,12 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 10px;
-  font-size: 13px;
+  padding: var(--space-2) 10px;
+  font-size: var(--text-control);
   color: var(--text-secondary);
-  border-radius: 7px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background 250ms ease-in-out;
+  transition: background var(--duration-slow) var(--ease-standard);
 
   &:hover,
   &:focus {

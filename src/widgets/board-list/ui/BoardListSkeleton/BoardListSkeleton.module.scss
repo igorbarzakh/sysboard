@@ -6,30 +6,30 @@
 .skeletonCard {
   width: 100%;
   border: 1px solid var(--border-subtle);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
 .skeletonCardPreview {
   aspect-ratio: 16 / 9;
   background: var(--bg-surface);
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulse 2s var(--ease-standard) infinite;
 }
 
 .skeletonCardBody {
-  padding: 12px 14px;
+  padding: var(--space-3) 14px;
   background: var(--bg-base);
   border-top: 1px solid var(--bg-surface);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .skeletonLine {
   height: 14px;
   background: var(--bg-surface);
-  border-radius: var(--r-sm);
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  border-radius: var(--radius-sm);
+  animation: pulse 2s var(--ease-standard) infinite;
 }
 
 .cardTitleLine {
@@ -52,25 +52,25 @@
 .skeletonRow {
   display: grid;
   grid-template-columns: 1fr 180px 180px 40px;
-  gap: 8px;
+  gap: var(--space-2);
   align-items: center;
-  padding: 8px 12px;
-  border-radius: var(--r-lg);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-lg);
 }
 
 .skeletonRowCell {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   min-width: 0;
 }
 
 .skeletonRowThumb {
   width: 100px;
   height: 64px;
-  border-radius: var(--r-md);
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
   background: var(--bg-surface);
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulse 2s var(--ease-standard) infinite;
   flex-shrink: 0;
 }

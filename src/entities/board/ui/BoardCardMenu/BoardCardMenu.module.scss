@@ -5,11 +5,13 @@
   cursor: pointer;
   color: var(--text-muted);
   padding: 6px;
-  border-radius: var(--r-md);
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 250ms ease-in-out;
+  transition:
+    background var(--duration-slow) var(--ease-standard),
+    color var(--duration-slow) var(--ease-standard);
 
   &:hover {
     color: var(--text-secondary);
@@ -32,10 +34,10 @@
 
 .itemDestructive {
   cursor: pointer;
-  color: var(--text-primary);
+  color: var(--danger);
 
   &:focus {
-    background: var(--danger-bg, rgba(239, 68, 68, 0.08));
-    color: var(--danger, #ef4444);
+    background: var(--danger-soft);
+    color: var(--danger);
   }
 }

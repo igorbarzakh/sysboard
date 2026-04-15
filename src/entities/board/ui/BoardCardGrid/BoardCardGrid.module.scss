@@ -1,10 +1,10 @@
 .card {
   width: 100%;
   border: 1px solid var(--border-default);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   cursor: pointer;
-  transition: border-color 250ms ease-in-out;
+  transition: border-color var(--duration-slow) var(--ease-standard);
 
   &:hover {
     border-color: var(--border-strong);
@@ -13,29 +13,29 @@
 
 .preview {
   aspect-ratio: 16 / 9;
-  background-color: #fff;
-  background-image: radial-gradient(circle, #dee2e6 1px, transparent 1px);
+  background-color: var(--bg-base);
+  background-image: radial-gradient(circle, var(--border-default) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
 .body {
-  padding: 12px 14px;
-  background: #fff;
+  padding: var(--space-3) 14px;
+  background: var(--bg-base);
   border-top: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .name {
-  font-size: 14px;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--text-primary);
   overflow: hidden;
@@ -46,6 +46,6 @@
 }
 
 .time {
-  font-size: 12px;
+  font-size: var(--text-small);
   color: var(--text-muted);
 }

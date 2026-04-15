@@ -1,9 +1,9 @@
 .popup {
-  z-index: 50;
+  z-index: var(--z-dropdown);
   min-width: 128px;
-  border-radius: var(--r-lg);
+  border-radius: var(--radius-lg);
   background: var(--bg-elevated);
-  padding: 4px;
+  padding: var(--space-1);
   color: var(--text-primary);
   box-shadow: var(--shadow-elevated);
   outline: none;
@@ -11,11 +11,11 @@
   max-height: var(--available-height);
 
   &[data-open] {
-    animation: menuIn 100ms ease;
+    animation: menuIn var(--duration-fast) var(--ease-out);
   }
 
   &[data-closed] {
-    animation: menuOut 100ms ease;
+    animation: menuOut var(--duration-fast) var(--ease-standard);
     overflow: hidden;
   }
 }
@@ -25,14 +25,16 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  border-radius: var(--r-md);
-  padding: 4px 6px;
-  font-size: var(--text-base);
+  border-radius: var(--radius-md);
+  padding: var(--space-1) 6px;
+  font-size: var(--text-body);
   font-family: var(--font-body);
   outline: none;
   user-select: none;
   cursor: default;
-  transition: background 100ms ease, color 100ms ease;
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
   color: var(--text-primary);
 
   &:focus {
@@ -40,8 +42,10 @@
   }
 
   &[data-variant='destructive'] {
+    color: var(--danger);
+
     &:focus {
-      background: var(--danger-bg);
+      background: var(--danger-soft);
       color: var(--danger);
     }
   }
@@ -60,21 +64,21 @@
 }
 
 .label {
-  padding: 4px 6px;
-  font-size: var(--text-sm);
+  padding: var(--space-1) 6px;
+  font-size: var(--text-small);
   font-weight: 500;
   color: var(--text-muted);
 }
 
 .separator {
-  margin: 4px -4px;
+  margin: var(--space-1) calc(-1 * var(--space-1));
   height: 1px;
   background: var(--border-subtle);
 }
 
 .shortcut {
   margin-left: auto;
-  font-size: var(--text-xs);
+  font-size: var(--text-caption);
   letter-spacing: 0.1em;
   color: var(--text-muted);
 }
@@ -91,7 +95,7 @@
 }
 
 .positioner {
-  z-index: 50;
+  z-index: var(--z-dropdown);
   outline: none;
   isolation: isolate;
 }

@@ -1,7 +1,7 @@
 .root {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--space-6);
 }
 
 .header {
@@ -11,7 +11,7 @@
 }
 
 .title {
-  font-size: 18px;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -19,7 +19,7 @@
 .headerActions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .viewToggle {
@@ -27,7 +27,7 @@
   align-items: center;
   background: var(--bg-surface);
   padding: 2px;
-  border-radius: var(--r-lg);
+  border-radius: var(--radius-lg);
   gap: 2px;
 }
 
@@ -37,10 +37,12 @@
   justify-content: center;
   width: 32px;
   height: 28px;
-  border-radius: var(--r-md);
+  border-radius: var(--radius-md);
   border: none;
   cursor: pointer;
-  transition: all 250ms ease-in-out;
+  transition:
+    background var(--duration-slow) var(--ease-standard),
+    color var(--duration-slow) var(--ease-standard);
   background: transparent;
   color: var(--text-muted);
 
@@ -57,7 +59,7 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .list {
@@ -69,11 +71,11 @@
 .listHeader {
   display: grid;
   grid-template-columns: 1fr 180px 180px 40px;
-  gap: 8px;
-  padding: 0 12px 8px;
+  gap: var(--space-2);
+  padding: 0 var(--space-3) var(--space-2);
 }
 
 .listHeaderCell {
-  font-size: 12px;
+  font-size: var(--text-small);
   color: var(--text-muted);
 }

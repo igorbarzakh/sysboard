@@ -4,16 +4,21 @@
   cursor: pointer;
   align-items: center;
   justify-content: center;
-  border-radius: var(--r-lg);
+  border-radius: var(--radius-lg);
   border: 1px solid transparent;
-  font-size: var(--text-base);
+  font-size: var(--text-body);
   font-family: var(--font-body);
   font-weight: 500;
   white-space: nowrap;
   outline: none;
   user-select: none;
   text-decoration: none;
-  transition: background 150ms ease, color 150ms ease, border-color 150ms ease, box-shadow 150ms ease, transform 100ms ease;
+  transition:
+    background var(--duration-base) var(--ease-standard),
+    color var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard),
+    box-shadow var(--duration-base) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
 
   &:active:not([aria-haspopup]) {
     transform: translateY(1px);
@@ -25,7 +30,7 @@
   }
 
   &:focus-visible {
-    box-shadow: 0 0 0 3px var(--accent-dim);
+    box-shadow: 0 0 0 3px var(--accent-soft);
     border-color: var(--accent);
   }
 
@@ -42,7 +47,7 @@
     color: var(--text-on-accent);
 
     &:hover:not(:disabled) {
-      background: var(--accent-dark);
+      background: var(--accent-hover);
     }
   }
 
@@ -75,11 +80,11 @@
   }
 
   &[data-variant='destructive'] {
-    background: rgba(220, 38, 38, 0.1);
+    background: var(--danger-soft);
     color: var(--danger);
 
     &:hover:not(:disabled) {
-      background: rgba(220, 38, 38, 0.2);
+      color: var(--danger-hover);
     }
   }
 
@@ -99,10 +104,10 @@
 
   &[data-size='xs'] {
     height: 24px;
-    gap: 4px;
-    padding: 0 8px;
-    font-size: var(--text-sm);
-    border-radius: var(--r-md);
+    gap: var(--space-1);
+    padding: 0 var(--space-2);
+    font-size: var(--text-small);
+    border-radius: var(--radius-md);
 
     svg {
       width: 12px;
@@ -112,10 +117,10 @@
 
   &[data-size='sm'] {
     height: 28px;
-    gap: 4px;
+    gap: var(--space-1);
     padding: 0 10px;
-    font-size: 13px;
-    border-radius: var(--r-md);
+    font-size: var(--text-control);
+    border-radius: var(--radius-md);
 
     svg {
       width: 14px;
@@ -139,7 +144,7 @@
     width: 24px;
     height: 24px;
     padding: 0;
-    border-radius: var(--r-md);
+    border-radius: var(--radius-md);
 
     svg {
       width: 12px;
@@ -151,7 +156,7 @@
     width: 28px;
     height: 28px;
     padding: 0;
-    border-radius: var(--r-md);
+    border-radius: var(--radius-md);
   }
 
   &[data-size='icon-lg'] {
