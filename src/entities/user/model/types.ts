@@ -1,4 +1,4 @@
-import type { UserPlan } from '@/shared/lib/constants'
+import type { UserPlan } from '@shared/lib'
 
 export interface CurrentUser {
   id: string

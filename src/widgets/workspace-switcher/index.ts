@@ -1,1 +1,1 @@
-export { WorkspaceSwitcher } from './WorkspaceSwitcher'
+export { WorkspaceSwitcher } from './ui/WorkspaceSwitcher/WorkspaceSwitcher'

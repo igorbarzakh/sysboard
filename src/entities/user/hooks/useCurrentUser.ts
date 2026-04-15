@@ -1,8 +1,8 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
-import type { CurrentUser } from '../model/types'
-import type { UserPlan } from '@/shared/lib/constants'
+import type { CurrentUser } from '../model'
+import type { UserPlan } from '@shared/lib'
 
 export function useCurrentUser(): CurrentUser | null {
   const { data: session } = useSession()

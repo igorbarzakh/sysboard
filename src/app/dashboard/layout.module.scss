@@ -1,0 +1,17 @@
+.root {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  background: var(--bg-canvas);
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.main {
+  flex: 1;
+  overflow: auto;
+}

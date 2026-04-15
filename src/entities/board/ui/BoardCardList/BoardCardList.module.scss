@@ -1,0 +1,46 @@
+.card {
+  display: grid;
+  grid-template-columns: 1fr 180px 180px 40px;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  transition: background 250ms ease-in-out;
+
+  &:hover {
+    background: var(--bg-surface);
+  }
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.thumb {
+  width: 100px;
+  height: 64px;
+  border-radius: var(--r-md);
+  flex-shrink: 0;
+  border: 1px solid var(--border-default);
+  background-color: #fff;
+  background-image: radial-gradient(circle, #dee2e6 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.time {
+  font-size: 14px;
+  color: var(--text-primary);
+}

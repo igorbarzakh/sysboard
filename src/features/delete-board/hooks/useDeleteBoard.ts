@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { deleteBoard as deleteBoardApi } from '@/entities/board'
+import { deleteBoard as deleteBoardApi } from '@entities/board/api'
 
 interface UseDeleteBoardResult {
   deleteBoard: (id: string) => Promise<void>

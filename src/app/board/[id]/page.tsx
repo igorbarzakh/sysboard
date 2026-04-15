@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/shared/lib/auth'
-import { prisma } from '@/shared/lib/db'
-import { CanvasEditor } from '@/widgets/canvas-editor'
-import { TrackBoardVisit, type Board } from '@/entities/board'
+import { authOptions, prisma } from '@shared/lib'
+import { CanvasEditor } from '@widgets/canvas-editor/ui'
+import { TrackBoardVisit } from '@entities/board/ui'
+import type { Board } from '@entities/board/model'
 
 type PageProps = { params: Promise<{ id: string }> }
 

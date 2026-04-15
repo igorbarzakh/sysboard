@@ -1,1 +1,1 @@
-export { BoardList } from './BoardList'
+export { BoardList } from './ui/BoardList/BoardList'

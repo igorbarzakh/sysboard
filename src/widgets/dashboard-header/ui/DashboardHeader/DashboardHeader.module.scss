@@ -1,0 +1,18 @@
+.header {
+  height: 52px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+  flex-shrink: 0;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.actions {
+  flex-shrink: 0;
+}

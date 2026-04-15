@@ -1,196 +1,45 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-
-@custom-variant dark (&:is(.dark *));
-
-@theme inline {
-  /* ── shadcn semantic tokens ──────────────────────────────────────────────── */
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  /* Note: --accent is overridden by tokens.css (#5C7CFA) — bg-accent = our brand blue */
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-
-  /* ── SDB: background colors → bg-bg-* ───────────────────────────────────── */
-  --color-bg-base: var(--bg-base);
-  --color-bg-canvas: var(--bg-canvas);
-  --color-bg-surface: var(--bg-surface);
-  --color-bg-surface-hover: var(--bg-surface-hover);
-  --color-bg-elevated: var(--bg-elevated);
-  --color-bg-overlay: var(--bg-overlay);
-
-  /* ── SDB: accent colors → bg-accent-* / text-accent-* ───────────────────── */
-  --color-accent-dark: var(--accent-dark);
-  --color-accent-bright: var(--accent-bright);
-  --color-accent-dim: var(--accent-dim);
-  --color-accent-glow: var(--accent-glow);
-
-  /* ── SDB: danger colors → text-danger / bg-danger-bg ───────────────────── */
-  --color-danger: var(--danger);
-  --color-danger-bg: var(--danger-bg);
-
-  /* ── SDB: text colors → text-text-* ─────────────────────────────────────── */
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-muted: var(--text-muted);
-  --color-text-accent: var(--text-accent);
-  --color-text-on-accent: var(--text-on-accent);
-
-  /* ── SDB: border colors → border-border-* ───────────────────────────────── */
-  --color-border-faint: var(--border-faint);
-  --color-border-subtle: var(--border-subtle);
-  --color-border-default: var(--border-default);
-  --color-border-strong: var(--border-strong);
-
-  /* ── SDB: node colors → bg-node-* ───────────────────────────────────────── */
-  --color-node-service: var(--node-service);
-  --color-node-database: var(--node-database);
-  --color-node-queue: var(--node-queue);
-  --color-node-cache: var(--node-cache);
-  --color-node-cdn: var(--node-cdn);
-
-  /* ── Border radius → rounded-* ───────────────────────────────────────────── */
-  /* Overrides shadcn's calc()-based scale with our explicit pixel values */
-  --radius-xs: var(--r-xs);
-  --radius-sm: var(--r-sm);
-  --radius-md: var(--r-md);
-  --radius-lg: var(--r-lg);
-  --radius-xl: var(--r-xl);
-  --radius-2xl: calc(var(--r-xl) * 1.4);
-  --radius-3xl: calc(var(--r-xl) * 1.8);
-  --radius-4xl: calc(var(--r-xl) * 2.2);
-
-  /* ── Shadows → shadow-* ──────────────────────────────────────────────────── */
-  --shadow-node: var(--shadow-node);
-  --shadow-selected: var(--shadow-selected);
-  --shadow-panel: var(--shadow-panel);
-  --shadow-toolbar: var(--shadow-toolbar);
-  --shadow-elevated: var(--shadow-elevated);
-
-  /* ── Fonts → font-* ──────────────────────────────────────────────────────── */
-  --font-sans: 'Onest', sans-serif;
-  --font-heading: var(--font-sans);
-  --font-body: var(--font-body);
-  --font-mono: var(--font-mono);
-
-  /* ── Font sizes → text-* ─────────────────────────────────────────────────── */
-  /* Registers our --text-* tokens so text-(--text-*) resolves as font-size    */
-  --text-2xs: var(--text-2xs);
-  --text-xs: var(--text-xs);
-  --text-sm: var(--text-sm);
-  --text-base: var(--text-base);
-  --text-md: var(--text-md);
-  --text-lg: var(--text-lg);
-  --text-xl: var(--text-xl);
-  --text-2xl: var(--text-2xl);
-  --text-3xl: var(--text-3xl);
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-:root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+html {
+  min-height: 100%;
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--bg-base);
+  color: var(--text-primary);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-  html {
-    font-family: 'Onest', sans-serif;
-  }
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
 }

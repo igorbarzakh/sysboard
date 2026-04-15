@@ -1,0 +1,9 @@
+.panel {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 var(--sp-3);
+  font-size: var(--text-sm);
+  font-family: var(--font-body);
+  color: var(--text-secondary);
+}

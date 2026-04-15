@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/shared/lib/auth'
-import { prisma } from '@/shared/lib/db'
-import { PLAN_LIMITS } from '@/shared/lib/constants'
-import type { UserPlan } from '@/shared/lib/constants'
+import { authOptions, PLAN_LIMITS, prisma } from '@shared/lib'
+import type { UserPlan } from '@shared/lib'
 
 type RouteContext = { params: Promise<{ slug: string }> }
 
@@ -90,11 +88,8 @@ export async function POST(request: Request, { params }: RouteContext): Promise<
   }
 
   const plan = workspace.plan as UserPlan
-  // maxMembersPerWorkspace is not in PlanLimits — use a generous safety cap.
-  // Per-board limits are enforced separately in liveblocks-auth.
   const currentCount = workspace.members.length
   const maxBoards = PLAN_LIMITS[plan].maxBoardsPerWorkspace
-  // Workspace member cap: free=5x boards, pro=unlimited for now (capped at 100)
   const memberCap = plan === 'free' ? maxBoards * 5 : 100
   if (currentCount >= memberCap) {
     return NextResponse.json({ error: 'Workspace member limit reached' }, { status: 403 })
@@ -110,7 +105,6 @@ export async function POST(request: Request, { params }: RouteContext): Promise<
     },
   })
 
-  // Auto-create BoardMember entries for all boards in the workspace
   const workspaceBoards = await prisma.board.findMany({
     where: { workspaceId: workspace.id },
     select: { id: true },

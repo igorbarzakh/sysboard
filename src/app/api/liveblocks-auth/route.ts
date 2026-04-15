@@ -1,10 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/shared/lib/auth'
-import { prisma } from '@/shared/lib/db'
-import { liveblocks } from '@/shared/lib/liveblocks'
-import { PLAN_LIMITS } from '@/shared/lib/constants'
-import type { UserPlan } from '@/shared/lib/constants'
+import { authOptions, getLiveblocks, PLAN_LIMITS, prisma } from '@shared/lib'
+import type { UserPlan } from '@shared/lib'
 
 export async function POST(request: Request): Promise<NextResponse> {
   const session = await getServerSession(authOptions)
@@ -41,6 +38,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
+  const liveblocks = getLiveblocks()
   const limit = PLAN_LIMITS[board.workspace.plan as UserPlan].maxMembersPerBoard
   const { data: activeUsers } = await liveblocks.getActiveUsers(roomId)
   const isAlreadyConnected = activeUsers.some((u) => u.id === session.user.id)

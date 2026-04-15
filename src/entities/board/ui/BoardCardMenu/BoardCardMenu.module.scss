@@ -1,0 +1,41 @@
+.trigger {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 6px;
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 250ms ease-in-out;
+
+  &:hover {
+    color: var(--text-secondary);
+    background: var(--bg-surface);
+  }
+}
+
+.content {
+  width: 144px;
+}
+
+.item {
+  cursor: pointer;
+
+  &:focus {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+  }
+}
+
+.itemDestructive {
+  cursor: pointer;
+  color: var(--text-primary);
+
+  &:focus {
+    background: var(--danger-bg, rgba(239, 68, 68, 0.08));
+    color: var(--danger, #ef4444);
+  }
+}

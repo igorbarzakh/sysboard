@@ -1,12 +1,11 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/shared/lib/auth'
-import { prisma } from '@/shared/lib/db'
-import { DashboardHeader } from '@/widgets/dashboard-header'
-import { WorkspaceSidebar } from '@/widgets/workspace-sidebar'
-import { PLAN_LIMITS } from '@/shared/lib/constants'
-import type { UserPlan } from '@/shared/lib/constants'
-import type { Workspace } from '@/entities/workspace'
+import { authOptions, PLAN_LIMITS, prisma } from '@shared/lib'
+import type { UserPlan } from '@shared/lib'
+import { DashboardHeader } from '@widgets/dashboard-header/ui'
+import { WorkspaceSidebar } from '@widgets/workspace-sidebar/ui'
+import type { Workspace } from '@entities/workspace/model'
+import styles from './layout.module.scss'
 
 type LayoutProps = {
   children: React.ReactNode
@@ -54,11 +53,11 @@ export default async function WorkspaceLayout({ children, params }: LayoutProps)
   const canCreateWorkspace = workspaceCount < PLAN_LIMITS[plan].maxWorkspaces
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-bg-canvas">
+    <div className={styles.root}>
       <DashboardHeader />
-      <div className="flex flex-1 overflow-hidden">
+      <div className={styles.body}>
         <WorkspaceSidebar workspace={workspace} canCreateWorkspace={canCreateWorkspace} />
-        <main className="flex-1 overflow-auto">{children}</main>
+        <main className={styles.main}>{children}</main>
       </div>
     </div>
   )

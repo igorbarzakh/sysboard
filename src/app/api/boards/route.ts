@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/shared/lib/auth'
-import { prisma } from '@/shared/lib/db'
-import { PLAN_LIMITS } from '@/shared/lib/constants'
-import type { UserPlan } from '@/shared/lib/constants'
+import { authOptions, PLAN_LIMITS, prisma } from '@shared/lib'
+import type { UserPlan } from '@shared/lib'
 
 export async function GET(): Promise<NextResponse> {
   const session = await getServerSession(authOptions)

@@ -1,4 +1,4 @@
-import type { Workspace, WorkspaceMember, WorkspaceBoard } from '../model/types'
+import type { Workspace, WorkspaceMember, WorkspaceBoard } from '../model'
 
 interface ApiError {
   error: string

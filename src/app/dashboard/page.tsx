@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/shared/lib/auth";
-import { prisma } from "@/shared/lib/db";
+import { authOptions, prisma } from "@shared/lib";
+import styles from "./page.module.scss";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -18,9 +18,9 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center flex-1 gap-4 py-24 text-center px-6">
-      <p className="text-sm font-semibold text-text-primary">No workspace yet</p>
-      <p className="text-sm text-text-secondary max-w-xs">
+    <div className={styles.empty}>
+      <p className={styles.title}>No workspace yet</p>
+      <p className={styles.subtitle}>
         Create your first workspace to start building diagrams.
       </p>
     </div>

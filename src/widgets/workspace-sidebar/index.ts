@@ -1,1 +1,1 @@
-export { WorkspaceSidebar } from './WorkspaceSidebar'
+export { WorkspaceSidebar } from './ui/WorkspaceSidebar/WorkspaceSidebar'

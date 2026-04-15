@@ -1,4 +1,4 @@
-import type { Board } from '../model/types'
+import type { Board } from '../model'
 
 interface ApiError {
   error: string

@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import type { Workspace } from '../model/types'
-import { getWorkspaces } from '../api/workspaceApi'
+import type { Workspace } from '../model'
 
 interface UseCurrentWorkspaceResult {
   workspace: Workspace | null
