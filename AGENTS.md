@@ -42,8 +42,10 @@ For Next.js-specific changes, read the relevant local docs in `node_modules/next
 
 - Pages and layouts.
 - API route handlers.
-- Global app wiring such as providers and global CSS import.
+- Global app wiring such as root providers and the global CSS import.
 - No reusable UI, domain models, or shared business logic should be implemented here.
+
+App-wide providers live in `src/app/providers`. Keep `src/app/layout.tsx` as a thin root shell that defines `<html>`, `<body>`, imports global styles, and wraps children in providers.
 
 FSD layers live under `src`:
 
@@ -159,7 +161,10 @@ Do not add Tailwind CSS, shadcn, utility-class styling, or `@apply`.
 Global CSS is limited to:
 
 - `src/shared/styles/global.css`
+- `src/shared/styles/reset.css`
 - `src/shared/styles/tokens.css`
+
+Import global styles only from `src/app/layout.tsx`, and import only `@/shared/styles/global.css` there. `global.css` owns font imports and imports `tokens.css` and `reset.css`.
 
 Component styles belong next to the component as `ComponentName.module.scss`.
 

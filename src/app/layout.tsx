@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import "./globals.css";
 import "@/shared/styles/global.css";
-import { NextAuthSessionProvider } from "./session-provider";
+import { AppProviders } from "./providers";
 
 export const metadata: Metadata = {
   title: "Sysboard",
@@ -12,7 +11,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <NextAuthSessionProvider>{children}</NextAuthSessionProvider>
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );
