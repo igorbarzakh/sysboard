@@ -34,6 +34,29 @@ a {
   color: inherit;
 }
 
+:where(
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  summary,
+  [href],
+  [tabindex]:not([tabindex='-1']),
+  [role='button'],
+  [role='checkbox'],
+  [role='combobox'],
+  [role='link'],
+  [role='menuitem'],
+  [role='option'],
+  [role='radio'],
+  [role='switch'],
+  [role='tab']
+):focus-visible {
+  outline: 2px solid var(--border-outline) !important;
+  outline-offset: 2px;
+}
+
 p,
 h1,
 h2,

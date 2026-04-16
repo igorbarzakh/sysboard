@@ -1,5 +1,6 @@
 'use client'
 
+import type { KeyboardEvent } from 'react'
 import { formatRelativeTime } from '@shared/lib'
 import type { Board } from '../../model'
 import { BoardCardMenu } from '../BoardCardMenu/BoardCardMenu'
@@ -12,9 +13,22 @@ interface BoardCardListProps {
 }
 
 export function BoardCardList({ board, onNavigate, onDeleteRequest }: BoardCardListProps) {
+  function handleKeyDown(event: KeyboardEvent<HTMLElement>) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      onNavigate()
+    }
+  }
+
   return (
     <BoardCardMenu boardId={board.id} onDeleteRequest={onDeleteRequest}>
-      <article className={styles.card} onClick={onNavigate}>
+      <article
+        className={styles.card}
+        role="button"
+        tabIndex={0}
+        onClick={onNavigate}
+        onKeyDown={handleKeyDown}
+      >
         <div className={styles.cell}>
           <div className={styles.thumb} />
           <h3 className={styles.name}>{board.name}</h3>

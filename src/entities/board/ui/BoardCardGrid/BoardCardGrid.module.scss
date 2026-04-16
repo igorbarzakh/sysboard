@@ -9,12 +9,21 @@
   &:hover {
     border-color: var(--border-strong);
   }
+
+  &[data-popup-open] {
+    outline: 2px solid var(--border-outline);
+    outline-offset: 2px;
+  }
 }
 
 .preview {
   aspect-ratio: 16 / 9;
   background-color: var(--bg-base);
-  background-image: radial-gradient(circle, var(--border-default) 1px, transparent 1px);
+  background-image: radial-gradient(
+    circle,
+    var(--border-default) 1px,
+    transparent 1px
+  );
   background-size: 20px 20px;
 }
 
