@@ -52,10 +52,6 @@
 .content {
   padding: var(--space-1);
   width: 224px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-elevated);
 }
 
 .item {
@@ -75,7 +71,7 @@
     outline: none;
   }
 
-  &[data-active="true"] {
+  &[data-active='true'] {
     pointer-events: none;
     cursor: default;
   }
@@ -121,7 +117,7 @@
 
   &:hover,
   &:focus {
-    background: var(--bg-surface);
+    background: var(--accent-soft);
     outline: none;
   }
 }
