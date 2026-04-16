@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { getInitials, getColorIndex } from '../../lib/avatarUtils'
+import { getInitials, getColorIndex } from './avatarUtils'
 import styles from './Avatar.module.scss'
 
 interface AvatarProps {

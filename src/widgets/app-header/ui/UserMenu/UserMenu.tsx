@@ -3,7 +3,7 @@
 import { signOut } from 'next-auth/react'
 import { ChevronDown, Settings, LogOut } from 'lucide-react'
 import { useCurrentUser } from '@entities/user/hooks'
-import { Avatar } from '@entities/user/ui'
+import { Avatar } from '@shared/ui'
 import {
   DropdownMenu,
   DropdownMenuTrigger,

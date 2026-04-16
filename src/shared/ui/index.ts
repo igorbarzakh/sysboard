@@ -39,3 +39,4 @@ export {
   ContextMenuItem,
 } from './ContextMenu'
 export { Logo } from './Logo'
+export { Avatar } from './Avatar/Avatar'
