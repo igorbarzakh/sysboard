@@ -57,7 +57,7 @@ export function WorkspaceSwitcher() {
         {workspaces.map((workspace) => (
           <DropdownMenuItem
             key={workspace.id}
-            onClick={() => router.push(`/w/${workspace.slug}`)}
+            onClick={() => router.push(`/workspace/${workspace.slug}`)}
             className={styles.item}
             data-active={workspace.slug === currentSlug ? 'true' : undefined}
           >

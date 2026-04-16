@@ -13,7 +13,7 @@ export default async function WorkspaceRedirectPage() {
   })
 
   if (workspace) {
-    redirect(`/w/${workspace.slug}`)
+    redirect(`/workspace/${workspace.slug}`)
   }
 
   const workspaceName = `${session.user.name ?? 'My'}'s Workspace`
@@ -30,5 +30,5 @@ export default async function WorkspaceRedirectPage() {
     select: { slug: true },
   })
 
-  redirect(`/w/${created.slug}`)
+  redirect(`/workspace/${created.slug}`)
 }

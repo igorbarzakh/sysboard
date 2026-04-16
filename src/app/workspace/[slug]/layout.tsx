@@ -31,7 +31,7 @@ export default async function WorkspaceLayout({ children, params }: LayoutProps)
     },
   })
 
-  if (!raw) redirect('/w')
+  if (!raw) redirect('/workspace')
 
   const workspace: Workspace = {
     ...raw,

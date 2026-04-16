@@ -6,7 +6,7 @@ export async function proxy(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const { pathname } = req.nextUrl;
 
-  const isProtected = pathname.startsWith("/board") || pathname.startsWith("/w");
+  const isProtected = pathname.startsWith("/board") || pathname.startsWith("/workspace");
 
   if (isProtected && !token) {
     const homeUrl = req.nextUrl.clone();
@@ -18,7 +18,7 @@ export async function proxy(req: NextRequest) {
   const isMainPage = pathname === "/";
   if (isMainPage && token) {
     const workspaceUrl = req.nextUrl.clone();
-    workspaceUrl.pathname = "/w";
+    workspaceUrl.pathname = "/workspace";
     workspaceUrl.search = "";
     return NextResponse.redirect(workspaceUrl);
   }

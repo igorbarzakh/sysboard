@@ -27,7 +27,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
             <Button
               variant="outline"
               className={styles.oauthBtn}
-              onClick={() => signIn('google', { callbackUrl: '/w' })}
+              onClick={() => signIn('google', { callbackUrl: '/workspace' })}
             >
               <GoogleIcon />
               Continue with Google
@@ -36,7 +36,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
             <Button
               variant="outline"
               className={styles.oauthBtn}
-              onClick={() => signIn('discord', { callbackUrl: '/w' })}
+              onClick={() => signIn('discord', { callbackUrl: '/workspace' })}
             >
               <DiscordIcon />
               Continue with Discord

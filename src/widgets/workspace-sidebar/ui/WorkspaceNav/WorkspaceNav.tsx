@@ -23,18 +23,18 @@ export function WorkspaceNav({ workspace }: WorkspaceNavProps) {
 
   const navItems: NavItem[] = [
     {
-      href: `/w/${workspace.slug}`,
+      href: `/workspace/${workspace.slug}`,
       icon: <LayoutGrid size={18} />,
       label: 'Boards',
     },
     {
       badge: workspace.members.length,
-      href: `/w/${workspace.slug}/members`,
+      href: `/workspace/${workspace.slug}/members`,
       icon: <Users size={18} />,
       label: 'Members',
     },
     {
-      href: `/w/${workspace.slug}/settings`,
+      href: `/workspace/${workspace.slug}/settings`,
       icon: <Settings size={18} />,
       label: 'Settings',
     },
