@@ -20,7 +20,7 @@ export default async function WorkspaceRedirectPage() {
   const created = await prisma.workspace.create({
     data: {
       name: workspaceName,
-      slug: deriveSlug(workspaceName),
+      slug: deriveSlug(),
       ownerId: session.user.id,
       plan: session.user.plan ?? 'free',
       members: {

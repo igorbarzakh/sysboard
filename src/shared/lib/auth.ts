@@ -49,7 +49,7 @@ export const authOptions: NextAuthOptions = {
       await prisma.workspace.create({
         data: {
           name: workspaceName,
-          slug: deriveSlug(workspaceName),
+          slug: deriveSlug(),
           ownerId: user.id,
           plan: 'free',
           members: {

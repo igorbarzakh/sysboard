@@ -62,7 +62,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   const workspace = await prisma.workspace.create({
     data: {
       name,
-      slug: deriveSlug(name),
+      slug: deriveSlug(),
       ownerId: session.user.id,
       plan: plan,
       members: {
