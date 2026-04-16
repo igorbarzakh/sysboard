@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Plus } from 'lucide-react'
 import { CreateBoardModal } from '../CreateBoardModal/CreateBoardModal'
 import type { WorkspaceBoard } from '@entities/workspace/model'
 import { FREE_PLAN } from '@shared/lib'
@@ -29,6 +30,7 @@ export function CreateBoardButton({
         disabled={isAtLimit}
         title={isAtLimit ? 'Board limit reached' : 'Create a new board'}
       >
+        <Plus size={16} />
         New board
       </Button>
 

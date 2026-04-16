@@ -8,12 +8,45 @@ import type { Board } from '@entities/board/model'
 import { CreateBoardButton } from '@features/create-board/ui'
 import { useDeleteBoard } from '@features/delete-board/hooks'
 import type { WorkspaceBoard } from '@entities/workspace/model'
+import { Select } from '@shared/ui'
 import { BoardListSkeleton } from '../BoardListSkeleton'
 import { BoardListEmpty } from '../BoardListEmpty/BoardListEmpty'
 import styles from './BoardList.module.scss'
 
 type ViewMode = 'grid' | 'list'
-type SortMode = 'updated-desc' | 'created-desc' | 'name-asc'
+type SortBy = 'name' | 'created' | 'viewed'
+
+const SORT_BY_LABELS: Record<SortBy, string> = {
+  name: 'Alphabetical',
+  created: 'Date created',
+  viewed: 'Last viewed',
+}
+
+const SORT_BY_OPTIONS = [
+  { value: 'name', label: 'Alphabetical' },
+  { value: 'created', label: 'Date created' },
+  { value: 'viewed', label: 'Last viewed' },
+] satisfies Array<{ value: SortBy; label: string }>
+
+function getSavedSortBy(): SortBy {
+  const saved = localStorage.getItem('sdb:board-sort-by')
+
+  if (saved === 'name' || saved === 'created' || saved === 'viewed') {
+    return saved
+  }
+
+  const legacy = localStorage.getItem('sdb:board-sort')
+
+  if (legacy === 'name-asc') {
+    return 'name'
+  }
+
+  if (legacy === 'created-desc') {
+    return 'created'
+  }
+
+  return 'viewed'
+}
 
 interface BoardListProps {
   workspaceSlug: string
@@ -23,15 +56,17 @@ export function BoardList({ workspaceSlug }: BoardListProps) {
   const [boards, setBoards] = useState<Board[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [view, setView] = useState<ViewMode>('grid')
-  const [sort, setSort] = useState<SortMode>('updated-desc')
+  const [sortBy, setSortBy] = useState<SortBy>('viewed')
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const saved = (localStorage.getItem('sdb:board-view') as ViewMode | null) ?? 'grid'
-    const savedSort = (localStorage.getItem('sdb:board-sort') as SortMode | null) ?? 'updated-desc'
+    const saved =
+      (localStorage.getItem('sdb:board-view') as ViewMode | null) ?? 'grid'
+    const savedSortBy = getSavedSortBy()
+
     startTransition(() => {
       setView(saved)
-      setSort(savedSort)
+      setSortBy(savedSortBy)
       setMounted(true)
     })
   }, [])
@@ -41,9 +76,9 @@ export function BoardList({ workspaceSlug }: BoardListProps) {
     localStorage.setItem('sdb:board-view', v)
   }
 
-  function handleSortChange(value: SortMode) {
-    setSort(value)
-    localStorage.setItem('sdb:board-sort', value)
+  function handleSortByChange(value: SortBy) {
+    setSortBy(value)
+    localStorage.setItem('sdb:board-sort-by', value)
   }
 
   const { deleteBoard } = useDeleteBoard()
@@ -69,15 +104,16 @@ export function BoardList({ workspaceSlug }: BoardListProps) {
 
   const sortedBoards = useMemo(() => {
     return [...boards].sort((a, b) => {
-      if (sort === 'name-asc') {
+      if (sortBy === 'name') {
         return a.name.localeCompare(b.name)
       }
 
-      const aDate = sort === 'created-desc' ? a.createdAt : a.updatedAt
-      const bDate = sort === 'created-desc' ? b.createdAt : b.updatedAt
+      const aDate = sortBy === 'created' ? a.createdAt : a.updatedAt
+      const bDate = sortBy === 'created' ? b.createdAt : b.updatedAt
+
       return Date.parse(bDate) - Date.parse(aDate)
     })
-  }, [boards, sort])
+  }, [boards, sortBy])
 
   return (
     <div className={styles.root}>
@@ -85,21 +121,6 @@ export function BoardList({ workspaceSlug }: BoardListProps) {
         <div className={styles.heading}>
           <h1 className={styles.title}>Boards</h1>
 
-          <label className={styles.sortControl}>
-            <span className={styles.sortLabel}>Sort by</span>
-            <select
-              value={sort}
-              onChange={(event) => handleSortChange(event.target.value as SortMode)}
-              className={styles.sortSelect}
-              disabled={isLoading || boards.length === 0}>
-              <option value="updated-desc">Last modified</option>
-              <option value="created-desc">Created</option>
-              <option value="name-asc">Name</option>
-            </select>
-          </label>
-        </div>
-
-        <div className={styles.headerControls}>
           {boards.length > 0 && !isLoading && (
             <CreateBoardButton
               workspaceSlug={workspaceSlug}
@@ -107,34 +128,55 @@ export function BoardList({ workspaceSlug }: BoardListProps) {
               onSuccess={handleCreated}
             />
           )}
+        </div>
+
+        <div className={styles.headerControls}>
+          <label className={styles.sortControl}>
+            <Select<SortBy>
+              value={sortBy}
+              onChange={handleSortByChange}
+              options={SORT_BY_OPTIONS}
+              renderValue={(value) => SORT_BY_LABELS[value]}
+              disabled={isLoading || boards.length === 0}
+              triggerClassName={styles.sortTrigger}
+            />
+          </label>
 
           <div className={styles.viewToggle}>
             <button
               onClick={() => handleViewChange('grid')}
               className={styles.viewBtn}
-              data-active={view === 'grid' ? 'true' : undefined}>
+              data-active={view === 'grid' ? 'true' : undefined}
+            >
               <LayoutGrid size={15} />
             </button>
             <button
               onClick={() => handleViewChange('list')}
               className={styles.viewBtn}
-              data-active={view === 'list' ? 'true' : undefined}>
+              data-active={view === 'list' ? 'true' : undefined}
+            >
               <List size={15} />
             </button>
           </div>
         </div>
       </div>
 
-      {!mounted ? null : isLoading ? (
-        <BoardListSkeleton view={view} />
-      ) : boards.length === 0 ? (
-        <BoardListEmpty workspaceSlug={workspaceSlug} boardCount={0} onCreated={handleCreated} />
+      {!mounted ? null : boards.length === 0 && !isLoading ? (
+        <BoardListEmpty
+          workspaceSlug={workspaceSlug}
+          boardCount={0}
+          onCreated={handleCreated}
+        />
       ) : view === 'grid' ? (
-        <div className={styles.grid}>
-          {sortedBoards.map((board) => (
-            <BoardCard key={board.id} board={board} onDelete={handleDelete} />
-          ))}
-        </div>
+        isLoading ? (
+          <BoardListSkeleton view={view} />
+        ) : (
+          <div className={styles.grid}>
+            {sortedBoards.map((board) => (
+              <BoardCard key={board.id} board={board} onDelete={handleDelete} />
+            ))}
+          </div>
+        )
       ) : (
         <div className={styles.list}>
           <div className={styles.listHeader}>
@@ -143,9 +185,18 @@ export function BoardList({ workspaceSlug }: BoardListProps) {
             <span className={styles.listHeaderCell}>Created</span>
             <span />
           </div>
-          {sortedBoards.map((board) => (
-            <BoardCard key={board.id} board={board} onDelete={handleDelete} view="list" />
-          ))}
+          {isLoading ? (
+            <BoardListSkeleton view={view} />
+          ) : (
+            sortedBoards.map((board) => (
+              <BoardCard
+                key={board.id}
+                board={board}
+                onDelete={handleDelete}
+                view="list"
+              />
+            ))
+          )}
         </div>
       )}
     </div>

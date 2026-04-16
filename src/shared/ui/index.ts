@@ -1,5 +1,7 @@
 export { Button } from './Button'
 export { Input } from './Input'
+export { Select } from './Select'
+export type { SelectOption, SelectOptionGroup } from './Select'
 export {
   Dialog,
   DialogClose,

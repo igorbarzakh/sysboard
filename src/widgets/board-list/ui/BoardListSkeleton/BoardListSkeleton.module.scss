@@ -25,18 +25,6 @@
   max-width: 896px;
 }
 
-.listHeader {
-  display: grid;
-  grid-template-columns: 1fr 180px 180px 40px;
-  gap: var(--space-2);
-  padding: 0 var(--space-3) var(--space-2);
-}
-
-.listHeaderCell {
-  font-size: var(--text-small);
-  color: var(--text-muted);
-}
-
 .skeletonCard {
   overflow: hidden;
   width: 100%;

@@ -22,12 +22,6 @@ export function BoardListSkeleton({ view }: BoardListSkeletonProps) {
 
   return (
     <div className={styles.list}>
-      <div className={styles.listHeader}>
-        <span className={styles.listHeaderCell}>Name</span>
-        <span className={styles.listHeaderCell}>Last modified</span>
-        <span className={styles.listHeaderCell}>Created</span>
-        <span />
-      </div>
       {items.map((item) => (
         <SkeletonRow key={item} />
       ))}

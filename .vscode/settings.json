@@ -3,6 +3,10 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.stylelint": "explicit"
   },
+  "javascript.preferences.quoteStyle": "single",
+  "prettier.semi": false,
+  "prettier.singleQuote": true,
   "scss.validate": false,
-  "stylelint.validate": ["css", "scss"]
+  "stylelint.validate": ["css", "scss"],
+  "typescript.preferences.quoteStyle": "single"
 }

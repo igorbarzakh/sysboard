@@ -23,9 +23,7 @@ export function UserMenu() {
       <DropdownMenuTrigger className={styles.trigger}>
         <div className={styles.triggerInner}>
           <Avatar name={user.name} image={user.image} size="sm" />
-          <span className={styles.triggerName}>
-            {user.name ?? user.email}
-          </span>
+          <span className={styles.triggerName}>{user.name ?? user.email}</span>
         </div>
         <ChevronDown size={14} className={styles.triggerChevron} />
       </DropdownMenuTrigger>
@@ -34,7 +32,8 @@ export function UserMenu() {
         side="bottom"
         align="end"
         sideOffset={8}
-        className={styles.content}>
+        className={styles.content}
+      >
         <div className={styles.profile}>
           <Avatar name={user.name} image={user.image} size="lg" />
           <div className={styles.profileInfo}>
@@ -54,7 +53,8 @@ export function UserMenu() {
           <DropdownMenuItem
             variant="destructive"
             onClick={() => signOut({ callbackUrl: '/' })}
-            className={[styles.item, styles.itemDestructive].join(' ')}>
+            className={[styles.item, styles.itemDestructive].join(' ')}
+          >
             <LogOut size={16} />
             Log out
           </DropdownMenuItem>
