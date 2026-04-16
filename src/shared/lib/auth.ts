@@ -45,6 +45,9 @@ export const authOptions: NextAuthOptions = {
   },
   events: {
     async createUser({ user }) {
+      const existing = await prisma.workspace.findFirst({ where: { ownerId: user.id } })
+      if (existing) return
+
       const workspaceName = `${user.name ?? 'My'}'s Workspace`
       await prisma.workspace.create({
         data: {

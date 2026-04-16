@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
-import { authOptions, deriveSlug, prisma } from '@shared/lib'
+import { authOptions, prisma } from '@shared/lib'
 
 export default async function WorkspaceRedirectPage() {
   const session = await getServerSession(authOptions)
@@ -12,23 +12,7 @@ export default async function WorkspaceRedirectPage() {
     select: { slug: true },
   })
 
-  if (workspace) {
-    redirect(`/workspace/${workspace.slug}`)
-  }
+  if (!workspace) redirect('/')
 
-  const workspaceName = `${session.user.name ?? 'My'}'s Workspace`
-  const created = await prisma.workspace.create({
-    data: {
-      name: workspaceName,
-      slug: deriveSlug(),
-      ownerId: session.user.id,
-      plan: session.user.plan ?? 'free',
-      members: {
-        create: { userId: session.user.id, role: 'owner' },
-      },
-    },
-    select: { slug: true },
-  })
-
-  redirect(`/workspace/${created.slug}`)
+  redirect(`/workspace/${workspace.slug}`)
 }
