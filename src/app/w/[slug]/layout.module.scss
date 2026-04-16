@@ -1,18 +1,20 @@
 .root {
   display: flex;
   overflow: hidden;
-  flex-direction: column;
   height: 100vh;
   background: var(--bg-canvas);
 }
 
-.body {
+.app {
   display: flex;
   overflow: hidden;
   flex: 1;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .main {
   overflow: auto;
   flex: 1;
+  min-width: 0;
 }

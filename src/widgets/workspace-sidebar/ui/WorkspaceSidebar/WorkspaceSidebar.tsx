@@ -5,7 +5,7 @@ import { LayoutGrid, Users, Settings, Zap, Sparkles, ArrowRight, X } from 'lucid
 import type { Workspace } from '@entities/workspace/model'
 import { WorkspaceSwitcher } from '@widgets/workspace-switcher/ui'
 import { PLAN_LIMITS } from '@shared/lib'
-import { Button } from '@shared/ui'
+import { Button, Logo } from '@shared/ui'
 import { useRecentBoards } from '@entities/board/hooks'
 import styles from './WorkspaceSidebar.module.scss'
 
@@ -51,6 +51,10 @@ export function WorkspaceSidebar({ workspace }: WorkspaceSidebarProps) {
 
   return (
     <aside className={styles.sidebar}>
+      <div className={styles.logo}>
+        <Logo />
+      </div>
+
       <div className={styles.switcher}>
         <WorkspaceSwitcher />
       </div>

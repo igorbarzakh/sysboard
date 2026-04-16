@@ -57,7 +57,7 @@ FSD layers live under `src`:
 Current app routes:
 
 - `/`
-- `/dashboard`
+- `/w`
 - `/w/[slug]`
 - `/board/[id]`
 - `/api/auth/[...nextauth]`

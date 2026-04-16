@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions, PLAN_LIMITS, prisma } from '@shared/lib'
 import type { UserPlan } from '@shared/lib'
-import { DashboardHeader } from '@widgets/dashboard-header/ui'
+import { AppHeader } from '@widgets/app-header/ui'
 import { WorkspaceSidebar } from '@widgets/workspace-sidebar/ui'
 import type { Workspace } from '@entities/workspace/model'
 import styles from './layout.module.scss'
@@ -31,7 +31,7 @@ export default async function WorkspaceLayout({ children, params }: LayoutProps)
     },
   })
 
-  if (!raw) redirect('/dashboard')
+  if (!raw) redirect('/w')
 
   const workspace: Workspace = {
     ...raw,
@@ -54,9 +54,9 @@ export default async function WorkspaceLayout({ children, params }: LayoutProps)
 
   return (
     <div className={styles.root}>
-      <DashboardHeader />
-      <div className={styles.body}>
-        <WorkspaceSidebar workspace={workspace} canCreateWorkspace={canCreateWorkspace} />
+      <WorkspaceSidebar workspace={workspace} canCreateWorkspace={canCreateWorkspace} />
+      <div className={styles.app}>
+        <AppHeader />
         <main className={styles.main}>{children}</main>
       </div>
     </div>

@@ -11,6 +11,7 @@ export interface RecentBoard {
   id: string
   name: string
   workspaceSlug: string
+  viewedAt?: number
 }
 
 let cachedRaw: string | null = null
@@ -64,7 +65,7 @@ export function useRecentBoards() {
   const addRecentBoard = useCallback((board: RecentBoard) => {
     const current = getSnapshot()
     const filtered = current.filter((b) => b.id !== board.id)
-    const next = [board, ...filtered].slice(0, MAX_RECENT)
+    const next = [{ ...board, viewedAt: Date.now() }, ...filtered].slice(0, MAX_RECENT)
     writeToStorage(next)
   }, [])
 

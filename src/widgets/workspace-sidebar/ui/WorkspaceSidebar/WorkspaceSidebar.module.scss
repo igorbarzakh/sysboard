@@ -5,9 +5,16 @@
   gap: var(--space-1);
   padding: var(--space-3);
   width: var(--shell-sidebar-width);
-  height: 100%;
+  height: 100vh;
   background: var(--bg-canvas);
   border-right: 1px solid var(--border-subtle);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-4);
+  min-height: 32px;
 }
 
 .switcher {
