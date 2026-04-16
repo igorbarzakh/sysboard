@@ -50,7 +50,6 @@ function SkeletonRow() {
       </div>
       <div className={[styles.skeletonLine, styles.rowMetaLine].join(' ')} />
       <div className={[styles.skeletonLine, styles.rowMetaLine].join(' ')} />
-      <div />
     </div>
   )
 }

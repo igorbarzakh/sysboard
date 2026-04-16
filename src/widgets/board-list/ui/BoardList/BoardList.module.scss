@@ -18,9 +18,9 @@
 
 .listHeader {
   display: grid;
-  grid-template-columns: 1fr 180px 180px 40px;
+  grid-template-columns: 1fr 180px 180px;
   gap: var(--space-2);
-  padding: 0 var(--space-3) var(--space-2);
+  padding: 0 var(--space-3) var(--space-3);
 }
 
 .listHeaderCell {

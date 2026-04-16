@@ -13,18 +13,19 @@ interface BoardCardListProps {
 
 export function BoardCardList({ board, onNavigate, onDeleteRequest }: BoardCardListProps) {
   return (
-    <article className={styles.card} onClick={onNavigate}>
-      <div className={styles.cell}>
-        <div className={styles.thumb} />
-        <h3 className={styles.name}>{board.name}</h3>
-      </div>
-      <time dateTime={board.updatedAt} className={styles.time}>
-        {formatRelativeTime(board.updatedAt)}
-      </time>
-      <time dateTime={board.createdAt} className={styles.time}>
-        {formatRelativeTime(board.createdAt)}
-      </time>
-      <BoardCardMenu boardId={board.id} boardName={board.name} onDeleteRequest={onDeleteRequest} />
-    </article>
+    <BoardCardMenu boardId={board.id} onDeleteRequest={onDeleteRequest}>
+      <article className={styles.card} onClick={onNavigate}>
+        <div className={styles.cell}>
+          <div className={styles.thumb} />
+          <h3 className={styles.name}>{board.name}</h3>
+        </div>
+        <time dateTime={board.updatedAt} className={styles.time}>
+          {formatRelativeTime(board.updatedAt)}
+        </time>
+        <time dateTime={board.createdAt} className={styles.time}>
+          {formatRelativeTime(board.createdAt)}
+        </time>
+      </article>
+    </BoardCardMenu>
   )
 }

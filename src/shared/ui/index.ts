@@ -31,4 +31,11 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
 } from './DropdownMenu'
+export {
+  ContextMenu,
+  ContextMenuPortal,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
+} from './ContextMenu'
 export { Logo } from './Logo'

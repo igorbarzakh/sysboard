@@ -82,7 +82,6 @@ export function BoardList({ workspaceSlug }: BoardListProps) {
             <span className={styles.listHeaderCell}>Name</span>
             <span className={styles.listHeaderCell}>Last modified</span>
             <span className={styles.listHeaderCell}>Created</span>
-            <span />
           </div>
           {isLoading ? (
             <BoardListSkeleton view={view} />

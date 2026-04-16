@@ -1,46 +1,42 @@
 'use client'
 
+import type { ReactElement } from 'react'
 import { useRouter } from 'next/navigation'
-import { MoreHorizontal } from 'lucide-react'
 import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
 } from '@shared/ui'
 import styles from './BoardCardMenu.module.scss'
 
 interface BoardCardMenuProps {
   boardId: string
-  boardName: string
+  children: ReactElement
   onDeleteRequest: () => void
 }
 
-export function BoardCardMenu({ boardId, onDeleteRequest }: BoardCardMenuProps) {
+export function BoardCardMenu({ boardId, children, onDeleteRequest }: BoardCardMenuProps) {
   const router = useRouter()
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        onClick={(e) => e.stopPropagation()}
-        className={styles.trigger}>
-        <MoreHorizontal size={16} />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent side="bottom" align="start" sideOffset={4} className={styles.content}>
-        <DropdownMenuItem
-          onClick={(e) => { e.stopPropagation(); router.push(`/board/${boardId}`) }}
+    <ContextMenu>
+      <ContextMenuTrigger render={children} />
+      <ContextMenuContent className={styles.content}>
+        <ContextMenuItem
+          onClick={() => router.push(`/board/${boardId}`)}
           className={styles.item}>
           Open
-        </DropdownMenuItem>
-        <DropdownMenuItem className={styles.item}>Rename</DropdownMenuItem>
-        <DropdownMenuItem className={styles.item}>Share</DropdownMenuItem>
-        <DropdownMenuItem
+        </ContextMenuItem>
+        <ContextMenuItem className={styles.item}>Rename</ContextMenuItem>
+        <ContextMenuItem className={styles.item}>Share</ContextMenuItem>
+        <ContextMenuItem
           variant="destructive"
-          onClick={(e) => { e.stopPropagation(); onDeleteRequest() }}
+          onClick={onDeleteRequest}
           className={styles.itemDestructive}>
           Delete
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   )
 }
