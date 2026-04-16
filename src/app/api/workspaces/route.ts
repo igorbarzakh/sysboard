@@ -1,23 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions, PLAN_LIMITS, prisma } from '@shared/lib'
+import { authOptions, deriveSlug, PLAN_LIMITS, prisma } from '@shared/lib'
 import type { UserPlan } from '@shared/lib'
-import { customAlphabet } from 'nanoid'
-
-const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 4)
-
-function deriveSlug(name: string): string {
-  return (
-    name
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-      .slice(0, 46) +
-    '-' +
-    nanoid()
-  )
-}
 
 const workspaceInclude = {
   members: { select: { userId: true } },

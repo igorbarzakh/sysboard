@@ -1,24 +1,9 @@
-import { type NextAuthOptions } from "next-auth";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import GoogleProvider from "next-auth/providers/google";
-import DiscordProvider from "next-auth/providers/discord";
-import { customAlphabet } from "nanoid";
-import { prisma } from "./db";
-
-const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789", 4);
-
-function deriveSlug(name: string): string {
-  return (
-    name
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .slice(0, 46) +
-    "-" +
-    nanoid()
-  );
-}
+import { type NextAuthOptions } from 'next-auth'
+import { PrismaAdapter } from '@next-auth/prisma-adapter'
+import GoogleProvider from 'next-auth/providers/google'
+import DiscordProvider from 'next-auth/providers/discord'
+import { deriveSlug } from './deriveSlug'
+import { prisma } from './db'
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -36,57 +21,56 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        token.id = user.id
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
           select: { plan: true },
-        });
-        token.plan = dbUser?.plan ?? "free";
+        })
+        token.plan = dbUser?.plan ?? 'free'
       }
-      return token;
+      return token
     },
     async session({ session, token }) {
       if (session.user && token) {
-        session.user.id = token.id;
-        session.user.plan = token.plan;
+        session.user.id = token.id
+        session.user.plan = token.plan
       }
-      return session;
+      return session
     },
   },
   events: {
     async createUser({ user }) {
-      const workspaceName = `${user.name ?? "My"}'s Workspace`;
-      const workspace = await prisma.workspace.create({
+      const workspaceName = `${user.name ?? 'My'}'s Workspace`
+      await prisma.workspace.create({
         data: {
           name: workspaceName,
           slug: deriveSlug(workspaceName),
           ownerId: user.id,
-          plan: "free",
+          plan: 'free',
           members: {
-            create: { userId: user.id, role: "owner" },
+            create: { userId: user.id, role: 'owner' },
           },
         },
-      });
-      console.log(`[auth] Created default workspace "${workspace.name}" for new user ${user.id}`);
+      })
     },
   },
   cookies: {
     sessionToken: {
-      name: "next-auth.session-token",
+      name: 'next-auth.session-token',
       options: {
         httpOnly: true,
-        sameSite: "lax",
-        path: "/",
+        sameSite: 'lax',
+        path: '/',
         secure: false,
       },
     },
   },
   pages: {
-    signIn: "/",
+    signIn: '/',
   },
-};
+}

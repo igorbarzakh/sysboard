@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
-import { authOptions, PLAN_LIMITS, prisma } from '@shared/lib'
+import { authOptions, prisma } from '@shared/lib'
 import type { UserPlan } from '@shared/lib'
 import { AppHeader } from '@widgets/app-header/ui'
 import { WorkspaceSidebar } from '@widgets/workspace-sidebar/ui'
@@ -46,15 +46,9 @@ export default async function WorkspaceLayout({ children, params }: LayoutProps)
     })),
   }
 
-  const workspaceCount = await prisma.workspace.count({
-    where: { ownerId: session.user.id },
-  })
-  const plan = (session.user.plan ?? 'free') as UserPlan
-  const canCreateWorkspace = workspaceCount < PLAN_LIMITS[plan].maxWorkspaces
-
   return (
     <div className={styles.root}>
-      <WorkspaceSidebar workspace={workspace} canCreateWorkspace={canCreateWorkspace} />
+      <WorkspaceSidebar workspace={workspace} />
       <div className={styles.app}>
         <AppHeader />
         <main className={styles.main}>{children}</main>

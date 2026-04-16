@@ -1,4 +1,5 @@
 export { formatRelativeTime } from './formatDate'
+export { deriveSlug } from './deriveSlug'
 export { cn } from './utils'
 export { PLAN_LIMITS, FREE_PLAN, PRO_PLAN } from './constants'
 export type { UserPlan, PlanLimits } from './constants'

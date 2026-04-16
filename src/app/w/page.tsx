@@ -1,22 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
-import { customAlphabet } from 'nanoid'
-import { authOptions, prisma } from '@shared/lib'
-
-const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 4)
-
-function deriveSlug(name: string): string {
-  return (
-    name
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-      .slice(0, 46) +
-    '-' +
-    nanoid()
-  )
-}
+import { authOptions, deriveSlug, prisma } from '@shared/lib'
 
 export default async function WorkspaceRedirectPage() {
   const session = await getServerSession(authOptions)
