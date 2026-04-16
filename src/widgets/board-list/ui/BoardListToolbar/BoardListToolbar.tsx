@@ -1,11 +1,16 @@
 'use client'
 
-import { LayoutGrid, List } from 'lucide-react'
 import { CreateBoardButton } from '@features/create-board/ui'
 import type { WorkspaceBoard } from '@entities/workspace/model'
 import { Select } from '@shared/ui'
-import { SORT_BY_LABELS, SORT_BY_OPTIONS, type SortBy, type ViewMode } from '../../model'
-import styles from '../BoardList/BoardList.module.scss'
+import {
+  SORT_BY_LABELS,
+  SORT_BY_OPTIONS,
+  type SortBy,
+  type ViewMode,
+} from '../../model'
+import { BoardListViewToggle } from '../BoardListViewToggle/BoardListViewToggle'
+import styles from './BoardListToolbar.module.scss'
 
 interface BoardListToolbarProps {
   boardCount: number
@@ -50,26 +55,10 @@ export function BoardListToolbar({
             options={SORT_BY_OPTIONS}
             renderValue={(value) => SORT_BY_LABELS[value]}
             disabled={isLoading || boardCount === 0}
-            triggerClassName={styles.sortTrigger}
           />
         </label>
 
-        <div className={styles.viewToggle}>
-          <button
-            onClick={() => onViewChange('grid')}
-            className={styles.viewBtn}
-            data-active={view === 'grid' ? 'true' : undefined}
-          >
-            <LayoutGrid size={15} />
-          </button>
-          <button
-            onClick={() => onViewChange('list')}
-            className={styles.viewBtn}
-            data-active={view === 'list' ? 'true' : undefined}
-          >
-            <List size={15} />
-          </button>
-        </div>
+        <BoardListViewToggle value={view} onChange={onViewChange} />
       </div>
     </div>
   )

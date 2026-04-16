@@ -28,29 +28,35 @@ interface SelectBaseProps<Value extends string> {
   sideOffset?: SelectPrimitive.Positioner.Props['sideOffset']
 }
 
-interface SelectSingleProps<Value extends string> extends SelectBaseProps<Value> {
+interface SelectSingleProps<
+  Value extends string,
+> extends SelectBaseProps<Value> {
   value: Value
   onChange: (value: Value) => void
   renderValue?: (value: Value) => React.ReactNode
 }
 
-interface SelectMultipleProps<Value extends string> extends SelectBaseProps<Value> {
+interface SelectMultipleProps<
+  Value extends string,
+> extends SelectBaseProps<Value> {
   value: Value[]
   onChange: (value: Value[]) => void
   renderValue?: (value: Value[]) => React.ReactNode
 }
 
-type SelectProps<Value extends string> = SelectSingleProps<Value> | SelectMultipleProps<Value>
+type SelectProps<Value extends string> =
+  | SelectSingleProps<Value>
+  | SelectMultipleProps<Value>
 
 function isOptionGroup<Value extends string>(
-  item: SelectOption<Value> | SelectOptionGroup<Value>
+  item: SelectOption<Value> | SelectOptionGroup<Value>,
 ): item is SelectOptionGroup<Value> {
   return 'options' in item
 }
 
 function getSelectedLabels<Value extends string>(
   options: Array<SelectOption<Value> | SelectOptionGroup<Value>>,
-  selected: Value[]
+  selected: Value[],
 ) {
   const labels = new Map<Value, React.ReactNode>()
 
@@ -63,7 +69,9 @@ function getSelectedLabels<Value extends string>(
     labels.set(item.value, item.label)
   })
 
-  return selected.map((selectedValue) => labels.get(selectedValue) ?? selectedValue).join(' · ')
+  return selected
+    .map((selectedValue) => labels.get(selectedValue) ?? selectedValue)
+    .join(' · ')
 }
 
 export function Select<Value extends string>({
@@ -96,7 +104,10 @@ export function Select<Value extends string>({
         >
           {options.map((item) => {
             if (isOptionGroup(item)) {
-              const key = typeof item.label === 'string' ? item.label : item.options[0]?.value
+              const key =
+                typeof item.label === 'string'
+                  ? item.label
+                  : item.options[0]?.value
 
               return (
                 <SelectPrimitive.Group key={key} className={styles.group}>
@@ -112,12 +123,14 @@ export function Select<Value extends string>({
                       disabled={option.disabled}
                       className={styles.item}
                     >
-                      <SelectPrimitive.ItemText>{option.label}</SelectPrimitive.ItemText>
-                      <span className={styles.itemIndicator}>
-                        <SelectPrimitive.ItemIndicator>
-                          <CheckIcon />
-                        </SelectPrimitive.ItemIndicator>
-                      </span>
+                      <SelectPrimitive.ItemText>
+                        {option.label}
+                      </SelectPrimitive.ItemText>
+                      <SelectPrimitive.ItemIndicator
+                        className={styles.itemIndicator}
+                      >
+                        <CheckIcon />
+                      </SelectPrimitive.ItemIndicator>
                     </SelectPrimitive.Item>
                   ))}
                 </SelectPrimitive.Group>
@@ -131,7 +144,9 @@ export function Select<Value extends string>({
                 disabled={item.disabled}
                 className={styles.item}
               >
-                <SelectPrimitive.ItemText>{item.label}</SelectPrimitive.ItemText>
+                <SelectPrimitive.ItemText>
+                  {item.label}
+                </SelectPrimitive.ItemText>
                 <span className={styles.itemIndicator}>
                   <SelectPrimitive.ItemIndicator>
                     <CheckIcon />
@@ -158,12 +173,18 @@ export function Select<Value extends string>({
       >
         <SelectPrimitive.Trigger
           data-slot="select-trigger"
-          className={[styles.trigger, triggerClassName].filter(Boolean).join(' ')}
+          className={[styles.trigger, triggerClassName]
+            .filter(Boolean)
+            .join(' ')}
         >
-          <SelectPrimitive.Value className={styles.value} placeholder={placeholder}>
+          <SelectPrimitive.Value
+            className={styles.value}
+            placeholder={placeholder}
+          >
             {() =>
-              (renderValue as ((value: Value[]) => React.ReactNode) | undefined)?.(selectedValue) ??
-              getSelectedLabels(options, selectedValue)
+              (
+                renderValue as ((value: Value[]) => React.ReactNode) | undefined
+              )?.(selectedValue) ?? getSelectedLabels(options, selectedValue)
             }
           </SelectPrimitive.Value>
           <SelectPrimitive.Icon className={styles.icon}>
@@ -192,10 +213,14 @@ export function Select<Value extends string>({
         data-slot="select-trigger"
         className={[styles.trigger, triggerClassName].filter(Boolean).join(' ')}
       >
-        <SelectPrimitive.Value className={styles.value} placeholder={placeholder}>
+        <SelectPrimitive.Value
+          className={styles.value}
+          placeholder={placeholder}
+        >
           {() =>
-            (renderValue as ((value: Value) => React.ReactNode) | undefined)?.(value) ??
-            getSelectedLabels(options, [value])
+            (renderValue as ((value: Value) => React.ReactNode) | undefined)?.(
+              value,
+            ) ?? getSelectedLabels(options, [value])
           }
         </SelectPrimitive.Value>
         <SelectPrimitive.Icon className={styles.icon}>
