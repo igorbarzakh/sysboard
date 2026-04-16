@@ -1,0 +1,1 @@
+export { BoardListSkeleton } from './BoardListSkeleton'

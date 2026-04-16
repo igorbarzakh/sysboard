@@ -8,7 +8,7 @@ import type { Board } from '@entities/board/model'
 import { CreateBoardButton } from '@features/create-board/ui'
 import { useDeleteBoard } from '@features/delete-board/hooks'
 import type { WorkspaceBoard } from '@entities/workspace/model'
-import { SkeletonCard, SkeletonRow } from '../BoardListSkeleton/BoardListSkeleton'
+import { BoardListSkeleton } from '../BoardListSkeleton'
 import { BoardListEmpty } from '../BoardListEmpty/BoardListEmpty'
 import styles from './BoardList.module.scss'
 
@@ -90,25 +90,7 @@ export function BoardList({ workspaceSlug }: BoardListProps) {
       </div>
 
       {!mounted ? null : isLoading ? (
-        view === 'grid' ? (
-          <div className={styles.grid}>
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
-          </div>
-        ) : (
-          <div className={styles.list}>
-            <div className={styles.listHeader}>
-              <span className={styles.listHeaderCell}>Name</span>
-              <span className={styles.listHeaderCell}>Last modified</span>
-              <span className={styles.listHeaderCell}>Created</span>
-              <span />
-            </div>
-            <SkeletonRow />
-            <SkeletonRow />
-            <SkeletonRow />
-          </div>
-        )
+        <BoardListSkeleton view={view} />
       ) : boards.length === 0 ? (
         <BoardListEmpty workspaceSlug={workspaceSlug} boardCount={0} onCreated={handleCreated} />
       ) : view === 'grid' ? (
