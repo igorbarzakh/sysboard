@@ -6,6 +6,7 @@
   --bg-surface: #f1f3f5;
   --bg-surface-hover: #e9ecef;
   --bg-elevated: #ffffff;
+  --bg-app: var(--bg-base);
 
   /* Borders */
 
@@ -90,6 +91,6 @@
 
   /* Layers */
 
-  --z-dropdown: 40;
   --z-modal: 50;
+  --z-dropdown: 60;
 }

@@ -24,6 +24,7 @@ interface SelectBaseProps<Value extends string> {
   contentClassName?: string
   align?: SelectPrimitive.Positioner.Props['align']
   alignOffset?: SelectPrimitive.Positioner.Props['alignOffset']
+  alignItemWithTrigger?: SelectPrimitive.Positioner.Props['alignItemWithTrigger']
   side?: SelectPrimitive.Positioner.Props['side']
   sideOffset?: SelectPrimitive.Positioner.Props['sideOffset']
 }
@@ -85,6 +86,7 @@ export function Select<Value extends string>({
   contentClassName,
   align = 'start',
   alignOffset = 0,
+  alignItemWithTrigger = false,
   side = 'bottom',
   sideOffset = 4,
 }: SelectProps<Value>) {
@@ -94,7 +96,7 @@ export function Select<Value extends string>({
         className={styles.positioner}
         align={align}
         alignOffset={alignOffset}
-        alignItemWithTrigger={false}
+        alignItemWithTrigger={alignItemWithTrigger}
         side={side}
         sideOffset={sideOffset}
       >

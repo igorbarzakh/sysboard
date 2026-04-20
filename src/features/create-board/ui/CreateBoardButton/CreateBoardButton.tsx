@@ -1,48 +1,37 @@
 'use client'
 
-import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Plus } from 'lucide-react'
-import { CreateBoardModal } from '../CreateBoardModal/CreateBoardModal'
-import type { WorkspaceBoard } from '@entities/workspace/model'
 import { FREE_PLAN } from '@shared/lib'
 import { Button } from '@shared/ui'
 
 interface CreateBoardButtonProps {
   workspaceSlug: string
   boardCount: number
-  onSuccess: (board: WorkspaceBoard) => void
   limit?: number
 }
 
 export function CreateBoardButton({
   workspaceSlug,
   boardCount,
-  onSuccess,
   limit = FREE_PLAN.maxBoardsPerWorkspace,
 }: CreateBoardButtonProps) {
-  const [isOpen, setIsOpen] = useState(false)
+  const router = useRouter()
   const isAtLimit = boardCount >= limit
 
-  return (
-    <>
-      <Button
-        onClick={() => !isAtLimit && setIsOpen(true)}
-        disabled={isAtLimit}
-        title={isAtLimit ? 'Board limit reached' : 'Create a new board'}
-      >
-        <Plus size={16} />
-        New board
-      </Button>
+  function handleClick() {
+    if (isAtLimit) return
+    router.push(`/board/new?workspace=${workspaceSlug}&n=${boardCount + 1}`)
+  }
 
-      <CreateBoardModal
-        workspaceSlug={workspaceSlug}
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        onSuccess={(board) => {
-          setIsOpen(false)
-          onSuccess(board)
-        }}
-      />
-    </>
+  return (
+    <Button
+      onClick={handleClick}
+      disabled={isAtLimit}
+      title={isAtLimit ? 'Board limit reached' : 'Create a new board'}
+    >
+      <Plus size={16} />
+      New board
+    </Button>
   )
 }

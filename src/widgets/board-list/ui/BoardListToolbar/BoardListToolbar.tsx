@@ -1,7 +1,6 @@
 'use client'
 
 import { CreateBoardButton } from '@features/create-board/ui'
-import type { WorkspaceBoard } from '@entities/workspace/model'
 import { Select } from '@shared/ui'
 import {
   SORT_BY_LABELS,
@@ -15,7 +14,6 @@ import styles from './BoardListToolbar.module.scss'
 interface BoardListToolbarProps {
   boardCount: number
   isLoading: boolean
-  onCreated: (board: WorkspaceBoard) => void
   onSortChange: (value: SortBy) => void
   onViewChange: (value: ViewMode) => void
   sortBy: SortBy
@@ -26,7 +24,6 @@ interface BoardListToolbarProps {
 export function BoardListToolbar({
   boardCount,
   isLoading,
-  onCreated,
   onSortChange,
   onViewChange,
   sortBy,
@@ -42,7 +39,6 @@ export function BoardListToolbar({
           <CreateBoardButton
             workspaceSlug={workspaceSlug}
             boardCount={boardCount}
-            onSuccess={onCreated}
           />
         )}
       </div>

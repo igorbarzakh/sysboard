@@ -1,7 +1,7 @@
 'use client'
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@shared/ui'
-import { Button } from '@shared/ui'
+import { Trash2 } from 'lucide-react'
+import { DangerDialog } from '@shared/ui'
 
 interface DeleteBoardDialogProps {
   boardName: string
@@ -12,23 +12,14 @@ interface DeleteBoardDialogProps {
 
 export function DeleteBoardDialog({ boardName, open, onOpenChange, onConfirm }: DeleteBoardDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false}>
-        <DialogHeader>
-          <DialogTitle>{`Delete "${boardName}"?`}</DialogTitle>
-          <DialogDescription>This action cannot be undone.</DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={() => { onOpenChange(false); onConfirm() }}>
-            Delete
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <DangerDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      icon={<Trash2 size={22} />}
+      title="Delete board?"
+      description={`"${boardName}" will be permanently deleted. This action cannot be undone.`}
+      confirmLabel="Delete"
+      onConfirm={() => { onOpenChange(false); onConfirm() }}
+    />
   )
 }

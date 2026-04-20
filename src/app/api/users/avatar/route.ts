@@ -5,7 +5,7 @@ import {
   isAllowedAvatarType,
   uploadUserAvatar,
 } from '@shared/lib/avatarStorage'
-import { authOptions, prisma } from '@shared/lib'
+import { authOptions } from '@shared/lib'
 
 export async function POST(request: Request): Promise<NextResponse> {
   const session = await getServerSession(authOptions)
@@ -40,11 +40,6 @@ export async function POST(request: Request): Promise<NextResponse> {
       data: await file.arrayBuffer(),
       source: 'manual',
       userId: session.user.id,
-    })
-
-    await prisma.user.update({
-      where: { id: session.user.id },
-      data: { image },
     })
 
     return NextResponse.json({ image })

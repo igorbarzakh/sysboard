@@ -9,6 +9,10 @@ interface UploadUserAvatarParams {
   userId: string
 }
 
+interface SupabaseStorageObject {
+  name?: unknown
+}
+
 function getSupabaseStorageConfig() {
   const url = process.env.SUPABASE_URL
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -43,8 +47,28 @@ function getPublicAvatarUrl(baseUrl: string, bucket: string, path: string) {
   return `${baseUrl}/storage/v1/object/public/${encodeURIComponent(bucket)}/${encodedPath}`
 }
 
+function extractStoragePath(publicUrl: string, baseUrl: string, bucket: string): string | null {
+  const prefix = `${baseUrl}/storage/v1/object/public/${encodeURIComponent(bucket)}/`
+  if (!publicUrl.startsWith(prefix)) return null
+  return publicUrl
+    .slice(prefix.length)
+    .split('/')
+    .map(decodeURIComponent)
+    .join('/')
+}
+
 export function isAllowedAvatarType(contentType: string) {
   return ALLOWED_AVATAR_TYPES.has(contentType)
+}
+
+export function isOwnedAvatarUrl(imageUrl: string): boolean {
+  try {
+    const { bucket, url } = getSupabaseStorageConfig()
+    const prefix = `${url}/storage/v1/object/public/${encodeURIComponent(bucket)}/`
+    return imageUrl.startsWith(prefix)
+  } catch {
+    return false
+  }
 }
 
 export function isAllowedAvatarSize(size: number) {
@@ -87,6 +111,91 @@ export async function uploadUserAvatar({
   }
 
   return getPublicAvatarUrl(url, bucket, path)
+}
+
+async function listUserAvatarPaths(userId: string) {
+  const { bucket, serviceRoleKey, url } = getSupabaseStorageConfig()
+  const prefix = `users/${userId}/`
+  const limit = 100
+  const paths: string[] = []
+  let offset = 0
+
+  while (true) {
+    const response = await fetch(
+      `${url}/storage/v1/object/list/${encodeURIComponent(bucket)}`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+          apikey: serviceRoleKey,
+        },
+        body: JSON.stringify({ limit, offset, prefix }),
+      },
+    )
+
+    if (!response.ok) {
+      throw new Error(`Supabase avatar list failed with status ${response.status}`)
+    }
+
+    const objects: unknown = await response.json()
+    if (!Array.isArray(objects) || objects.length === 0) break
+
+    objects.forEach((object: SupabaseStorageObject) => {
+      if (typeof object.name !== 'string') return
+      paths.push(
+        object.name.startsWith(prefix)
+          ? object.name
+          : `${prefix}/${object.name}`,
+      )
+    })
+
+    if (objects.length < limit) break
+    offset += limit
+  }
+
+  return paths
+}
+
+export async function deleteAvatarByUrl(imageUrl: string): Promise<void> {
+  const { bucket, serviceRoleKey, url } = getSupabaseStorageConfig()
+  const path = extractStoragePath(imageUrl, url, bucket)
+  if (!path) return
+
+  const response = await fetch(`${url}/storage/v1/object/${encodeURIComponent(bucket)}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${serviceRoleKey}`,
+      'Content-Type': 'application/json',
+      apikey: serviceRoleKey,
+    },
+    body: JSON.stringify({ prefixes: [path] }),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Supabase avatar delete failed with status ${response.status}`)
+  }
+}
+
+export async function deleteUserAvatars(userId: string) {
+  const { bucket, serviceRoleKey, url } = getSupabaseStorageConfig()
+  const paths = await listUserAvatarPaths(userId)
+
+  if (paths.length === 0) return
+
+  const response = await fetch(`${url}/storage/v1/object/${encodeURIComponent(bucket)}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${serviceRoleKey}`,
+      'Content-Type': 'application/json',
+      apikey: serviceRoleKey,
+    },
+    body: JSON.stringify({ prefixes: paths }),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Supabase avatar delete failed with status ${response.status}`)
+  }
 }
 
 export async function importOAuthAvatar(userId: string, imageUrl: string | null | undefined) {
