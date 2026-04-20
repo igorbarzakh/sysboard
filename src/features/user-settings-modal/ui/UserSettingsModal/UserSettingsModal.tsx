@@ -99,9 +99,16 @@ export function UserSettingsModal({
   }, [open, user.image, user.name, user.profileRole])
 
   const isBusy = isSaving || isDeleting
-  const isNameValid = name.trim().length > 0
+  const nameResult = validateName(name)
+  const isNameValid = nameResult.ok
+  const normalizedName = nameResult.ok ? nameResult.value : name.trim()
   const roleValue = profileRole ?? EMPTY_ROLE_VALUE
   const displayImage = previewUrl ?? image
+  const hasChanges =
+    normalizedName !== (user.name ?? '') ||
+    profileRole !== user.profileRole ||
+    image !== user.image ||
+    pendingFile !== null
 
   function handleAvatarChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
@@ -141,10 +148,18 @@ export function UserSettingsModal({
   async function handleSave(event: { preventDefault(): void }) {
     event.preventDefault()
 
-    const nameResult = validateName(name)
     if (!nameResult.ok) return
 
     const nextName = nameResult.value
+    const hasProfileChanges =
+      nextName !== (user.name ?? '') ||
+      profileRole !== user.profileRole ||
+      image !== user.image ||
+      pendingFile !== null
+
+    console.log('Old', !hasProfileChanges)
+    if (!hasProfileChanges) return
+
     setIsSaving(true)
 
     try {
@@ -171,8 +186,8 @@ export function UserSettingsModal({
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: nextName,
-          profileRole,
+          ...(nextName !== (user.name ?? '') ? { name: nextName } : {}),
+          ...(profileRole !== user.profileRole ? { profileRole } : {}),
           ...(imageChanged ? { image: nextImage } : {}),
         }),
       })
@@ -236,7 +251,11 @@ export function UserSettingsModal({
 
             <div className={styles.avatarSection}>
               <div className={styles.avatarPreview}>
-                <Avatar name={name || user.email} image={displayImage} size="lg" />
+                <Avatar
+                  name={name || user.email}
+                  image={displayImage}
+                  size="lg"
+                />
               </div>
               <div className={styles.avatarRight}>
                 <div className={styles.avatarButtons}>
@@ -351,7 +370,10 @@ export function UserSettingsModal({
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isBusy || !isNameValid}>
+              <Button
+                type="submit"
+                disabled={isBusy || !isNameValid || !hasChanges}
+              >
                 {isSaving ? 'Saving…' : 'Save changes'}
               </Button>
             </DialogFooter>
