@@ -47,18 +47,22 @@ export function BoardList({ workspaceSlug }: BoardListProps) {
     return sortBoards(boards, sortBy)
   }, [boards, sortBy])
 
+  const isEmpty = !isLoading && boards.length === 0
+
   return (
     <div className={styles.root}>
-      <BoardListToolbar
-        boardCount={boards.length}
-        isLoading={isLoading}
-        onCreated={handleCreated}
-        onSortChange={setSortBy}
-        onViewChange={setView}
-        sortBy={sortBy}
-        view={view}
-        workspaceSlug={workspaceSlug}
-      />
+      {!isEmpty && (
+        <BoardListToolbar
+          boardCount={boards.length}
+          isLoading={isLoading}
+          onCreated={handleCreated}
+          onSortChange={setSortBy}
+          onViewChange={setView}
+          sortBy={sortBy}
+          view={view}
+          workspaceSlug={workspaceSlug}
+        />
+      )}
 
       {!mounted ? null : boards.length === 0 && !isLoading ? (
         <BoardListEmpty

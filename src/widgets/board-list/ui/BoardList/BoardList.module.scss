@@ -1,7 +1,9 @@
 .root {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: var(--space-6);
+  min-height: 0;
 }
 
 .grid {
