@@ -1,158 +1,160 @@
-.trigger {
-  display: inline-flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  padding: 0 var(--space-2);
-  min-width: 0;
-  height: 28px;
-  font-family: var(--font-body);
-  font-size: var(--text-control);
-  color: var(--text-primary);
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  outline: none;
-  cursor: pointer;
-  transition:
-    border-color var(--duration-base) var(--ease-standard),
-    background-color var(--duration-base) var(--ease-standard);
+@layer ui {
+  .trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding: 0 var(--space-2);
+    min-width: 0;
+    height: 28px;
+    font-family: var(--font-body);
+    font-size: var(--text-control);
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    outline: none;
+    cursor: pointer;
+    transition:
+      border-color var(--duration-base) var(--ease-standard),
+      background-color var(--duration-base) var(--ease-standard);
 
-  &[data-disabled] {
-    color: var(--text-muted);
-    opacity: 0.7;
-    pointer-events: none;
-    cursor: default;
-  }
+    &[data-disabled] {
+      color: var(--text-muted);
+      opacity: 0.7;
+      pointer-events: none;
+      cursor: default;
+    }
 
-  &:hover:not([data-disabled]) {
-    background-color: var(--bg-surface);
+    &:hover:not([data-disabled]) {
+      background-color: var(--bg-surface);
 
-    .icon {
-      color: var(--text-primary);
+      .icon {
+        color: var(--text-primary);
+      }
     }
   }
-}
 
-.value {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.icon {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  color: var(--text-muted);
-  pointer-events: none;
-  transition: color var(--duration-base) var(--ease-standard);
-
-  svg {
-    width: 14px;
-    height: 14px;
-  }
-}
-
-.popup {
-  z-index: var(--z-dropdown);
-  overflow: hidden;
-  padding: var(--space-1);
-  min-width: var(--anchor-width);
-  max-height: var(--available-height);
-  color: var(--text-primary);
-  background: var(--bg-elevated);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-elevated);
-  outline: none;
-
-  &[data-open] {
-    animation: selectIn var(--duration-fast) var(--ease-out);
-  }
-
-  &[data-closed] {
+  .value {
     overflow: hidden;
-    animation: selectOut var(--duration-fast) var(--ease-standard);
-  }
-}
-
-.item {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: var(--space-2) var(--space-8) var(--space-2) var(--space-2);
-  font-family: var(--font-body);
-  font-size: var(--text-control);
-  color: var(--text-primary);
-  border-radius: var(--radius-md);
-  outline: none;
-  cursor: pointer;
-  user-select: none;
-  transition:
-    background var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard);
-
-  &[data-highlighted] {
-    background: var(--bg-surface);
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  &[data-disabled] {
-    opacity: 0.5;
+  .icon {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    color: var(--text-muted);
     pointer-events: none;
+    transition: color var(--duration-base) var(--ease-standard);
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
   }
-}
 
-.itemIndicator {
-  position: absolute;
-  top: 50%;
-  right: 8px;
-  display: flex;
-  align-items: center;
-  transform: translateY(-50%);
+  .popup {
+    z-index: var(--z-dropdown);
+    overflow: hidden;
+    padding: var(--space-1);
+    min-width: var(--anchor-width);
+    max-height: var(--available-height);
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-elevated);
+    outline: none;
 
-  svg {
-    width: 16px;
-    height: 16px;
+    &[data-open] {
+      animation: selectIn var(--duration-fast) var(--ease-out);
+    }
+
+    &[data-closed] {
+      overflow: hidden;
+      animation: selectOut var(--duration-fast) var(--ease-standard);
+    }
   }
-}
 
-.group {
-  display: flex;
-  flex-direction: column;
-}
+  .item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: var(--space-2) var(--space-8) var(--space-2) var(--space-2);
+    font-family: var(--font-body);
+    font-size: var(--text-control);
+    color: var(--text-primary);
+    border-radius: var(--radius-md);
+    outline: none;
+    cursor: pointer;
+    user-select: none;
+    transition:
+      background var(--duration-fast) var(--ease-standard),
+      color var(--duration-fast) var(--ease-standard);
 
-.groupLabel {
-  padding: var(--space-1) 6px;
-  font-size: var(--text-small);
-  font-weight: 500;
-  color: var(--text-muted);
-}
+    &[data-highlighted] {
+      background: var(--bg-surface);
+    }
 
-.positioner {
-  z-index: var(--z-dropdown);
-  isolation: isolate;
-  outline: none;
-}
-
-@keyframes selectIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
+    &[data-disabled] {
+      opacity: 0.5;
+      pointer-events: none;
+    }
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
 
-@keyframes selectOut {
-  from {
-    opacity: 1;
-    transform: scale(1);
+  .itemIndicator {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    transform: translateY(-50%);
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
   }
-  to {
-    opacity: 0;
-    transform: scale(0.95);
+
+  .group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .groupLabel {
+    padding: var(--space-1) 6px;
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+
+  .positioner {
+    z-index: var(--z-dropdown);
+    isolation: isolate;
+    outline: none;
+  }
+
+  @keyframes selectIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes selectOut {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.95);
+    }
   }
 }

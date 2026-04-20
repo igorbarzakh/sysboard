@@ -1,55 +1,57 @@
-.content {
-  gap: 0;
-  padding: var(--space-6);
-  max-width: min(calc(100% - 2rem), 380px);
-}
-
-.iconWrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto var(--space-4);
-  width: 48px;
-  height: 48px;
-  color: var(--danger);
-  background: var(--danger-soft);
-  border-radius: 50%;
-}
-
-.body {
-  margin-bottom: var(--space-6);
-  text-align: center;
-}
-
-.title {
-  margin-bottom: var(--space-2);
-  font-size: var(--text-body-lg);
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.description {
-  font-size: var(--text-small);
-  line-height: 1.6;
-  color: var(--text-secondary);
-}
-
-.actions {
-  display: flex;
-  gap: var(--space-2);
-
-  & > * {
-    flex: 1;
+@layer ui {
+  .content {
+    gap: 0;
+    padding: var(--space-6);
+    max-width: min(calc(100% - 2rem), 380px);
   }
-}
 
-.confirmButton {
-  color: var(--danger) !important;
-  background: var(--danger-soft) !important;
-  border-color: transparent !important;
+  .iconWrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--space-4);
+    width: 48px;
+    height: 48px;
+    color: var(--danger);
+    background: var(--danger-soft);
+    border-radius: 50%;
+  }
 
-  &:hover:not(:disabled) {
-    color: var(--bg-base) !important;
-    background: var(--danger) !important;
+  .body {
+    margin-bottom: var(--space-6);
+    text-align: center;
+  }
+
+  .title {
+    margin-bottom: var(--space-2);
+    font-size: var(--text-body-lg);
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .description {
+    font-size: var(--text-small);
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .actions {
+    display: flex;
+    gap: var(--space-2);
+
+    & > * {
+      flex: 1;
+    }
+  }
+
+  .confirmButton {
+    color: var(--danger) !important;
+    background: var(--danger-soft) !important;
+    border-color: transparent !important;
+
+    &:hover:not(:disabled) {
+      color: var(--bg-base) !important;
+      background: var(--danger) !important;
+    }
   }
 }

@@ -1,167 +1,169 @@
-.button {
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-body);
-  font-size: var(--text-body);
-  font-weight: 500;
-  text-decoration: none;
-  white-space: nowrap;
-  border: 1px solid transparent;
-  border-radius: var(--radius-lg);
-  outline: none;
-  cursor: pointer;
-  user-select: none;
-  transition:
-    background var(--duration-base) var(--ease-standard),
-    color var(--duration-base) var(--ease-standard),
-    border-color var(--duration-base) var(--ease-standard),
-    box-shadow var(--duration-base) var(--ease-standard),
-    transform var(--duration-fast) var(--ease-standard);
-
-  &:active:not([aria-haspopup]) {
-    transform: translateY(1px);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    pointer-events: none;
-  }
-
-  &:focus-visible {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-soft);
-  }
-
-  svg {
+@layer ui {
+  .button {
+    display: inline-flex;
     flex-shrink: 0;
-    width: 16px;
-    height: 16px;
-    pointer-events: none;
-  }
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    border-radius: var(--radius-lg);
+    outline: none;
+    cursor: pointer;
+    user-select: none;
+    transition:
+      background var(--duration-base) var(--ease-standard),
+      color var(--duration-base) var(--ease-standard),
+      border-color var(--duration-base) var(--ease-standard),
+      box-shadow var(--duration-base) var(--ease-standard),
+      transform var(--duration-fast) var(--ease-standard);
 
-  // variants
-  &[data-variant='default'] {
-    color: var(--text-on-accent);
-    background: var(--accent);
-
-    &:hover:not(:disabled) {
-      background: var(--accent-hover);
+    &:active:not([aria-haspopup]) {
+      transform: translateY(1px);
     }
-  }
 
-  &[data-variant='outline'] {
-    color: var(--text-primary);
-    background: var(--bg-base);
-    border-color: var(--border-default);
+    &:disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
 
-    &:hover:not(:disabled) {
+    &:focus-visible {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    svg {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      pointer-events: none;
+    }
+
+    // variants
+    &[data-variant='default'] {
+      color: var(--text-on-accent);
+      background: var(--accent);
+
+      &:hover:not(:disabled) {
+        background: var(--accent-hover);
+      }
+    }
+
+    &[data-variant='outline'] {
+      color: var(--text-primary);
+      background: var(--bg-base);
+      border-color: var(--border-default);
+
+      &:hover:not(:disabled) {
+        background: var(--bg-surface);
+      }
+    }
+
+    &[data-variant='secondary'] {
+      color: var(--text-secondary);
       background: var(--bg-surface);
+
+      &:hover:not(:disabled) {
+        background: var(--bg-surface-hover);
+      }
     }
-  }
 
-  &[data-variant='secondary'] {
-    color: var(--text-secondary);
-    background: var(--bg-surface);
+    &[data-variant='ghost'] {
+      color: var(--text-primary);
+      background: transparent;
 
-    &:hover:not(:disabled) {
-      background: var(--bg-surface-hover);
+      &:hover:not(:disabled) {
+        background: var(--bg-surface);
+      }
     }
-  }
 
-  &[data-variant='ghost'] {
-    color: var(--text-primary);
-    background: transparent;
+    &[data-variant='destructive'] {
+      color: var(--danger);
+      background: var(--danger-soft);
 
-    &:hover:not(:disabled) {
-      background: var(--bg-surface);
+      &:hover:not(:disabled) {
+        color: var(--danger-hover);
+      }
     }
-  }
 
-  &[data-variant='destructive'] {
-    color: var(--danger);
-    background: var(--danger-soft);
-
-    &:hover:not(:disabled) {
-      color: var(--danger-hover);
+    &[data-variant='link'] {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      color: var(--text-accent);
+      background: transparent;
     }
-  }
 
-  &[data-variant='link'] {
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    color: var(--text-accent);
-    background: transparent;
-  }
-
-  // sizes
-  &[data-size='default'] {
-    gap: 6px;
-    padding: 0 10px;
-    height: 32px;
-  }
-
-  &[data-size='xs'] {
-    gap: var(--space-1);
-    padding: 0 var(--space-2);
-    height: 24px;
-    font-size: var(--text-small);
-    border-radius: var(--radius-md);
-
-    svg {
-      width: 12px;
-      height: 12px;
+    // sizes
+    &[data-size='default'] {
+      gap: 6px;
+      padding: 0 10px;
+      height: 32px;
     }
-  }
 
-  &[data-size='sm'] {
-    gap: var(--space-1);
-    padding: 0 10px;
-    height: 28px;
-    font-size: var(--text-control);
-    border-radius: var(--radius-md);
+    &[data-size='xs'] {
+      gap: var(--space-1);
+      padding: 0 var(--space-2);
+      height: 24px;
+      font-size: var(--text-small);
+      border-radius: var(--radius-md);
 
-    svg {
-      width: 14px;
-      height: 14px;
+      svg {
+        width: 12px;
+        height: 12px;
+      }
     }
-  }
 
-  &[data-size='lg'] {
-    gap: 6px;
-    padding: 0 10px;
-    height: 36px;
-  }
+    &[data-size='sm'] {
+      gap: var(--space-1);
+      padding: 0 10px;
+      height: 28px;
+      font-size: var(--text-control);
+      border-radius: var(--radius-md);
 
-  &[data-size='icon'] {
-    padding: 0;
-    width: 32px;
-    height: 32px;
-  }
-
-  &[data-size='icon-xs'] {
-    padding: 0;
-    width: 24px;
-    height: 24px;
-    border-radius: var(--radius-md);
-
-    svg {
-      width: 12px;
-      height: 12px;
+      svg {
+        width: 14px;
+        height: 14px;
+      }
     }
-  }
 
-  &[data-size='icon-sm'] {
-    padding: 0;
-    width: 28px;
-    height: 28px;
-    border-radius: var(--radius-md);
-  }
+    &[data-size='lg'] {
+      gap: 6px;
+      padding: 0 10px;
+      height: 36px;
+    }
 
-  &[data-size='icon-lg'] {
-    padding: 0;
-    width: 36px;
-    height: 36px;
+    &[data-size='icon'] {
+      padding: 0;
+      width: 32px;
+      height: 32px;
+    }
+
+    &[data-size='icon-xs'] {
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-md);
+
+      svg {
+        width: 12px;
+        height: 12px;
+      }
+    }
+
+    &[data-size='icon-sm'] {
+      padding: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-md);
+    }
+
+    &[data-size='icon-lg'] {
+      padding: 0;
+      width: 36px;
+      height: 36px;
+    }
   }
 }

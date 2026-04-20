@@ -1,68 +1,72 @@
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+@layer reset, ui;
 
-html {
-  min-height: 100%;
-  font-family: var(--font-body);
-  color: var(--text-primary);
-  background: var(--bg-base);
-}
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-body {
-  margin: 0;
-  min-height: 100%;
-  color: var(--text-primary);
-  background: var(--bg-base);
-}
+  html {
+    min-height: 100%;
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background: var(--bg-base);
+  }
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
+  body {
+    margin: 0;
+    min-height: 100%;
+    color: var(--text-primary);
+    background: var(--bg-base);
+  }
 
-button {
-  color: inherit;
-}
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-:where(
-  a,
   button,
   input,
-  select,
   textarea,
-  summary,
-  [href],
-  [tabindex]:not([tabindex='-1']),
-  [role='button'],
-  [role='checkbox'],
-  [role='combobox'],
-  [role='link'],
-  [role='menuitem'],
-  [role='option'],
-  [role='radio'],
-  [role='switch'],
-  [role='tab']
-):focus-visible {
-  outline: 2px solid var(--border-outline) !important;
-  outline-offset: 2px;
-}
+  select {
+    font: inherit;
+  }
 
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 0;
+  button {
+    color: inherit;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  :where(
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    summary,
+    [href],
+    [tabindex]:not([tabindex='-1']),
+    [role='button'],
+    [role='checkbox'],
+    [role='combobox'],
+    [role='link'],
+    [role='menuitem'],
+    [role='option'],
+    [role='radio'],
+    [role='switch'],
+    [role='tab']
+  ):focus-visible {
+    outline: 2px solid var(--border-outline) !important;
+    outline-offset: 2px;
+  }
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+  }
 }

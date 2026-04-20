@@ -1,123 +1,125 @@
-.popup {
-  z-index: var(--z-dropdown);
-  overflow: hidden;
-  padding: var(--space-1);
-  min-width: 128px;
-  max-height: var(--available-height);
-  color: var(--text-primary);
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  outline: none;
-
-  &[data-open] {
-    animation: menuIn var(--duration-fast) var(--ease-out);
-  }
-
-  &[data-closed] {
+@layer ui {
+  .popup {
+    z-index: var(--z-dropdown);
     overflow: hidden;
-    animation: menuOut var(--duration-fast) var(--ease-standard);
-  }
-}
+    padding: var(--space-1);
+    min-width: 128px;
+    max-height: var(--available-height);
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    outline: none;
 
-.item {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: var(--space-2);
-  font-family: var(--font-body);
-  font-size: var(--text-control);
-  color: var(--text-primary);
-  border-radius: var(--radius-md);
-  outline: none;
-  cursor: default;
-  user-select: none;
-  transition:
-    background var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard);
+    &[data-open] {
+      animation: menuIn var(--duration-fast) var(--ease-out);
+    }
 
-  &:focus {
-    background: var(--bg-surface);
-  }
-
-  &[data-variant='destructive'] {
-    color: var(--danger);
-
-    &:focus {
-      color: var(--danger);
-      background: var(--danger-soft);
+    &[data-closed] {
+      overflow: hidden;
+      animation: menuOut var(--duration-fast) var(--ease-standard);
     }
   }
 
-  &[data-disabled] {
-    opacity: 0.5;
-    pointer-events: none;
+  .item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: var(--space-2);
+    font-family: var(--font-body);
+    font-size: var(--text-control);
+    color: var(--text-primary);
+    border-radius: var(--radius-md);
+    outline: none;
+    cursor: default;
+    user-select: none;
+    transition:
+      background var(--duration-fast) var(--ease-standard),
+      color var(--duration-fast) var(--ease-standard);
+
+    &:focus {
+      background: var(--bg-surface);
+    }
+
+    &[data-variant='destructive'] {
+      color: var(--danger);
+
+      &:focus {
+        color: var(--danger);
+        background: var(--danger-soft);
+      }
+    }
+
+    &[data-disabled] {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    svg {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      pointer-events: none;
+    }
   }
 
-  svg {
-    flex-shrink: 0;
-    width: 16px;
-    height: 16px;
-    pointer-events: none;
+  .label {
+    padding: var(--space-1) 6px;
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--text-muted);
   }
-}
 
-.label {
-  padding: var(--space-1) 6px;
-  font-size: var(--text-small);
-  font-weight: 500;
-  color: var(--text-muted);
-}
-
-.separator {
-  margin: var(--space-1) calc(-1 * var(--space-1));
-  height: 1px;
-  background: var(--border-subtle);
-}
-
-.shortcut {
-  margin-left: auto;
-  font-size: var(--text-caption);
-  letter-spacing: 0.1em;
-  color: var(--text-muted);
-}
-
-.submenuIcon {
-  margin-left: auto;
-}
-
-.itemIndicator {
-  position: absolute;
-  right: 8px;
-  display: flex;
-  align-items: center;
-}
-
-.positioner {
-  z-index: var(--z-dropdown);
-  isolation: isolate;
-  outline: none;
-}
-
-@keyframes menuIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
+  .separator {
+    margin: var(--space-1) calc(-1 * var(--space-1));
+    height: 1px;
+    background: var(--border-subtle);
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
 
-@keyframes menuOut {
-  from {
-    opacity: 1;
-    transform: scale(1);
+  .shortcut {
+    margin-left: auto;
+    font-size: var(--text-caption);
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
   }
-  to {
-    opacity: 0;
-    transform: scale(0.95);
+
+  .submenuIcon {
+    margin-left: auto;
+  }
+
+  .itemIndicator {
+    position: absolute;
+    right: 8px;
+    display: flex;
+    align-items: center;
+  }
+
+  .positioner {
+    z-index: var(--z-dropdown);
+    isolation: isolate;
+    outline: none;
+  }
+
+  @keyframes menuIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes menuOut {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.95);
+    }
   }
 }
