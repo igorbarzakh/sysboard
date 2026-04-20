@@ -254,7 +254,7 @@ export function UserSettingsModal({
                 <Avatar
                   name={name || user.email}
                   image={displayImage}
-                  size="lg"
+                  size="xl"
                 />
               </div>
               <div className={styles.avatarRight}>

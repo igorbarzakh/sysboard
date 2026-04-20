@@ -41,15 +41,9 @@
 .avatarPreview {
   overflow: hidden;
   flex-shrink: 0;
-  width: 72px;
-  height: 72px;
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
-
-  & > * {
-    width: 100% !important;
-    height: 100% !important;
-    font-size: 28px !important;
-  }
 }
 
 .avatarRight {

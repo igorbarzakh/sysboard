@@ -7,13 +7,14 @@ import styles from './Avatar.module.scss'
 interface AvatarProps {
   name: string | null
   image: string | null
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xl'
 }
 
 const IMAGE_SIZES: Record<NonNullable<AvatarProps['size']>, string> = {
   sm: '24px',
   md: '32px',
   lg: '40px',
+  xl: '96px',
 }
 
 export function Avatar({ name, image, size = 'md' }: AvatarProps) {
@@ -26,6 +27,7 @@ export function Avatar({ name, image, size = 'md' }: AvatarProps) {
           fill
           sizes={IMAGE_SIZES[size]}
           className={styles.image}
+          unoptimized
         />
       </div>
     )
