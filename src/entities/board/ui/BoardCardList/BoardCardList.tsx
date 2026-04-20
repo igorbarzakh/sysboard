@@ -4,6 +4,7 @@ import type { KeyboardEvent } from 'react'
 import { formatRelativeTime } from '@shared/lib'
 import type { Board } from '../../model'
 import { BoardCardMenu } from '../BoardCardMenu/BoardCardMenu'
+import { BoardPreview } from '../BoardPreview/BoardPreview'
 import styles from './BoardCardList.module.scss'
 
 interface BoardCardListProps {
@@ -30,7 +31,9 @@ export function BoardCardList({ board, onNavigate, onDeleteRequest }: BoardCardL
         onKeyDown={handleKeyDown}
       >
         <div className={styles.cell}>
-          <div className={styles.thumb} />
+          <div className={styles.thumb}>
+            <BoardPreview data={board.data} />
+          </div>
           <h3 className={styles.name}>{board.name}</h3>
         </div>
         <time dateTime={board.updatedAt} className={styles.time}>

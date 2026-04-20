@@ -4,6 +4,7 @@ import type { KeyboardEvent } from 'react'
 import { formatRelativeTime } from '@shared/lib'
 import type { Board } from '../../model'
 import { BoardCardMenu } from '../BoardCardMenu/BoardCardMenu'
+import { BoardPreview } from '../BoardPreview/BoardPreview'
 import styles from './BoardCardGrid.module.scss'
 
 interface BoardCardGridProps {
@@ -29,7 +30,9 @@ export function BoardCardGrid({ board, onNavigate, onDeleteRequest }: BoardCardG
         onClick={onNavigate}
         onKeyDown={handleKeyDown}
       >
-        <div className={styles.preview} />
+        <div className={styles.preview}>
+          <BoardPreview data={board.data} />
+        </div>
         <div className={styles.body}>
           <div className={styles.row}>
             <h3 className={styles.name}>{board.name}</h3>

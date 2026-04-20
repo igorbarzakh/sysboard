@@ -17,6 +17,7 @@
 }
 
 .preview {
+  overflow: hidden;
   aspect-ratio: 16 / 9;
   background-color: var(--bg-base);
   background-image: radial-gradient(

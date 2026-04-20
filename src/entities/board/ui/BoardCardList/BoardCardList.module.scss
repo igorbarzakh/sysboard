@@ -26,6 +26,7 @@
 }
 
 .thumb {
+  overflow: hidden;
   flex-shrink: 0;
   width: 100px;
   height: 64px;
