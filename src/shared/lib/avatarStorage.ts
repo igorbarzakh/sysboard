@@ -1,0 +1,113 @@
+const DEFAULT_AVATAR_BUCKET = 'avatars'
+const MAX_AVATAR_BYTES = 2 * 1024 * 1024
+const ALLOWED_AVATAR_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
+
+interface UploadUserAvatarParams {
+  contentType: string
+  data: ArrayBuffer
+  source: 'manual' | 'oauth'
+  userId: string
+}
+
+function getSupabaseStorageConfig() {
+  const url = process.env.SUPABASE_URL
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const bucket = process.env.SUPABASE_AVATARS_BUCKET ?? DEFAULT_AVATAR_BUCKET
+
+  if (!url || !serviceRoleKey) {
+    throw new Error('Supabase avatar storage is not configured')
+  }
+
+  return {
+    bucket,
+    serviceRoleKey,
+    url: url.replace(/\/$/, ''),
+  }
+}
+
+function getAvatarExtension(contentType: string) {
+  switch (contentType) {
+    case 'image/jpeg':
+      return 'jpg'
+    case 'image/png':
+      return 'png'
+    case 'image/webp':
+      return 'webp'
+    default:
+      return null
+  }
+}
+
+function getPublicAvatarUrl(baseUrl: string, bucket: string, path: string) {
+  const encodedPath = path.split('/').map(encodeURIComponent).join('/')
+  return `${baseUrl}/storage/v1/object/public/${encodeURIComponent(bucket)}/${encodedPath}`
+}
+
+export function isAllowedAvatarType(contentType: string) {
+  return ALLOWED_AVATAR_TYPES.has(contentType)
+}
+
+export function isAllowedAvatarSize(size: number) {
+  return size > 0 && size <= MAX_AVATAR_BYTES
+}
+
+export async function uploadUserAvatar({
+  contentType,
+  data,
+  source,
+  userId,
+}: UploadUserAvatarParams) {
+  const extension = getAvatarExtension(contentType)
+
+  if (!extension || !isAllowedAvatarSize(data.byteLength)) {
+    throw new Error('Invalid avatar file')
+  }
+
+  const { bucket, serviceRoleKey, url } = getSupabaseStorageConfig()
+  const path = `users/${userId}/${source}-${Date.now()}.${extension}`
+  const uploadUrl = `${url}/storage/v1/object/${encodeURIComponent(bucket)}/${path
+    .split('/')
+    .map(encodeURIComponent)
+    .join('/')}`
+
+  const response = await fetch(uploadUrl, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${serviceRoleKey}`,
+      'Cache-Control': '31536000',
+      'Content-Type': contentType,
+      apikey: serviceRoleKey,
+      'x-upsert': 'false',
+    },
+    body: data,
+  })
+
+  if (!response.ok) {
+    throw new Error(`Supabase avatar upload failed with status ${response.status}`)
+  }
+
+  return getPublicAvatarUrl(url, bucket, path)
+}
+
+export async function importOAuthAvatar(userId: string, imageUrl: string | null | undefined) {
+  if (!imageUrl) return null
+
+  const response = await fetch(imageUrl)
+  if (!response.ok) return null
+
+  const contentType = response.headers.get('content-type')?.split(';')[0]?.toLowerCase()
+  const contentLength = Number(response.headers.get('content-length') ?? 0)
+
+  if (!contentType || !isAllowedAvatarType(contentType)) return null
+  if (contentLength > 0 && !isAllowedAvatarSize(contentLength)) return null
+
+  const data = await response.arrayBuffer()
+  if (!isAllowedAvatarSize(data.byteLength)) return null
+
+  return uploadUserAvatar({
+    contentType,
+    data,
+    source: 'oauth',
+    userId,
+  })
+}
