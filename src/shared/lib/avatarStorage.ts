@@ -47,8 +47,28 @@ function getPublicAvatarUrl(baseUrl: string, bucket: string, path: string) {
   return `${baseUrl}/storage/v1/object/public/${encodeURIComponent(bucket)}/${encodedPath}`
 }
 
+function extractStoragePath(publicUrl: string, baseUrl: string, bucket: string): string | null {
+  const prefix = `${baseUrl}/storage/v1/object/public/${encodeURIComponent(bucket)}/`
+  if (!publicUrl.startsWith(prefix)) return null
+  return publicUrl
+    .slice(prefix.length)
+    .split('/')
+    .map(decodeURIComponent)
+    .join('/')
+}
+
 export function isAllowedAvatarType(contentType: string) {
   return ALLOWED_AVATAR_TYPES.has(contentType)
+}
+
+export function isOwnedAvatarUrl(imageUrl: string): boolean {
+  try {
+    const { bucket, url } = getSupabaseStorageConfig()
+    const prefix = `${url}/storage/v1/object/public/${encodeURIComponent(bucket)}/`
+    return imageUrl.startsWith(prefix)
+  } catch {
+    return false
+  }
 }
 
 export function isAllowedAvatarSize(size: number) {
@@ -135,6 +155,26 @@ async function listUserAvatarPaths(userId: string) {
   }
 
   return paths
+}
+
+export async function deleteAvatarByUrl(imageUrl: string): Promise<void> {
+  const { bucket, serviceRoleKey, url } = getSupabaseStorageConfig()
+  const path = extractStoragePath(imageUrl, url, bucket)
+  if (!path) return
+
+  const response = await fetch(`${url}/storage/v1/object/${encodeURIComponent(bucket)}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${serviceRoleKey}`,
+      'Content-Type': 'application/json',
+      apikey: serviceRoleKey,
+    },
+    body: JSON.stringify({ prefixes: [path] }),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Supabase avatar delete failed with status ${response.status}`)
+  }
 }
 
 export async function deleteUserAvatars(userId: string) {

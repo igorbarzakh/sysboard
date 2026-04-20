@@ -68,81 +68,112 @@ export function UserSettingsModal({
   const fileInputRef = React.useRef<HTMLInputElement>(null)
   const [name, setName] = React.useState(user.name ?? '')
   const [image, setImage] = React.useState(user.image)
+  const [pendingFile, setPendingFile] = React.useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = React.useState<string | null>(null)
   const [profileRole, setProfileRole] = React.useState<ProfileRole | null>(
     user.profileRole,
   )
   const [isSaving, setIsSaving] = React.useState(false)
-  const [isUploading, setIsUploading] = React.useState(false)
   const [isDeleting, setIsDeleting] = React.useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false)
-  const [error, setError] = React.useState<string | null>(null)
+  const [avatarError, setAvatarError] = React.useState<string | null>(null)
+
+  React.useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl)
+    }
+  }, [previewUrl])
 
   React.useEffect(() => {
     if (!open) return
 
     setName(user.name ?? '')
     setImage(user.image)
+    setPendingFile(null)
+    setPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev)
+      return null
+    })
     setProfileRole(user.profileRole)
-    setError(null)
+    setAvatarError(null)
   }, [open, user.image, user.name, user.profileRole])
 
-  const isBusy = isSaving || isUploading || isDeleting
+  const isBusy = isSaving || isDeleting
   const isNameValid = name.trim().length > 0
   const roleValue = profileRole ?? EMPTY_ROLE_VALUE
-  async function handleAvatarChange(
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) {
+  const displayImage = previewUrl ?? image
+
+  function handleAvatarChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     event.target.value = ''
     if (!file) return
 
-    setError(null)
-    setIsUploading(true)
+    const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
+    const MAX_BYTES = 2 * 1024 * 1024
 
-    const formData = new FormData()
-    formData.append('file', file)
-
-    try {
-      const response = await fetch('/api/users/avatar', {
-        method: 'POST',
-        body: formData,
-      })
-      const body = await readJsonResponse(response)
-
-      if (!response.ok || typeof body.image !== 'string') {
-        throw new Error(body.error ?? 'Avatar upload failed')
-      }
-
-      setImage(body.image)
-      await update({ image: body.image })
-    } catch (uploadError) {
-      setError(
-        uploadError instanceof Error
-          ? uploadError.message
-          : 'Avatar upload failed',
-      )
-    } finally {
-      setIsUploading(false)
+    if (!ALLOWED_TYPES.has(file.type)) {
+      setAvatarError('File must be a JPEG, PNG, or WebP image')
+      return
     }
+
+    if (file.size > MAX_BYTES) {
+      setAvatarError('File must be 2 MB or smaller')
+      return
+    }
+
+    setAvatarError(null)
+    setPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev)
+      return URL.createObjectURL(file)
+    })
+    setPendingFile(file)
   }
 
-  async function handleSave(event: React.FormEvent<HTMLFormElement>) {
+  function handleDeleteAvatar() {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl)
+      setPreviewUrl(null)
+    }
+    setPendingFile(null)
+    setImage(null)
+  }
+
+  async function handleSave(event: { preventDefault(): void }) {
     event.preventDefault()
 
     const nameResult = validateName(name)
     if (!nameResult.ok) return
 
     const nextName = nameResult.value
-    setError(null)
     setIsSaving(true)
 
     try {
+      let nextImage = image
+
+      if (pendingFile) {
+        const formData = new FormData()
+        formData.append('file', pendingFile)
+        const uploadResponse = await fetch('/api/users/avatar', {
+          method: 'POST',
+          body: formData,
+        })
+        const uploadBody = await readJsonResponse(uploadResponse)
+
+        if (!uploadResponse.ok || typeof uploadBody.image !== 'string') {
+          throw new Error(uploadBody.error ?? 'Avatar upload failed')
+        }
+
+        nextImage = uploadBody.image
+      }
+
+      const imageChanged = nextImage !== user.image
       const response = await fetch('/api/users/me', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: nextName,
           profileRole,
+          ...(imageChanged ? { image: nextImage } : {}),
         }),
       })
       const body = await readJsonResponse(response)
@@ -153,25 +184,26 @@ export function UserSettingsModal({
 
       setName(body.user.name ?? '')
       setProfileRole(body.user.profileRole ?? null)
+      setImage(body.user.image ?? null)
+      setPendingFile(null)
+      setPreviewUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev)
+        return null
+      })
       await update({
-        image,
+        image: body.user.image ?? null,
         name: body.user.name ?? null,
         profileRole: body.user.profileRole ?? null,
       })
       onOpenChange(false)
-    } catch (saveError) {
-      setError(
-        saveError instanceof Error
-          ? saveError.message
-          : 'Profile update failed',
-      )
+    } catch {
+      // silent — user can retry via Save button
     } finally {
       setIsSaving(false)
     }
   }
 
   async function handleDeleteAccount() {
-    setError(null)
     setIsDeleting(true)
 
     try {
@@ -183,12 +215,7 @@ export function UserSettingsModal({
       }
 
       await signOut({ callbackUrl: '/' })
-    } catch (deleteError) {
-      setError(
-        deleteError instanceof Error
-          ? deleteError.message
-          : 'Account deletion failed',
-      )
+    } catch {
       setIsDeleteOpen(false)
       setIsDeleting(false)
     }
@@ -209,7 +236,7 @@ export function UserSettingsModal({
 
             <div className={styles.avatarSection}>
               <div className={styles.avatarPreview}>
-                <Avatar name={name || user.email} image={image} size="lg" />
+                <Avatar name={name || user.email} image={displayImage} size="lg" />
               </div>
               <div className={styles.avatarRight}>
                 <div className={styles.avatarButtons}>
@@ -227,23 +254,26 @@ export function UserSettingsModal({
                     onClick={() => fileInputRef.current?.click()}
                   >
                     <Upload size={13} />
-                    {isUploading ? 'Uploading…' : 'Upload Picture'}
+                    Upload Picture
                   </Button>
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    disabled={isBusy || !image}
-                    onClick={() => setImage(null)}
+                    disabled={isBusy || (!image && !pendingFile)}
+                    onClick={handleDeleteAvatar}
                   >
                     Delete
                   </Button>
                 </div>
-                <p className={styles.avatarHint}>
-                  File type: .png, .jpeg, .webp
-                  <br />
-                  Max file size: 2 MB
-                </p>
+                <div className={styles.avatarMeta}>
+                  <p className={styles.avatarHint}>
+                    File type: .png, .jpeg, .webp
+                    <br />
+                    Max file size: 2 MB
+                  </p>
+                  <p className={styles.avatarError}>{avatarError}</p>
+                </div>
               </div>
             </div>
 

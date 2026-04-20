@@ -1,7 +1,11 @@
 import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import { isProfileRole } from '@entities/user/model'
-import { deleteUserAvatars } from '@shared/lib/avatarStorage'
+import {
+  deleteAvatarByUrl,
+  deleteUserAvatars,
+  isOwnedAvatarUrl,
+} from '@shared/lib/avatarStorage'
 import { authOptions, prisma, validateName } from '@shared/lib'
 
 function readBodyField(body: unknown, field: string) {
@@ -20,6 +24,13 @@ function normalizeProfileRole(value: unknown) {
   return isProfileRole(value) ? value : undefined
 }
 
+function normalizeImage(value: unknown): string | null | undefined {
+  if (value === undefined) return undefined
+  if (value === null) return null
+  if (typeof value === 'string' && isOwnedAvatarUrl(value)) return value
+  return undefined
+}
+
 export async function PATCH(request: Request): Promise<NextResponse> {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
@@ -29,6 +40,8 @@ export async function PATCH(request: Request): Promise<NextResponse> {
   const body: unknown = await request.json().catch(() => ({}))
   const rawName = readBodyField(body, 'name')
   const profileRole = normalizeProfileRole(readBodyField(body, 'profileRole'))
+  const rawImage = readBodyField(body, 'image')
+  const nextImage = normalizeImage(rawImage)
 
   let name: string | undefined
   if (rawName !== undefined) {
@@ -46,11 +59,25 @@ export async function PATCH(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: 'Invalid profile role' }, { status: 400 })
   }
 
+  if (rawImage !== undefined && nextImage === undefined) {
+    return NextResponse.json({ error: 'Invalid image URL' }, { status: 400 })
+  }
+
+  let oldImage: string | null | undefined
+  if (nextImage !== undefined) {
+    const current = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { image: true },
+    })
+    oldImage = current?.image
+  }
+
   const user = await prisma.user.update({
     where: { id: session.user.id },
     data: {
       ...(name !== undefined ? { name } : {}),
       ...(profileRole !== undefined ? { profileRole } : {}),
+      ...(nextImage !== undefined ? { image: nextImage } : {}),
     },
     select: {
       id: true,
@@ -60,6 +87,10 @@ export async function PATCH(request: Request): Promise<NextResponse> {
       profileRole: true,
     },
   })
+
+  if (oldImage && oldImage !== nextImage) {
+    await deleteAvatarByUrl(oldImage).catch(() => {})
+  }
 
   return NextResponse.json({ user })
 }

@@ -75,10 +75,23 @@
   border: 0;
 }
 
+.avatarMeta {
+  position: relative;
+}
+
 .avatarHint {
   font-size: var(--text-small);
   line-height: 1.6;
   color: var(--text-muted);
+}
+
+.avatarError {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--danger);
 }
 
 /* ─── Fields ────────────────────────────────────────────── */
