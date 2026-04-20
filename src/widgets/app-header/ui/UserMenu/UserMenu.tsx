@@ -1,8 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import { signOut } from 'next-auth/react'
 import { ChevronDown, Settings, LogOut } from 'lucide-react'
 import { useCurrentUser } from '@entities/user/hooks'
+import { UserSettingsModal } from '@features/user-settings-modal'
 import { Avatar } from '@shared/ui'
 import {
   DropdownMenu,
@@ -15,51 +17,63 @@ import styles from './UserMenu.module.scss'
 
 export function UserMenu() {
   const user = useCurrentUser()
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
 
   if (!user) return null
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger className={styles.trigger}>
-        <div className={styles.triggerInner}>
-          <Avatar name={user.name} image={user.image} size="sm" />
-          <span className={styles.triggerName}>{user.name ?? user.email}</span>
-        </div>
-        <ChevronDown size={14} className={styles.triggerChevron} />
-      </DropdownMenuTrigger>
-
-      <DropdownMenuContent
-        side="bottom"
-        align="end"
-        sideOffset={8}
-        className={styles.content}
-      >
-        <div className={styles.profile}>
-          <Avatar name={user.name} image={user.image} size="lg" />
-          <div className={styles.profileInfo}>
-            <p className={styles.profileName}>{user.name ?? 'User'}</p>
-            <p className={styles.profileEmail}>{user.email}</p>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger className={styles.trigger}>
+          <div className={styles.triggerInner}>
+            <Avatar name={user.name} image={user.image} size="sm" />
+            <span className={styles.triggerName}>{user.name ?? user.email}</span>
           </div>
-        </div>
+          <ChevronDown size={14} className={styles.triggerChevron} />
+        </DropdownMenuTrigger>
 
-        <DropdownMenuSeparator />
+        <DropdownMenuContent
+          side="bottom"
+          align="end"
+          sideOffset={8}
+          className={styles.content}
+        >
+          <div className={styles.profile}>
+            <Avatar name={user.name} image={user.image} size="lg" />
+            <div className={styles.profileInfo}>
+              <p className={styles.profileName}>{user.name ?? 'User'}</p>
+              <p className={styles.profileEmail}>{user.email}</p>
+            </div>
+          </div>
 
-        <div className={styles.items}>
-          <DropdownMenuItem className={styles.item}>
-            <Settings size={16} />
-            Settings
-          </DropdownMenuItem>
+          <DropdownMenuSeparator />
 
-          <DropdownMenuItem
-            variant="destructive"
-            onClick={() => signOut({ callbackUrl: '/' })}
-            className={[styles.item, styles.itemDestructive].join(' ')}
-          >
-            <LogOut size={16} />
-            Log out
-          </DropdownMenuItem>
-        </div>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          <div className={styles.items}>
+            <DropdownMenuItem
+              className={styles.item}
+              onClick={() => setIsSettingsOpen(true)}
+            >
+              <Settings size={16} />
+              Settings
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => signOut({ callbackUrl: '/' })}
+              className={[styles.item, styles.itemDestructive].join(' ')}
+            >
+              <LogOut size={16} />
+              Log out
+            </DropdownMenuItem>
+          </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <UserSettingsModal
+        open={isSettingsOpen}
+        user={user}
+        onOpenChange={setIsSettingsOpen}
+      />
+    </>
   )
 }

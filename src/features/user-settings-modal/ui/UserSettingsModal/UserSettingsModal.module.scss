@@ -1,0 +1,195 @@
+.content {
+  gap: 0;
+  padding: 0;
+  max-width: min(calc(100% - 2rem), 560px);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Header ────────────────────────────────────────────── */
+
+.header {
+  padding: var(--space-6) var(--space-6) var(--space-5);
+}
+
+.title {
+  font-size: var(--text-title);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ─── Divider ───────────────────────────────────────────── */
+
+.divider {
+  flex-shrink: 0;
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+/* ─── Avatar section ────────────────────────────────────── */
+
+.avatarSection {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  padding: var(--space-6);
+}
+
+.avatarPreview {
+  overflow: hidden;
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+
+  & > * {
+    width: 100% !important;
+    height: 100% !important;
+    font-size: 28px !important;
+  }
+}
+
+.avatarRight {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.avatarButtons {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.fileInput {
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  margin: -1px;
+  padding: 0;
+  width: 1px;
+  height: 1px;
+  white-space: nowrap;
+  border: 0;
+}
+
+.avatarHint {
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+/* ─── Fields ────────────────────────────────────────────── */
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.label {
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.emailHint {
+  font-size: var(--text-caption);
+  color: var(--text-muted);
+}
+
+.roleTrigger {
+  width: 100%;
+  height: 36px;
+  font-size: var(--text-body);
+  background: transparent;
+  border-radius: var(--radius-lg);
+}
+
+.roleContent {
+  min-width: 240px;
+}
+
+/* ─── Error ─────────────────────────────────────────────── */
+
+.error {
+  margin: 0 var(--space-6);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-small);
+  color: var(--danger);
+  background: var(--danger-soft);
+  border-radius: var(--radius-md);
+}
+
+/* ─── Danger zone ───────────────────────────────────────── */
+
+.danger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6);
+}
+
+.dangerTitle {
+  font-size: var(--text-body);
+  font-weight: 500;
+  color: var(--danger);
+}
+
+.dangerDescription {
+  margin-top: 2px;
+  font-size: var(--text-small);
+  color: var(--text-muted);
+}
+
+/* ─── Footer ────────────────────────────────────────────── */
+
+.footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-4) var(--space-6);
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-subtle);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+/* ─── Delete account dialog ─────────────────────────────── */
+
+.deleteContent {
+  max-width: min(calc(100% - 2rem), 360px);
+}
+
+/* ─── Responsive ────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .avatarSection {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .danger {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .footer {
+    flex-direction: column-reverse;
+
+    & > * {
+      width: 100%;
+    }
+  }
+}

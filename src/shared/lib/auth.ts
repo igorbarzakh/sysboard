@@ -5,7 +5,7 @@ import DiscordProvider from 'next-auth/providers/discord'
 import { importOAuthAvatar } from './avatarStorage'
 import { deriveSlug } from './deriveSlug'
 import { prisma } from './db'
-import { getUpdatedSessionImage } from './nextAuthSession'
+import { getUpdatedSessionUser } from './nextAuthSession'
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -27,19 +27,39 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user, trigger, session }) {
-      const updatedImage = trigger === 'update' ? getUpdatedSessionImage(session) : null
-      if (updatedImage) {
-        token.picture = updatedImage
+      const updatedUser = trigger === 'update' ? getUpdatedSessionUser(session) : {}
+      if ('image' in updatedUser) {
+        token.picture = updatedUser.image ?? null
+      }
+      if ('name' in updatedUser) {
+        token.name = updatedUser.name
+      }
+      if ('profileRole' in updatedUser) {
+        token.profileRole = updatedUser.profileRole ?? null
       }
 
       if (user) {
         token.id = user.id
         token.picture = user.image
-        const dbUser = await prisma.user.findUnique({
-          where: { id: user.id },
-          select: { plan: true },
-        })
+        const [dbUser, dbAccount] = await Promise.all([
+          prisma.user.findUnique({
+            where: { id: user.id },
+            select: { plan: true, profileRole: true },
+          }),
+          prisma.account.findFirst({
+            where: { userId: user.id },
+            select: { provider: true },
+          }),
+        ])
         token.plan = dbUser?.plan ?? 'free'
+        token.profileRole = dbUser?.profileRole ?? null
+        token.provider = dbAccount?.provider ?? null
+      } else if (token.provider === undefined) {
+        const dbAccount = await prisma.account.findFirst({
+          where: { userId: token.id },
+          select: { provider: true },
+        })
+        token.provider = dbAccount?.provider ?? null
       }
       return token
     },
@@ -47,9 +67,13 @@ export const authOptions: NextAuthOptions = {
       if (session.user && token) {
         session.user.id = token.id
         session.user.plan = token.plan
+        session.user.profileRole =
+          typeof token.profileRole === 'string' ? token.profileRole : null
+        session.user.name = typeof token.name === 'string' ? token.name : null
         if (typeof token.picture === 'string') {
           session.user.image = token.picture
         }
+        session.user.provider = typeof token.provider === 'string' ? token.provider : null
       }
       return session
     },
