@@ -1,3 +1,4 @@
+export { validateName, MAX_NAME_LENGTH } from './validation'
 export { formatRelativeTime } from './formatDate'
 export { deriveSlug } from './deriveSlug'
 export { cn } from './utils'

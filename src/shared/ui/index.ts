@@ -40,3 +40,4 @@ export {
 } from './ContextMenu'
 export { Logo } from './Logo'
 export { Avatar } from './Avatar/Avatar'
+export { DangerDialog } from './DangerDialog'

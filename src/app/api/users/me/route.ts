@@ -2,9 +2,7 @@ import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import { isProfileRole } from '@entities/user/model'
 import { deleteUserAvatars } from '@shared/lib/avatarStorage'
-import { authOptions, prisma } from '@shared/lib'
-
-const MAX_NAME_LENGTH = 80
+import { authOptions, prisma, validateName } from '@shared/lib'
 
 function readBodyField(body: unknown, field: string) {
   if (typeof body !== 'object' || body === null || !(field in body)) {
@@ -12,15 +10,6 @@ function readBodyField(body: unknown, field: string) {
   }
 
   return (body as Record<string, unknown>)[field]
-}
-
-function normalizeName(value: unknown) {
-  if (value === undefined) return undefined
-  if (value === null) return null
-  if (typeof value !== 'string') return undefined
-
-  const name = value.trim()
-  return name.length > 0 ? name : null
 }
 
 function normalizeProfileRole(value: unknown) {
@@ -38,18 +27,19 @@ export async function PATCH(request: Request): Promise<NextResponse> {
   }
 
   const body: unknown = await request.json().catch(() => ({}))
-  const name = normalizeName(readBodyField(body, 'name'))
+  const rawName = readBodyField(body, 'name')
   const profileRole = normalizeProfileRole(readBodyField(body, 'profileRole'))
 
-  if (name === undefined && readBodyField(body, 'name') !== undefined) {
-    return NextResponse.json({ error: 'Name must be a string or null' }, { status: 400 })
-  }
-
-  if (typeof name === 'string' && name.length > MAX_NAME_LENGTH) {
-    return NextResponse.json(
-      { error: `Name must be ${MAX_NAME_LENGTH} characters or fewer` },
-      { status: 400 },
-    )
+  let name: string | undefined
+  if (rawName !== undefined) {
+    if (typeof rawName !== 'string') {
+      return NextResponse.json({ error: 'Name must be a string' }, { status: 400 })
+    }
+    const result = validateName(rawName)
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: 400 })
+    }
+    name = result.value
   }
 
   if (profileRole === undefined && readBodyField(body, 'profileRole') !== undefined) {

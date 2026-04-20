@@ -2,18 +2,19 @@
 
 import * as React from 'react'
 import { signOut, useSession } from 'next-auth/react'
-import { Upload } from 'lucide-react'
+import { HeartCrack, Upload } from 'lucide-react'
 import {
   PROFILE_ROLE_OPTIONS,
   type ProfileRole,
   type CurrentUser,
 } from '@entities/user/model'
+import { validateName, MAX_NAME_LENGTH } from '@shared/lib'
 import {
   Avatar,
   Button,
+  DangerDialog,
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -86,8 +87,11 @@ export function UserSettingsModal({
   }, [open, user.image, user.name, user.profileRole])
 
   const isBusy = isSaving || isUploading || isDeleting
+  const isNameValid = name.trim().length > 0
   const roleValue = profileRole ?? EMPTY_ROLE_VALUE
-  async function handleAvatarChange(event: React.ChangeEvent<HTMLInputElement>) {
+  async function handleAvatarChange(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
     const file = event.target.files?.[0]
     event.target.value = ''
     if (!file) return
@@ -112,7 +116,11 @@ export function UserSettingsModal({
       setImage(body.image)
       await update({ image: body.image })
     } catch (uploadError) {
-      setError(uploadError instanceof Error ? uploadError.message : 'Avatar upload failed')
+      setError(
+        uploadError instanceof Error
+          ? uploadError.message
+          : 'Avatar upload failed',
+      )
     } finally {
       setIsUploading(false)
     }
@@ -120,10 +128,13 @@ export function UserSettingsModal({
 
   async function handleSave(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+
+    const nameResult = validateName(name)
+    if (!nameResult.ok) return
+
+    const nextName = nameResult.value
     setError(null)
     setIsSaving(true)
-
-    const nextName = name.trim() || null
 
     try {
       const response = await fetch('/api/users/me', {
@@ -149,7 +160,11 @@ export function UserSettingsModal({
       })
       onOpenChange(false)
     } catch (saveError) {
-      setError(saveError instanceof Error ? saveError.message : 'Profile update failed')
+      setError(
+        saveError instanceof Error
+          ? saveError.message
+          : 'Profile update failed',
+      )
     } finally {
       setIsSaving(false)
     }
@@ -169,7 +184,11 @@ export function UserSettingsModal({
 
       await signOut({ callbackUrl: '/' })
     } catch (deleteError) {
-      setError(deleteError instanceof Error ? deleteError.message : 'Account deletion failed')
+      setError(
+        deleteError instanceof Error
+          ? deleteError.message
+          : 'Account deletion failed',
+      )
       setIsDeleteOpen(false)
       setIsDeleting(false)
     }
@@ -181,7 +200,9 @@ export function UserSettingsModal({
         <DialogContent className={styles.content}>
           <form className={styles.form} onSubmit={handleSave}>
             <DialogHeader className={styles.header}>
-              <DialogTitle className={styles.title}>Profile Settings</DialogTitle>
+              <DialogTitle className={styles.title}>
+                Profile Settings
+              </DialogTitle>
             </DialogHeader>
 
             <div className={styles.divider} />
@@ -229,16 +250,21 @@ export function UserSettingsModal({
             <div className={styles.divider} />
 
             <div className={styles.fields}>
-              <label className={styles.field}>
-                <span className={styles.label}>Name</span>
+              <div className={styles.field}>
+                <div className={styles.labelRow}>
+                  <span className={styles.label}>Name</span>
+                  <span className={styles.charCount}>
+                    {name.length}/{MAX_NAME_LENGTH}
+                  </span>
+                </div>
                 <Input
                   value={name}
-                  maxLength={80}
+                  maxLength={MAX_NAME_LENGTH}
                   disabled={isBusy}
                   placeholder="Your name"
                   onChange={(event) => setName(event.target.value)}
                 />
-              </label>
+              </div>
 
               <div className={styles.field}>
                 <span className={styles.label}>Email Address</span>
@@ -250,7 +276,7 @@ export function UserSettingsModal({
                 ) : null}
               </div>
 
-              <label className={styles.field}>
+              <div className={styles.field}>
                 <span className={styles.label}>Job Role</span>
                 <Select<RoleSelectValue>
                   value={roleValue}
@@ -258,34 +284,33 @@ export function UserSettingsModal({
                   disabled={isBusy}
                   triggerClassName={styles.roleTrigger}
                   contentClassName={styles.roleContent}
+                  alignItemWithTrigger
                   onChange={(value) => {
                     setProfileRole(value === EMPTY_ROLE_VALUE ? null : value)
                   }}
                 />
-              </label>
+              </div>
             </div>
-
-            {error ? <p className={styles.error}>{error}</p> : null}
 
             <div className={styles.divider} />
 
             <div className={styles.danger}>
-              <div>
-                <p className={styles.dangerTitle}>Delete account</p>
-                <p className={styles.dangerDescription}>
-                  Remove your account and all related records.
-                </p>
-              </div>
+              <p className={styles.dangerTitle}>Danger Zone</p>
+              <p className={styles.dangerSubtitle}>
+                Actions in this section are permanent and cannot be undone.
+              </p>
               <Button
                 type="button"
-                variant="destructive"
-                size="sm"
+                variant="ghost"
                 disabled={isBusy}
+                className={styles.dangerButton}
                 onClick={() => setIsDeleteOpen(true)}
               >
-                Delete
+                Delete Account
               </Button>
             </div>
+
+            <div className={styles.divider} />
 
             <DialogFooter className={styles.footer}>
               <Button
@@ -296,7 +321,7 @@ export function UserSettingsModal({
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isBusy}>
+              <Button type="submit" disabled={isBusy || !isNameValid}>
                 {isSaving ? 'Saving…' : 'Save changes'}
               </Button>
             </DialogFooter>
@@ -304,34 +329,16 @@ export function UserSettingsModal({
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-        <DialogContent className={styles.deleteContent}>
-          <DialogHeader>
-            <DialogTitle>Delete account?</DialogTitle>
-            <DialogDescription>
-              This removes your account, workspaces, boards, sessions, and saved avatar files.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              disabled={isDeleting}
-              onClick={() => setIsDeleteOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              disabled={isDeleting}
-              onClick={handleDeleteAccount}
-            >
-              {isDeleting ? 'Deleting…' : 'Delete account'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DangerDialog
+        open={isDeleteOpen}
+        onOpenChange={setIsDeleteOpen}
+        icon={<HeartCrack size={22} />}
+        title="Delete account?"
+        description="This removes your account, workspaces, boards, sessions, and saved avatar files. This action cannot be undone."
+        confirmLabel={isDeleting ? 'Deleting…' : 'Delete account'}
+        isConfirming={isDeleting}
+        onConfirm={handleDeleteAccount}
+      />
     </>
   )
 }
