@@ -102,7 +102,15 @@ export async function DELETE(): Promise<NextResponse> {
   }
 
   try {
-    await deleteUserAvatars(session.user.id)
+    const current = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { image: true },
+    })
+
+    if (current?.image && isOwnedAvatarUrl(current.image)) {
+      await deleteUserAvatars(session.user.id)
+    }
+
     await prisma.user.delete({ where: { id: session.user.id } })
     return NextResponse.json({ ok: true })
   } catch {

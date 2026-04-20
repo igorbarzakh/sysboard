@@ -146,7 +146,7 @@ async function listUserAvatarPaths(userId: string) {
       paths.push(
         object.name.startsWith(prefix)
           ? object.name
-          : `${prefix}/${object.name}`,
+          : `${prefix}${object.name}`,
       )
     })
 
