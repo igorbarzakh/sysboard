@@ -1,0 +1,26 @@
+@layer components {
+  .toaster {
+    --normal-bg: var(--bg-elevated);
+    --normal-border: var(--border-default);
+    --normal-text: var(--text-primary);
+    --border-radius: var(--radius-lg);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+  }
+
+  .iconSuccess {
+    color: #16a34a;
+  }
+
+  .iconError {
+    color: var(--danger);
+  }
+
+  .iconInfo {
+    color: var(--accent);
+  }
+
+  .iconWarning {
+    color: #d97706;
+  }
+}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { toast } from 'sonner'
 import { getBoards } from '@entities/board/api'
 import { BoardCard } from '@entities/board/ui'
 import type { Board } from '@entities/board/model'
@@ -35,6 +36,7 @@ export function BoardList({ workspaceSlug }: BoardListProps) {
       await deleteBoard(id)
     } catch {
       getBoards().then(setBoards)
+      toast.error('Failed to delete board')
     }
   }
 

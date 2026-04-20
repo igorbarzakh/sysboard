@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { signOut, useSession } from 'next-auth/react'
+import { toast } from 'sonner'
 import { HeartCrack, Upload } from 'lucide-react'
 import {
   PROFILE_ROLE_OPTIONS,
@@ -157,7 +158,6 @@ export function UserSettingsModal({
       image !== user.image ||
       pendingFile !== null
 
-    console.log('Old', !hasProfileChanges)
     if (!hasProfileChanges) return
 
     setIsSaving(true)
@@ -211,8 +211,11 @@ export function UserSettingsModal({
         profileRole: body.user.profileRole ?? null,
       })
       onOpenChange(false)
-    } catch {
-      // silent — user can retry via Save button
+      toast.success('Profile saved')
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Profile update failed',
+      )
     } finally {
       setIsSaving(false)
     }
