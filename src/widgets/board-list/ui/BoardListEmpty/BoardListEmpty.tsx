@@ -1,14 +1,12 @@
 import { CreateBoardButton } from '@features/create-board/ui'
-import type { WorkspaceBoard } from '@entities/workspace/model'
 import styles from './BoardListEmpty.module.scss'
 
 interface BoardListEmptyProps {
   workspaceSlug: string
   boardCount: number
-  onCreated: (b: WorkspaceBoard) => void
 }
 
-export function BoardListEmpty({ workspaceSlug, boardCount, onCreated }: BoardListEmptyProps) {
+export function BoardListEmpty({ workspaceSlug, boardCount }: BoardListEmptyProps) {
   return (
     <section className={styles.empty} aria-labelledby="boards-empty-title">
       <div className={styles.content}>
@@ -54,7 +52,6 @@ export function BoardListEmpty({ workspaceSlug, boardCount, onCreated }: BoardLi
         <CreateBoardButton
           workspaceSlug={workspaceSlug}
           boardCount={boardCount}
-          onSuccess={onCreated}
         />
       </div>
     </section>

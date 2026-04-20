@@ -5,7 +5,6 @@ import { getBoards } from '@entities/board/api'
 import { BoardCard } from '@entities/board/ui'
 import type { Board } from '@entities/board/model'
 import { useDeleteBoard } from '@features/delete-board/hooks'
-import type { WorkspaceBoard } from '@entities/workspace/model'
 import { useBoardListPreferences } from '../../hooks'
 import { sortBoards } from '../../model'
 import { BoardListToolbar } from '../BoardListToolbar/BoardListToolbar'
@@ -39,11 +38,7 @@ export function BoardList({ workspaceSlug }: BoardListProps) {
     }
   }
 
-  function handleCreated(board: WorkspaceBoard) {
-    setBoards((prev) => [board as Board, ...prev])
-  }
-
-  const sortedBoards = useMemo(() => {
+const sortedBoards = useMemo(() => {
     return sortBoards(boards, sortBy)
   }, [boards, sortBy])
 
@@ -55,7 +50,6 @@ export function BoardList({ workspaceSlug }: BoardListProps) {
         <BoardListToolbar
           boardCount={boards.length}
           isLoading={isLoading}
-          onCreated={handleCreated}
           onSortChange={setSortBy}
           onViewChange={setView}
           sortBy={sortBy}
@@ -68,7 +62,6 @@ export function BoardList({ workspaceSlug }: BoardListProps) {
         <BoardListEmpty
           workspaceSlug={workspaceSlug}
           boardCount={0}
-          onCreated={handleCreated}
         />
       ) : view === 'grid' ? (
         isLoading ? (
