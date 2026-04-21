@@ -13,7 +13,7 @@ async function requireWorkspaceMember(slug: string, userId: string) {
     },
     select: {
       id: true,
-      plan: true,
+      owner: { select: { plan: true } },
       members: { where: { userId }, select: { role: true } },
     },
   })
@@ -75,7 +75,7 @@ export async function POST(request: Request, { params }: RouteContext): Promise<
     return NextResponse.json({ error: 'Name must be 100 characters or fewer' }, { status: 400 })
   }
 
-  const plan = workspace.plan as UserPlan
+  const plan = workspace.owner.plan as UserPlan
   const limit = PLAN_LIMITS[plan].maxBoardsPerWorkspace
   const boardCount = await prisma.board.count({ where: { workspaceId: workspace.id } })
 
@@ -90,6 +90,7 @@ export async function POST(request: Request, { params }: RouteContext): Promise<
     data: {
       name,
       workspaceId: workspace.id,
+      createdById: session.user.id,
       members: {
         create: { userId: session.user.id, role: 'editor' },
       },
