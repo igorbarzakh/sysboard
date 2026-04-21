@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions, PLAN_LIMITS, prisma } from '@shared/lib'
+import { randomBytes } from 'crypto'
+import { authOptions, PLAN_LIMITS, WORKSPACE_INVITE_TTL_MS, prisma } from '@shared/lib'
 import type { UserPlan } from '@shared/lib'
 
 type RouteContext = { params: Promise<{ slug: string }> }
@@ -13,8 +14,15 @@ async function requireWorkspaceMember(slug: string, userId: string) {
     },
     select: {
       id: true,
-      plan: true,
       ownerId: true,
+      owner: { select: { plan: true } },
+      invites: {
+        where: {
+          acceptedAt: null,
+          expiresAt: { gt: new Date() },
+        },
+        select: { id: true },
+      },
       members: {
         select: {
           userId: true,
@@ -55,73 +63,55 @@ export async function POST(request: Request, { params }: RouteContext): Promise<
   }
 
   const callerRole = workspace.members.find((m) => m.userId === session.user.id)?.role
-  if (!callerRole || !['owner', 'admin'].includes(callerRole)) {
-    return NextResponse.json({ error: 'Only owners and admins can invite members' }, { status: 403 })
+  if (callerRole !== 'owner') {
+    return NextResponse.json({ error: 'Only workspace owners can invite members' }, { status: 403 })
   }
 
-  const body: unknown = await request.json()
-  if (
-    typeof body !== 'object' ||
-    body === null ||
-    !('email' in body) ||
-    typeof (body as Record<string, unknown>).email !== 'string'
-  ) {
-    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+  const plan = workspace.owner.plan as UserPlan
+  if (plan === 'free') {
+    return NextResponse.json(
+      { error: 'Inviting members is available on Pro' },
+      { status: 403 },
+    )
   }
 
-  const email = ((body as Record<string, unknown>).email as string).trim().toLowerCase()
-  if (!email) {
-    return NextResponse.json({ error: 'Email is required' }, { status: 400 })
-  }
-
-  const invitee = await prisma.user.findUnique({
-    where: { email },
-    select: { id: true, name: true, email: true, image: true },
-  })
-  if (!invitee) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 })
-  }
-
-  const alreadyMember = workspace.members.some((m) => m.userId === invitee.id)
-  if (alreadyMember) {
-    return NextResponse.json({ error: 'User is already a member' }, { status: 409 })
-  }
-
-  const plan = workspace.plan as UserPlan
   const currentCount = workspace.members.length
-  const maxBoards = PLAN_LIMITS[plan].maxBoardsPerWorkspace
-  const memberCap = plan === 'free' ? maxBoards * 5 : 100
-  if (currentCount >= memberCap) {
+  const memberCap = PLAN_LIMITS[plan].maxWorkspaceMembers
+  if (currentCount + workspace.invites.length >= memberCap) {
     return NextResponse.json({ error: 'Workspace member limit reached' }, { status: 403 })
   }
 
-  const newMember = await prisma.workspaceMember.create({
-    data: { workspaceId: workspace.id, userId: invitee.id, role: 'member' },
-    select: {
-      userId: true,
-      role: true,
-      joinedAt: true,
-      user: { select: { id: true, name: true, email: true, image: true } },
+  const expiresAt = new Date(Date.now() + WORKSPACE_INVITE_TTL_MS)
+  const invite = await prisma.workspaceInvite.create({
+    data: {
+      workspaceId: workspace.id,
+      token: createInviteToken(),
+      role: 'member',
+      expiresAt,
+      invitedById: session.user.id,
     },
+    select: { id: true, createdAt: true, expiresAt: true, token: true },
   })
 
-  const workspaceBoards = await prisma.board.findMany({
-    where: { workspaceId: workspace.id },
-    select: { id: true },
-  })
+  return NextResponse.json(
+    {
+      id: invite.id,
+      token: invite.token,
+      createdAt: invite.createdAt.toISOString(),
+      expiresAt: invite.expiresAt.toISOString(),
+      inviteUrl: createInviteUrl(request, invite.token),
+    },
+    { status: 201 },
+  )
+}
 
-  if (workspaceBoards.length > 0) {
-    await prisma.boardMember.createMany({
-      data: workspaceBoards.map((b) => ({
-        boardId: b.id,
-        userId: invitee.id,
-        role: 'editor',
-      })),
-      skipDuplicates: true,
-    })
-  }
+function createInviteToken(): string {
+  return randomBytes(32).toString('base64url')
+}
 
-  return NextResponse.json(newMember, { status: 201 })
+function createInviteUrl(request: Request, token: string): string {
+  const origin = request.headers.get('origin')
+  return origin ? `${origin}/invite/${token}` : `/invite/${token}`
 }
 
 export async function DELETE(request: Request, { params }: RouteContext): Promise<NextResponse> {
@@ -137,8 +127,8 @@ export async function DELETE(request: Request, { params }: RouteContext): Promis
   }
 
   const callerRole = workspace.members.find((m) => m.userId === session.user.id)?.role
-  if (!callerRole || !['owner', 'admin'].includes(callerRole)) {
-    return NextResponse.json({ error: 'Only owners and admins can remove members' }, { status: 403 })
+  if (callerRole !== 'owner') {
+    return NextResponse.json({ error: 'Only workspace owners can remove members' }, { status: 403 })
   }
 
   const body: unknown = await request.json()
