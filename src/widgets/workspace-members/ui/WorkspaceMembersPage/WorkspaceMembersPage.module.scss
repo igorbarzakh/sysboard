@@ -83,10 +83,25 @@
 }
 
 .inviteHint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
   margin-top: var(--space-1);
   font-size: var(--text-small);
   line-height: 1.45;
   color: var(--text-secondary);
+}
+
+.inviteInfoIcon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--text-muted);
+  transition: color var(--duration-base) var(--ease-standard);
+
+  &:hover {
+    color: var(--text-secondary);
+  }
 }
 
 .invite {
@@ -321,10 +336,6 @@
   }
 }
 
-.memberRowNoAction {
-  grid-template-columns: 32px minmax(220px, 1fr) auto;
-}
-
 .memberInfo {
   min-width: 0;
 }
@@ -399,11 +410,7 @@
   }
 
   .memberRow {
-    grid-template-columns: 32px minmax(0, 1fr) auto;
-  }
-
-  .memberRowNoAction {
-    grid-template-columns: 32px minmax(0, 1fr) auto;
+    grid-template-columns: 32px minmax(0, 1fr) auto 32px;
   }
 
   .role {

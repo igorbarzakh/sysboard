@@ -23,6 +23,19 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(workspaceUrl);
   }
 
+  const match = pathname.match(/^\/workspace\/([^/]+)/)
+  if (match) {
+    const slug = match[1]
+    const response = NextResponse.next()
+    response.cookies.set('last-workspace', slug, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: 'lax',
+      httpOnly: true,
+    })
+    return response
+  }
+
   return NextResponse.next();
 }
 

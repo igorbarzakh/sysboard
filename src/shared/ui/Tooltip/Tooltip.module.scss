@@ -1,0 +1,117 @@
+@layer ui {
+  .trigger {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
+    cursor: default;
+
+    &::before {
+      position: absolute;
+      inset: -25%;
+      z-index: -1;
+      content: '';
+    }
+
+    &[data-trigger='click'] {
+      cursor: pointer;
+    }
+  }
+
+  .positioner {
+    z-index: var(--z-tooltip);
+
+    &[data-open] {
+      animation: tooltipIn var(--duration-fast) var(--ease-out);
+    }
+
+    &[data-closed] {
+      animation: tooltipOut var(--duration-fast) var(--ease-standard);
+    }
+  }
+
+  .popup {
+    position: relative;
+    overflow: visible;
+    padding: var(--space-3);
+    max-width: 260px;
+    font-size: var(--text-small);
+    line-height: 1.45;
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+    border: 0.5px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-popup);
+  }
+
+  /*
+   * SVG is 6×16px, tip (concave side) at x=0, base at x=6, points LEFT.
+   * rotate(-90deg) → tip points DOWN  (side="top":  popup above, arrow at bottom)
+   * rotate( 90deg) → tip points UP    (side="bottom": popup below, arrow at top)
+   * rotate(180deg) → tip points RIGHT (side="left":  popup to left, arrow at right)
+   * no rotation   → tip points LEFT  (side="right": popup to right, arrow at left)
+   *
+   * Span is 6×16px in layout. After ±90deg rotation visual becomes 16×6px.
+   * Span center placed on popup edge so arrow straddles it: 3px inside, 3px outside.
+   * top/bottom = −(16/2) = −8px centers span on the edge.
+   * left/right = −6px flush-mounts the full 6px span outside the edge.
+   */
+  .arrow {
+    position: absolute;
+    display: block;
+    line-height: 0;
+    pointer-events: none;
+
+    [data-side='top'] & {
+      bottom: -11px;
+      left: calc(50% - 3px);
+      transform: rotate(-90deg);
+      transform-origin: center;
+    }
+
+    [data-side='bottom'] & {
+      top: -11px;
+      left: calc(50% - 3px);
+      transform: rotate(90deg);
+      transform-origin: center;
+    }
+
+    [data-side='right'] & {
+      top: calc(50% - 8px);
+      left: -6px;
+    }
+
+    [data-side='left'] & {
+      top: calc(50% - 8px);
+      right: -6px;
+      transform: rotate(180deg);
+      transform-origin: center;
+    }
+  }
+
+  .arrowFill {
+    fill: var(--bg-elevated);
+  }
+
+  .arrowBorder {
+    fill: var(--border-default);
+  }
+
+  @keyframes tooltipIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes tooltipOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+}

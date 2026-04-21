@@ -1,10 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, Copy, Link2, Trash2 } from 'lucide-react'
+import { Check, Copy, Info, Link2, Trash2 } from 'lucide-react'
 import type { WorkspaceMember } from '@entities/workspace/model'
 import type { UserPlan } from '@shared/lib'
-import { PLAN_LIMITS, WORKSPACE_INVITE_TTL_LABEL, cn, formatRelativeTime } from '@shared/lib'
+import {
+  PLAN_LIMITS,
+  WORKSPACE_INVITE_TTL_LABEL,
+  cn,
+  formatRelativeTime,
+} from '@shared/lib'
 import {
   Avatar,
   Button,
@@ -12,6 +17,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  Tooltip,
 } from '@shared/ui'
 import styles from './WorkspaceMembersPage.module.scss'
 
@@ -84,11 +90,21 @@ export function WorkspaceMembersPage({
 
       setInvite(body)
       setActiveInvites((prev) => [
-        { id: body.id, token: body.token, createdAt: body.createdAt, expiresAt: body.expiresAt, revoking: false },
+        {
+          id: body.id,
+          token: body.token,
+          createdAt: body.createdAt,
+          expiresAt: body.expiresAt,
+          revoking: false,
+        },
         ...prev,
       ])
     } catch (inviteError) {
-      setError(inviteError instanceof Error ? inviteError.message : 'Unable to invite member')
+      setError(
+        inviteError instanceof Error
+          ? inviteError.message
+          : 'Unable to invite member',
+      )
     } finally {
       setIsInviting(false)
     }
@@ -107,9 +123,12 @@ export function WorkspaceMembersPage({
     )
 
     try {
-      const response = await fetch(`/api/workspaces/${workspaceSlug}/invites/${id}`, {
-        method: 'DELETE',
-      })
+      const response = await fetch(
+        `/api/workspaces/${workspaceSlug}/invites/${id}`,
+        {
+          method: 'DELETE',
+        },
+      )
 
       if (!response.ok) {
         const body: unknown = await response.json().catch(() => ({}))
@@ -135,7 +154,11 @@ export function WorkspaceMembersPage({
         if (invite?.id === id) setInvite(null)
       }
     } catch (revokeError) {
-      setError(revokeError instanceof Error ? revokeError.message : 'Unable to revoke invite')
+      setError(
+        revokeError instanceof Error
+          ? revokeError.message
+          : 'Unable to revoke invite',
+      )
       setActiveInvites((prev) =>
         prev.map((inv) => (inv.id === id ? { ...inv, revoking: false } : inv)),
       )
@@ -169,17 +192,23 @@ export function WorkspaceMembersPage({
 
       setMembers((prev) => prev.filter((member) => member.userId !== userId))
     } catch (removeError) {
-      setError(removeError instanceof Error ? removeError.message : 'Unable to remove member')
+      setError(
+        removeError instanceof Error
+          ? removeError.message
+          : 'Unable to remove member',
+      )
     } finally {
       setRemovingUserId(null)
     }
   }
 
   function handleCopyPendingLink(token: string, id: string) {
-    void navigator.clipboard.writeText(`${window.location.origin}/invite/${token}`).then(() => {
-      setCopiedId(id)
-      setTimeout(() => setCopiedId(null), 1500)
-    })
+    void navigator.clipboard
+      .writeText(`${window.location.origin}/invite/${token}`)
+      .then(() => {
+        setCopiedId(id)
+        setTimeout(() => setCopiedId(null), 1500)
+      })
   }
 
   return (
@@ -193,8 +222,22 @@ export function WorkspaceMembersPage({
           <div className={styles.inviteCopy}>
             <p className={styles.inviteTitle}>Create invite link</p>
             <p className={styles.inviteHint}>
-              Create a one-time link, copy it, and send it manually. Anyone signed in with the
-              link can join within {WORKSPACE_INVITE_TTL_LABEL}.
+              Create a one-time link, copy it, and send it manually{' '}
+              <Tooltip
+                side="top"
+                trigger="click"
+                content={
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: `Anyone with this link can join&nbsp;&mdash; valid for&nbsp;${WORKSPACE_INVITE_TTL_LABEL}.`,
+                    }}
+                  />
+                }
+              >
+                <span className={styles.inviteInfoIcon}>
+                  <Info size={13} />
+                </span>
+              </Tooltip>
             </p>
           </div>
           <div className={styles.invite}>
@@ -216,7 +259,9 @@ export function WorkspaceMembersPage({
                   onClick={() => setPendingOpen(true)}
                 >
                   Pending invites
-                  <span className={styles.pendingBadge}>{activeInvites.length}</span>
+                  <span className={styles.pendingBadge}>
+                    {activeInvites.length}
+                  </span>
                 </button>
               ) : null}
               {plan === 'free' ? (
@@ -237,7 +282,8 @@ export function WorkspaceMembersPage({
                   >
                     {usedMembers}
                   </span>
-                  {' / '}{maxMembers}
+                  {' / '}
+                  {maxMembers}
                 </p>
                 <div className={styles.slotsBar}>
                   <div
@@ -278,10 +324,17 @@ export function WorkspaceMembersPage({
                     Expires in {WORKSPACE_INVITE_TTL_LABEL}
                   </span>
                 </div>
-                <p className={styles.inviteLinkHelp}>Copy and send this link to the invited person.</p>
+                <p className={styles.inviteLinkHelp}>
+                  Copy and send this link to the invited person.
+                </p>
                 <p className={styles.inviteLinkValue}>{invite.inviteUrl}</p>
               </div>
-              <Button type="button" variant="outline" size="sm" onClick={handleCopyInviteLink}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleCopyInviteLink}
+              >
                 {copiedMain ? <Check size={14} /> : <Copy size={14} />}
                 Copy
               </Button>
@@ -305,7 +358,9 @@ export function WorkspaceMembersPage({
                     <Link2 size={14} />
                   </div>
                   <div className={styles.pendingInfo}>
-                    <p className={styles.pendingUrl}>{`${typeof window !== 'undefined' ? window.location.origin : ''}/invite/${inv.token}`}</p>
+                    <p
+                      className={styles.pendingUrl}
+                    >{`${typeof window !== 'undefined' ? window.location.origin : ''}/invite/${inv.token}`}</p>
                     <p className={styles.pendingMeta}>
                       Created {formatRelativeTime(inv.createdAt)}
                       {' · '}
@@ -319,7 +374,11 @@ export function WorkspaceMembersPage({
                       size="sm"
                       onClick={() => handleCopyPendingLink(inv.token, inv.id)}
                     >
-                      {copiedId === inv.id ? <Check size={13} /> : <Copy size={13} />}
+                      {copiedId === inv.id ? (
+                        <Check size={13} />
+                      ) : (
+                        <Copy size={13} />
+                      )}
                       Copy
                     </Button>
                     <Button
@@ -348,19 +407,21 @@ export function WorkspaceMembersPage({
           const canRemove = canManageMembers && !isOwner
 
           return (
-            <div
-              key={member.userId}
-              className={cn(styles.memberRow, !canRemove && styles.memberRowNoAction)}
-            >
+            <div key={member.userId} className={styles.memberRow}>
               <Avatar name={displayName} image={member.user.image} size="md" />
               <div className={styles.memberInfo}>
                 <p className={styles.memberName}>
                   <span>{displayName}</span>
-                  {isCurrentUser ? <span className={styles.youBadge}>(You)</span> : null}
+                  {isCurrentUser ? (
+                    <span className={styles.youBadge}>(You)</span>
+                  ) : null}
                 </p>
                 <p className={styles.memberEmail}>{member.user.email}</p>
               </div>
-              <span className={styles.role} data-role={isOwner ? 'owner' : 'member'}>
+              <span
+                className={styles.role}
+                data-role={isOwner ? 'owner' : 'member'}
+              >
                 {isOwner ? 'Owner' : 'Member'}
               </span>
               {canRemove ? (
@@ -375,7 +436,9 @@ export function WorkspaceMembersPage({
                 >
                   <Trash2 size={15} />
                 </Button>
-              ) : null}
+              ) : (
+                <span />
+              )}
             </div>
           )
         })}
