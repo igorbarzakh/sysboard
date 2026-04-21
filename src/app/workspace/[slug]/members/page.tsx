@@ -1,12 +1,17 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
-import { authOptions, prisma } from '@shared/lib'
+import { authOptions, prisma } from '@shared/lib/server'
 import type { UserPlan } from '@shared/lib'
 import type { WorkspaceMember, WorkspaceRole } from '@entities/workspace/model'
-import { WorkspaceMembersPage } from '@widgets/workspace-members/ui'
+import { WorkspaceMembersPage } from '@pages/workspace-members'
 import styles from './page.module.scss'
 
 type PageProps = { params: Promise<{ slug: string }> }
+
+export const metadata: Metadata = {
+  title: 'Members',
+}
 
 export default async function MembersPage({ params }: PageProps) {
   const session = await getServerSession(authOptions)

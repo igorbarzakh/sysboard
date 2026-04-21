@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import { AlertCircle, CheckCircle2, LogIn, Users } from 'lucide-react'
 import { Button } from '@shared/ui'
-import styles from './AcceptWorkspaceInvitePage.module.scss'
+import styles from './InviteAcceptPage.module.scss'
 
 type InviteStatus =
   | 'ready'
@@ -14,19 +14,19 @@ type InviteStatus =
   | 'expired'
   | 'accepted'
 
-interface AcceptWorkspaceInvitePageProps {
+interface InviteAcceptPageProps {
   status: InviteStatus
   token: string
   workspaceName?: string
   workspaceSlug?: string
 }
 
-export function AcceptWorkspaceInvitePage({
+export function InviteAcceptPage({
   status,
   token,
   workspaceName,
   workspaceSlug,
-}: AcceptWorkspaceInvitePageProps) {
+}: InviteAcceptPageProps) {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [isAccepting, setIsAccepting] = useState(false)

@@ -3,15 +3,10 @@
 import * as React from 'react'
 import { signOut, useSession } from 'next-auth/react'
 import { toast } from 'sonner'
-import { HeartCrack, Upload } from 'lucide-react'
+import { HeartCrack } from 'lucide-react'
+import { type CurrentUser, type ProfileRole } from '@entities/user/model'
+import { validateName } from '@shared/lib'
 import {
-  PROFILE_ROLE_OPTIONS,
-  type ProfileRole,
-  type CurrentUser,
-} from '@entities/user/model'
-import { validateName, MAX_NAME_LENGTH } from '@shared/lib'
-import {
-  Avatar,
   Button,
   DangerDialog,
   Dialog,
@@ -19,45 +14,25 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Input,
-  Select,
-  type SelectOption,
 } from '@shared/ui'
+import {
+  deleteAccount,
+  updateProfile,
+  uploadAvatar,
+  type UpdateProfilePayload,
+} from '../../api'
+import { AvatarSettingsSection } from './AvatarSettingsSection/AvatarSettingsSection'
+import { DangerZone } from './DangerZone/DangerZone'
+import { ProfileFields } from './ProfileFields/ProfileFields'
 import styles from './UserSettingsModal.module.scss'
 
-const EMPTY_ROLE_VALUE = '__empty__'
-
-type RoleSelectValue = ProfileRole | typeof EMPTY_ROLE_VALUE
+const ALLOWED_AVATAR_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
+const MAX_AVATAR_BYTES = 2 * 1024 * 1024
 
 interface UserSettingsModalProps {
   open: boolean
   user: CurrentUser
   onOpenChange: (open: boolean) => void
-}
-
-interface ProfileResponse {
-  image?: string
-  user?: {
-    image?: string | null
-    name?: string | null
-    profileRole?: ProfileRole | null
-  }
-  error?: string
-}
-
-const PROVIDER_LABELS: Record<string, string> = {
-  google: 'Google',
-  discord: 'Discord',
-}
-
-const ROLE_OPTIONS: Array<SelectOption<RoleSelectValue>> = [
-  { label: 'No role', value: EMPTY_ROLE_VALUE },
-  ...PROFILE_ROLE_OPTIONS,
-]
-
-async function readJsonResponse(response: Response): Promise<ProfileResponse> {
-  const body: unknown = await response.json().catch(() => ({}))
-  return typeof body === 'object' && body !== null ? body : {}
 }
 
 export function UserSettingsModal({
@@ -103,7 +78,6 @@ export function UserSettingsModal({
   const nameResult = validateName(name)
   const isNameValid = nameResult.ok
   const normalizedName = nameResult.ok ? nameResult.value : name.trim()
-  const roleValue = profileRole ?? EMPTY_ROLE_VALUE
   const displayImage = previewUrl ?? image
   const hasChanges =
     normalizedName !== (user.name ?? '') ||
@@ -116,15 +90,12 @@ export function UserSettingsModal({
     event.target.value = ''
     if (!file) return
 
-    const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
-    const MAX_BYTES = 2 * 1024 * 1024
-
-    if (!ALLOWED_TYPES.has(file.type)) {
+    if (!ALLOWED_AVATAR_TYPES.has(file.type)) {
       setAvatarError('File must be a JPEG, PNG, or WebP image')
       return
     }
 
-    if (file.size > MAX_BYTES) {
+    if (file.size > MAX_AVATAR_BYTES) {
       setAvatarError('File must be 2 MB or smaller')
       return
     }
@@ -166,49 +137,29 @@ export function UserSettingsModal({
       let nextImage = image
 
       if (pendingFile) {
-        const formData = new FormData()
-        formData.append('file', pendingFile)
-        const uploadResponse = await fetch('/api/users/avatar', {
-          method: 'POST',
-          body: formData,
-        })
-        const uploadBody = await readJsonResponse(uploadResponse)
-
-        if (!uploadResponse.ok || typeof uploadBody.image !== 'string') {
-          throw new Error(uploadBody.error ?? 'Avatar upload failed')
-        }
-
-        nextImage = uploadBody.image
+        nextImage = await uploadAvatar(pendingFile)
       }
 
       const imageChanged = nextImage !== user.image
-      const response = await fetch('/api/users/me', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...(nextName !== (user.name ?? '') ? { name: nextName } : {}),
-          ...(profileRole !== user.profileRole ? { profileRole } : {}),
-          ...(imageChanged ? { image: nextImage } : {}),
-        }),
-      })
-      const body = await readJsonResponse(response)
-
-      if (!response.ok || !body.user) {
-        throw new Error(body.error ?? 'Profile update failed')
+      const payload: UpdateProfilePayload = {
+        ...(nextName !== (user.name ?? '') ? { name: nextName } : {}),
+        ...(profileRole !== user.profileRole ? { profileRole } : {}),
+        ...(imageChanged ? { image: nextImage } : {}),
       }
+      const updatedUser = await updateProfile(payload)
 
-      setName(body.user.name ?? '')
-      setProfileRole(body.user.profileRole ?? null)
-      setImage(body.user.image ?? null)
+      setName(updatedUser.name ?? '')
+      setProfileRole(updatedUser.profileRole ?? null)
+      setImage(updatedUser.image ?? null)
       setPendingFile(null)
       setPreviewUrl((prev) => {
         if (prev) URL.revokeObjectURL(prev)
         return null
       })
       await update({
-        image: body.user.image ?? null,
-        name: body.user.name ?? null,
-        profileRole: body.user.profileRole ?? null,
+        image: updatedUser.image ?? null,
+        name: updatedUser.name ?? null,
+        profileRole: updatedUser.profileRole ?? null,
       })
       onOpenChange(false)
       toast.success('Profile saved')
@@ -225,13 +176,7 @@ export function UserSettingsModal({
     setIsDeleting(true)
 
     try {
-      const response = await fetch('/api/users/me', { method: 'DELETE' })
-      const body = await readJsonResponse(response)
-
-      if (!response.ok) {
-        throw new Error(body.error ?? 'Account deletion failed')
-      }
-
+      await deleteAccount()
       await signOut({ callbackUrl: '/' })
     } catch {
       setIsDeleteOpen(false)
@@ -252,115 +197,35 @@ export function UserSettingsModal({
 
             <div className={styles.divider} />
 
-            <div className={styles.avatarSection}>
-              <div className={styles.avatarPreview}>
-                <Avatar
-                  name={name || user.email}
-                  image={displayImage}
-                  size="xl"
-                />
-              </div>
-              <div className={styles.avatarRight}>
-                <div className={styles.avatarButtons}>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    className={styles.fileInput}
-                    onChange={handleAvatarChange}
-                  />
-                  <Button
-                    type="button"
-                    size="sm"
-                    disabled={isBusy}
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <Upload size={13} />
-                    Upload Picture
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    disabled={isBusy || (!image && !pendingFile)}
-                    onClick={handleDeleteAvatar}
-                  >
-                    Delete
-                  </Button>
-                </div>
-                <div className={styles.avatarMeta}>
-                  <p className={styles.avatarHint}>
-                    File type: .png, .jpeg, .webp
-                    <br />
-                    Max file size: 2 MB
-                  </p>
-                  <p className={styles.avatarError}>{avatarError}</p>
-                </div>
-              </div>
-            </div>
+            <AvatarSettingsSection
+              avatarError={avatarError}
+              canDelete={Boolean(image || pendingFile)}
+              disabled={isBusy}
+              displayImage={displayImage}
+              fileInputRef={fileInputRef}
+              name={name}
+              userEmail={user.email}
+              onAvatarChange={handleAvatarChange}
+              onDeleteAvatar={handleDeleteAvatar}
+            />
 
             <div className={styles.divider} />
 
-            <div className={styles.fields}>
-              <div className={styles.field}>
-                <div className={styles.labelRow}>
-                  <span className={styles.label}>Name</span>
-                  <span className={styles.charCount}>
-                    {name.length}/{MAX_NAME_LENGTH}
-                  </span>
-                </div>
-                <Input
-                  value={name}
-                  maxLength={MAX_NAME_LENGTH}
-                  disabled={isBusy}
-                  placeholder="Your name"
-                  onChange={(event) => setName(event.target.value)}
-                />
-              </div>
-
-              <div className={styles.field}>
-                <span className={styles.label}>Email Address</span>
-                <Input value={user.email} disabled readOnly />
-                {user.provider ? (
-                  <span className={styles.emailHint}>
-                    Managed by {PROVIDER_LABELS[user.provider] ?? user.provider}
-                  </span>
-                ) : null}
-              </div>
-
-              <div className={styles.field}>
-                <span className={styles.label}>Job Role</span>
-                <Select<RoleSelectValue>
-                  value={roleValue}
-                  options={ROLE_OPTIONS}
-                  disabled={isBusy}
-                  triggerClassName={styles.roleTrigger}
-                  contentClassName={styles.roleContent}
-                  alignItemWithTrigger
-                  onChange={(value) => {
-                    setProfileRole(value === EMPTY_ROLE_VALUE ? null : value)
-                  }}
-                />
-              </div>
-            </div>
+            <ProfileFields
+              disabled={isBusy}
+              name={name}
+              profileRole={profileRole}
+              user={user}
+              onNameChange={setName}
+              onProfileRoleChange={setProfileRole}
+            />
 
             <div className={styles.divider} />
 
-            <div className={styles.danger}>
-              <p className={styles.dangerTitle}>Danger Zone</p>
-              <p className={styles.dangerSubtitle}>
-                Actions in this section are permanent and cannot be undone.
-              </p>
-              <Button
-                type="button"
-                variant="ghost"
-                disabled={isBusy}
-                className={styles.dangerButton}
-                onClick={() => setIsDeleteOpen(true)}
-              >
-                Delete Account
-              </Button>
-            </div>
+            <DangerZone
+              disabled={isBusy}
+              onDeleteClick={() => setIsDeleteOpen(true)}
+            />
 
             <div className={styles.divider} />
 

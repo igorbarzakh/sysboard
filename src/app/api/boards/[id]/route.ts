@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions, prisma } from '@shared/lib'
+import { authOptions, prisma } from '@shared/lib/server'
 
 type RouteContext = { params: Promise<{ id: string }> }
 

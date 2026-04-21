@@ -1,7 +1,12 @@
+import type { Metadata } from 'next'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
-import { authOptions, prisma } from '@shared/lib'
+import { authOptions, prisma } from '@shared/lib/server'
+
+export const metadata: Metadata = {
+  title: 'Workspace',
+}
 
 export default async function WorkspaceRedirectPage() {
   const session = await getServerSession(authOptions)

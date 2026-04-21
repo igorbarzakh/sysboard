@@ -1,0 +1,52 @@
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.labelRow .label {
+  margin-bottom: 0;
+}
+
+.label {
+  margin-bottom: var(--space-2);
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.charCount {
+  font-size: var(--text-caption);
+  color: var(--text-muted);
+}
+
+.emailHint {
+  margin-top: var(--space-1);
+  font-size: var(--text-caption);
+  color: var(--text-muted);
+}
+
+.roleTrigger {
+  width: 100%;
+  height: 40px;
+  font-size: var(--text-body);
+  background: transparent;
+  border-radius: var(--radius-lg);
+}
+
+.roleContent {
+  min-width: 240px;
+}

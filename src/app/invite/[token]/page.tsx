@@ -1,8 +1,13 @@
+import type { Metadata } from 'next'
 import { getServerSession } from 'next-auth'
-import { authOptions, prisma } from '@shared/lib'
-import { AcceptWorkspaceInvitePage } from '@features/accept-workspace-invite/ui'
+import { authOptions, prisma } from '@shared/lib/server'
+import { InviteAcceptPage } from '@pages/invite-accept'
 
 type PageProps = { params: Promise<{ token: string }> }
+
+export const metadata: Metadata = {
+  title: 'Invite',
+}
 
 export default async function InvitePage({ params }: PageProps) {
   const { token } = await params
@@ -25,14 +30,14 @@ export default async function InvitePage({ params }: PageProps) {
   })
 
   if (!invite) {
-    return <AcceptWorkspaceInvitePage status="not_found" token={token} />
+    return <InviteAcceptPage status="not_found" token={token} />
   }
 
   const currentUserIsMember = invite.workspace.members?.length > 0
 
   if (invite.acceptedAt || currentUserIsMember) {
     return (
-      <AcceptWorkspaceInvitePage
+      <InviteAcceptPage
         status="accepted"
         token={token}
         workspaceName={invite.workspace.name}
@@ -43,7 +48,7 @@ export default async function InvitePage({ params }: PageProps) {
 
   if (invite.expiresAt <= new Date()) {
     return (
-      <AcceptWorkspaceInvitePage
+      <InviteAcceptPage
         status="expired"
         token={token}
         workspaceName={invite.workspace.name}
@@ -53,7 +58,7 @@ export default async function InvitePage({ params }: PageProps) {
 
   if (!session?.user?.id) {
     return (
-      <AcceptWorkspaceInvitePage
+      <InviteAcceptPage
         status="unauthenticated"
         token={token}
         workspaceName={invite.workspace.name}
@@ -62,7 +67,7 @@ export default async function InvitePage({ params }: PageProps) {
   }
 
   return (
-    <AcceptWorkspaceInvitePage
+    <InviteAcceptPage
       status="ready"
       token={token}
       workspaceName={invite.workspace.name}

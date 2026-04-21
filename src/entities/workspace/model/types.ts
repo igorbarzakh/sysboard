@@ -7,6 +7,17 @@ export interface WorkspaceMember {
   user: { id: string; name: string | null; email: string; image: string | null }
 }
 
+export interface WorkspaceInvite {
+  id: string
+  token: string
+  createdAt: string
+  expiresAt: string
+}
+
+export interface WorkspaceInviteLink extends WorkspaceInvite {
+  inviteUrl: string
+}
+
 export interface Workspace {
   id: string
   name: string

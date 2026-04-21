@@ -4,8 +4,10 @@ export {
   updateWorkspace,
   deleteWorkspace,
   getWorkspaceMembers,
-  inviteMember,
+  createWorkspaceInvite,
+  revokeWorkspaceInvite,
   removeMember,
+  removeWorkspaceMember,
   getWorkspaceBoards,
   createWorkspaceBoard,
 } from './workspaceApi'

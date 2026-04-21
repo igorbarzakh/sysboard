@@ -5,7 +5,7 @@ import {
   isAllowedAvatarType,
   uploadUserAvatar,
 } from '@shared/lib/avatarStorage'
-import { authOptions } from '@shared/lib'
+import { authOptions } from '@shared/lib/server'
 
 export async function POST(request: Request): Promise<NextResponse> {
   const session = await getServerSession(authOptions)

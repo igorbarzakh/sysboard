@@ -4,7 +4,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import type { ReactNode } from 'react'
 import { LayoutGrid, Settings, Users } from 'lucide-react'
 import type { Workspace } from '@entities/workspace/model'
-import styles from '../WorkspaceSidebar/WorkspaceSidebar.module.scss'
+import styles from './WorkspaceNav.module.scss'
 
 interface WorkspaceNavProps {
   workspace: Workspace
@@ -72,13 +72,13 @@ function WorkspaceNavButton({
           onNavigate(item.href)
         }
       }}
-      className={styles.navBtn}
+      className={styles.button}
       data-active={isActive ? 'true' : undefined}
     >
-      <span className={styles.navBtnIcon}>{item.icon}</span>
-      <span className={styles.navBtnLabel}>{item.label}</span>
+      <span className={styles.icon}>{item.icon}</span>
+      <span className={styles.label}>{item.label}</span>
       {item.badge !== undefined && (
-        <span className={styles.navBtnBadge}>{item.badge}</span>
+        <span className={styles.badge}>{item.badge}</span>
       )}
     </button>
   )

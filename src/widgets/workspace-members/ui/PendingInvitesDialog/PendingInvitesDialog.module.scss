@@ -1,0 +1,69 @@
+.pendingDialog {
+  max-width: min(calc(100% - 2rem), 600px);
+}
+
+.pendingEmpty {
+  font-size: var(--text-body);
+  color: var(--text-muted);
+}
+
+.pendingList {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+.pendingRow {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 28px 1fr auto;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.pendingIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.pendingInfo {
+  min-width: 0;
+}
+
+.pendingUrl {
+  overflow: hidden;
+  font-size: var(--text-small);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-primary);
+}
+
+.pendingMeta {
+  margin-top: 2px;
+  font-size: var(--text-caption);
+  color: var(--text-muted);
+}
+
+.pendingActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.revokeButton {
+  color: var(--danger);
+
+  &:hover {
+    color: var(--danger-hover);
+    background: var(--danger-soft);
+  }
+}

@@ -1,0 +1,1 @@
+export { BoardRoomPage } from './BoardRoomPage'

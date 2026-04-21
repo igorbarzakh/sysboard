@@ -1,9 +1,15 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
-import { authOptions, PLAN_LIMITS, prisma } from '@shared/lib'
+import { PLAN_LIMITS } from '@shared/lib'
+import { authOptions, prisma } from '@shared/lib/server'
 import type { UserPlan } from '@shared/lib'
 
 type PageProps = { searchParams: Promise<{ workspace?: string; n?: string }> }
+
+export const metadata: Metadata = {
+  title: 'New Board',
+}
 
 export default async function NewBoardPage({ searchParams }: PageProps) {
   const session = await getServerSession(authOptions)

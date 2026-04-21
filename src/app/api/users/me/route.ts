@@ -6,7 +6,8 @@ import {
   deleteUserAvatars,
   isOwnedAvatarUrl,
 } from '@shared/lib/avatarStorage'
-import { authOptions, prisma, validateName } from '@shared/lib'
+import { validateName } from '@shared/lib'
+import { authOptions, prisma } from '@shared/lib/server'
 
 function readBodyField(body: unknown, field: string) {
   if (typeof body !== 'object' || body === null || !(field in body)) {

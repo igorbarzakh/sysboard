@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { LayoutGrid, X } from 'lucide-react'
 import { useRecentBoards } from '@entities/board/hooks'
-import styles from '../WorkspaceSidebar/WorkspaceSidebar.module.scss'
+import styles from './RecentBoards.module.scss'
 
 export function RecentBoards() {
   const router = useRouter()
@@ -14,22 +14,22 @@ export function RecentBoards() {
   }
 
   return (
-    <div className={styles.recent}>
-      <p className={styles.recentLabel}>Recent</p>
+    <div className={styles.root}>
+      <p className={styles.label}>Recent</p>
       {recentBoards.map((board) => (
         <div
           key={board.id}
           onClick={() => router.push(`/board/${board.id}`)}
-          className={styles.recentItem}
+          className={styles.item}
         >
-          <LayoutGrid size={14} className={styles.recentIcon} />
-          <span className={styles.recentName}>{board.name}</span>
+          <LayoutGrid size={14} className={styles.icon} />
+          <span className={styles.name}>{board.name}</span>
           <button
             onClick={(event) => {
               event.stopPropagation()
               removeRecentBoard(board.id)
             }}
-            className={styles.recentRemove}
+            className={styles.remove}
           >
             <X size={12} />
           </button>

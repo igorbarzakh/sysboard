@@ -49,6 +49,7 @@ App-wide providers live in `src/app/providers`. Keep `src/app/layout.tsx` as a t
 
 FSD layers live under `src`:
 
+- `pages-layer` contains full route-level page compositions imported by `src/app`.
 - `widgets` compose features, entities, and shared UI into product blocks.
 - `features` implement user actions and flows.
 - `entities` own domain models, domain UI, hooks, and API clients.
@@ -59,7 +60,10 @@ Current app routes:
 - `/`
 - `/workspace`
 - `/workspace/[slug]`
+- `/workspace/[slug]/members`
 - `/board/[id]`
+- `/board/new`
+- `/invite/[token]`
 - `/api/auth/[...nextauth]`
 - `/api/boards`
 - `/api/boards/[id]`
@@ -67,21 +71,32 @@ Current app routes:
 - `/api/workspaces/[slug]`
 - `/api/workspaces/[slug]/boards`
 - `/api/workspaces/[slug]/members`
+- `/api/workspaces/[slug]/invites/[id]`
+- `/api/invites/[token]/accept`
 - `/api/liveblocks-auth`
+
+Current page slices:
+
+- `@pages/home`
+- `@pages/workspace-overview`
+- `@pages/workspace-members`
+- `@pages/board-room`
+- `@pages/invite-accept`
 
 ## Feature-Sliced Design Rules
 
 Follow the dependency direction:
 
 ```text
-app -> widgets -> features -> entities -> shared
+app -> pages-layer -> widgets -> features -> entities -> shared
 ```
 
 `shared` must not import from app, widgets, features, or entities.
 `entities` may import only from shared.
 `features` may import from entities and shared.
 `widgets` may import from features, entities, and shared.
-`app` may compose any lower layer.
+`pages-layer` may import from widgets, features, entities, and shared.
+`app` may compose pages-layer and any lower layer.
 
 Avoid new same-layer cross-slice dependencies. If an existing widget composes another widget, keep the import through that widget's public API and do not introduce cycles.
 
@@ -94,6 +109,7 @@ import { BoardCard } from '@entities/board/ui';
 import { getBoards } from '@entities/board/api';
 import type { Board } from '@entities/board/model';
 import { CreateBoardButton } from '@features/create-board/ui';
+import { WorkspaceMembersPage } from '@pages/workspace-members';
 import { BoardList } from '@widgets/board-list/ui';
 import { Button } from '@shared/ui';
 ```
@@ -151,6 +167,15 @@ slice-name/
 
 Only create subgroups that the slice actually needs.
 Do not place implementation `.ts` or `.tsx` files directly in a slice root.
+
+Page slices under `src/pages-layer` use a flatter shape:
+
+```text
+page-name/
+  PageName.tsx
+  PageName.module.scss
+  index.ts
+```
 
 ## Styling
 

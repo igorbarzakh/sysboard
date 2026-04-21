@@ -1,6 +1,8 @@
 export type {
   Workspace,
   WorkspaceMember,
+  WorkspaceInvite,
+  WorkspaceInviteLink,
   WorkspaceRole,
   WorkspaceBoard,
 } from './model/types'
@@ -11,8 +13,10 @@ export {
   updateWorkspace,
   deleteWorkspace,
   getWorkspaceMembers,
-  inviteMember,
+  createWorkspaceInvite,
+  revokeWorkspaceInvite,
   removeMember,
+  removeWorkspaceMember,
   getWorkspaceBoards,
   createWorkspaceBoard,
 } from './api/workspaceApi'

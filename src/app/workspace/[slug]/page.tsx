@@ -1,10 +1,14 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@shared/lib'
-import { BoardList } from '@widgets/board-list/ui'
-import styles from './page.module.scss'
+import { authOptions } from '@shared/lib/server'
+import { WorkspaceOverviewPage } from '@pages/workspace-overview'
 
 type PageProps = { params: Promise<{ slug: string }> }
+
+export const metadata: Metadata = {
+  title: 'Main',
+}
 
 export default async function WorkspacePage({ params }: PageProps) {
   const session = await getServerSession(authOptions)
@@ -12,9 +16,5 @@ export default async function WorkspacePage({ params }: PageProps) {
 
   const { slug } = await params
 
-  return (
-    <div className={styles.page}>
-      <BoardList currentUserId={session.user.id} workspaceSlug={slug} />
-    </div>
-  )
+  return <WorkspaceOverviewPage currentUserId={session.user.id} workspaceSlug={slug} />
 }

@@ -1,11 +1,15 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
-import { authOptions, prisma } from '@shared/lib'
-import { CanvasEditor } from '@widgets/canvas-editor/ui'
-import { TrackBoardVisit } from '@entities/board/ui'
+import { authOptions, prisma } from '@shared/lib/server'
 import type { Board } from '@entities/board/model'
+import { BoardRoomPage } from '@pages/board-room'
 
 type PageProps = { params: Promise<{ id: string }> }
+
+export const metadata: Metadata = {
+  title: 'Board',
+}
 
 export default async function BoardPage({ params }: PageProps) {
   const session = await getServerSession(authOptions)
@@ -43,10 +47,5 @@ export default async function BoardPage({ params }: PageProps) {
     })),
   }
 
-  return (
-    <>
-      <TrackBoardVisit id={board.id} name={board.name} workspaceSlug={board.workspace.slug} />
-      <CanvasEditor board={board} />
-    </>
-  )
+  return <BoardRoomPage board={board} />
 }

@@ -10,6 +10,3 @@ export {
   WORKSPACE_INVITE_TTL_MS,
 } from './constants'
 export type { UserPlan, PlanLimits } from './constants'
-export { authOptions } from './auth'
-export { prisma } from './db'
-export { getLiveblocks } from './liveblocks'

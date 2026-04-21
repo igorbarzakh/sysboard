@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions, getLiveblocks, PLAN_LIMITS, prisma } from '@shared/lib'
+import { PLAN_LIMITS } from '@shared/lib'
+import { authOptions, getLiveblocks, prisma } from '@shared/lib/server'
 import type { UserPlan } from '@shared/lib'
 
 export async function POST(request: Request): Promise<NextResponse> {

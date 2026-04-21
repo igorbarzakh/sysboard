@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { randomBytes } from 'crypto'
-import { authOptions, PLAN_LIMITS, WORKSPACE_INVITE_TTL_MS, prisma } from '@shared/lib'
+import { PLAN_LIMITS, WORKSPACE_INVITE_TTL_MS } from '@shared/lib'
+import { authOptions, prisma } from '@shared/lib/server'
 import type { UserPlan } from '@shared/lib'
 
 type RouteContext = { params: Promise<{ slug: string }> }

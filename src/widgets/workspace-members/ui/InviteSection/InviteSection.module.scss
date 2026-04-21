@@ -1,0 +1,157 @@
+.readOnlyNotice {
+  font-size: var(--text-small);
+  color: var(--text-secondary);
+}
+
+.inviteSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.inviteCopy {
+  max-width: 560px;
+}
+
+.inviteTitle {
+  font-size: var(--text-body);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.inviteHint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+  font-size: var(--text-small);
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.inviteInfoIcon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--text-muted);
+  transition: color var(--duration-base) var(--ease-standard);
+
+  &:hover {
+    color: var(--text-secondary);
+  }
+}
+
+.invite {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  max-width: 720px;
+}
+
+.inviteLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.createButton {
+  min-width: 115px;
+}
+
+.pendingTrigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0;
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--text-accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--accent-hover, var(--text-accent));
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+}
+
+.pendingBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  min-width: 18px;
+  height: 18px;
+  font-size: var(--text-caption);
+  font-weight: 600;
+  color: var(--text-accent);
+  background: var(--accent-soft);
+  border-radius: var(--radius-pill);
+}
+
+.inviteDisabledHint {
+  font-size: var(--text-small);
+  color: var(--text-muted);
+}
+
+.slots {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.slotsLabel {
+  font-size: var(--text-small);
+  color: var(--text-secondary);
+}
+
+.slotsCount {
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: color 0.15s ease;
+}
+
+.slotsCountNear {
+  color: var(--color-warning, #d97706);
+}
+
+.slotsCountFull {
+  color: var(--danger);
+}
+
+.slotsBar {
+  overflow: hidden;
+  width: 96px;
+  height: 4px;
+  background: var(--border-subtle);
+  border-radius: var(--radius-pill);
+}
+
+.slotsFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+  transition: width 0.3s ease, background-color 0.15s ease;
+}
+
+.slotsFillNear {
+  background: var(--color-warning, #d97706);
+}
+
+.slotsFillFull {
+  background: var(--danger);
+}
+
+@media (max-width: 760px) {
+  .invite {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

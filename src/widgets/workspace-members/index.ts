@@ -1,1 +1,1 @@
-export { WorkspaceMembersPage } from './ui'
+export * from './ui'

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
-import { authOptions, prisma } from '@shared/lib'
+import { authOptions, prisma } from '@shared/lib/server'
 import { AppHeader } from '@widgets/app-header/ui'
 import { WorkspaceSidebar } from '@widgets/workspace-sidebar/ui'
 import type { Workspace } from '@entities/workspace/model'

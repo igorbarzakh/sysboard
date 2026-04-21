@@ -3,7 +3,10 @@ import "@/shared/styles/global.css";
 import { AppProviders } from "./providers";
 
 export const metadata: Metadata = {
-  title: "Sysboard",
+  title: {
+    default: "Sysboard",
+    template: "%s – Sysboard",
+  },
   description: "Collaborative diagramming for software architects",
 };
 

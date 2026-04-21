@@ -1,1 +1,0 @@
-export { AcceptWorkspaceInvitePage } from './ui'
