@@ -1,0 +1,7 @@
+.page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: var(--space-8);
+  min-height: calc(100vh - var(--shell-header-height));
+}
