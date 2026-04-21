@@ -3,9 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
-  directUrl         = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -18,11 +18,13 @@ model User {
   plan          String    @default("free")
   createdAt     DateTime  @default(now())
 
-  ownedWorkspaces  Workspace[]       @relation("WorkspaceOwner")
-  workspaceMembers WorkspaceMember[]
-  boardMembers     BoardMember[]
-  accounts         Account[]
-  sessions         Session[]
+  ownedWorkspaces      Workspace[]       @relation("WorkspaceOwner")
+  createdBoards        Board[]           @relation("BoardCreator")
+  workspaceMembers     WorkspaceMember[]
+  boardMembers         BoardMember[]
+  sentWorkspaceInvites WorkspaceInvite[] @relation("WorkspaceInviteSender")
+  accounts             Account[]
+  sessions             Session[]
 }
 
 model Workspace {
@@ -30,15 +32,35 @@ model Workspace {
   name      String
   slug      String   @unique
   ownerId   String
-  plan      String   @default("free")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   owner   User              @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   members WorkspaceMember[]
   boards  Board[]
+  invites WorkspaceInvite[]
 
   @@index([ownerId])
+}
+
+model WorkspaceInvite {
+  id          String    @id @default(cuid())
+  workspaceId String
+  email       String?
+  token       String    @unique
+  role        String    @default("member")
+  invitedById String
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  invitedBy User      @relation("WorkspaceInviteSender", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([email])
+  @@index([invitedById])
 }
 
 model WorkspaceMember {
@@ -58,14 +80,17 @@ model Board {
   id          String   @id @default(cuid())
   name        String
   workspaceId String
+  createdById String
   data        Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   workspace Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdBy User          @relation("BoardCreator", fields: [createdById], references: [id], onDelete: Cascade)
   members   BoardMember[]
 
   @@index([workspaceId])
+  @@index([createdById])
 }
 
 model BoardMember {
