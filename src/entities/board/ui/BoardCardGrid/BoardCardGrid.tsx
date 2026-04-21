@@ -9,11 +9,17 @@ import styles from './BoardCardGrid.module.scss'
 
 interface BoardCardGridProps {
   board: Board
+  canManage: boolean
   onNavigate: () => void
   onDeleteRequest: () => void
 }
 
-export function BoardCardGrid({ board, onNavigate, onDeleteRequest }: BoardCardGridProps) {
+export function BoardCardGrid({
+  board,
+  canManage,
+  onNavigate,
+  onDeleteRequest,
+}: BoardCardGridProps) {
   function handleKeyDown(event: KeyboardEvent<HTMLElement>) {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
@@ -22,7 +28,7 @@ export function BoardCardGrid({ board, onNavigate, onDeleteRequest }: BoardCardG
   }
 
   return (
-    <BoardCardMenu boardId={board.id} onDeleteRequest={onDeleteRequest}>
+    <BoardCardMenu boardId={board.id} canManage={canManage} onDeleteRequest={onDeleteRequest}>
       <article
         className={styles.card}
         role="button"

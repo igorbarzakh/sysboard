@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import { getBoards } from '@entities/board/api'
+import { getBoardsByWorkspace } from '@entities/board/api'
 import { BoardCard } from '@entities/board/ui'
 import type { Board } from '@entities/board/model'
 import { useDeleteBoard } from '@features/delete-board/hooks'
@@ -14,10 +14,11 @@ import { BoardListEmpty } from '../BoardListEmpty/BoardListEmpty'
 import styles from './BoardList.module.scss'
 
 interface BoardListProps {
+  currentUserId: string
   workspaceSlug: string
 }
 
-export function BoardList({ workspaceSlug }: BoardListProps) {
+export function BoardList({ currentUserId, workspaceSlug }: BoardListProps) {
   const [boards, setBoards] = useState<Board[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const { mounted, setSortBy, setView, sortBy, view } =
@@ -25,22 +26,22 @@ export function BoardList({ workspaceSlug }: BoardListProps) {
   const { deleteBoard } = useDeleteBoard()
 
   useEffect(() => {
-    getBoards()
+    getBoardsByWorkspace(workspaceSlug)
       .then(setBoards)
       .finally(() => setIsLoading(false))
-  }, [])
+  }, [workspaceSlug])
 
   async function handleDelete(id: string) {
     setBoards((prev) => prev.filter((b) => b.id !== id))
     try {
       await deleteBoard(id)
     } catch {
-      getBoards().then(setBoards)
+      getBoardsByWorkspace(workspaceSlug).then(setBoards)
       toast.error('Failed to delete board')
     }
   }
 
-const sortedBoards = useMemo(() => {
+  const sortedBoards = useMemo(() => {
     return sortBoards(boards, sortBy)
   }, [boards, sortBy])
 
@@ -71,7 +72,12 @@ const sortedBoards = useMemo(() => {
         ) : (
           <div className={styles.grid}>
             {sortedBoards.map((board) => (
-              <BoardCard key={board.id} board={board} onDelete={handleDelete} />
+              <BoardCard
+                key={board.id}
+                board={board}
+                canManage={board.createdById === currentUserId}
+                onDelete={handleDelete}
+              />
             ))}
           </div>
         )
@@ -89,6 +95,7 @@ const sortedBoards = useMemo(() => {
               <BoardCard
                 key={board.id}
                 board={board}
+                canManage={board.createdById === currentUserId}
                 onDelete={handleDelete}
                 view="list"
               />

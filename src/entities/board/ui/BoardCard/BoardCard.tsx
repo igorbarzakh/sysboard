@@ -9,11 +9,12 @@ import { DeleteBoardDialog } from '../DeleteBoardDialog/DeleteBoardDialog'
 
 interface BoardCardProps {
   board: Board
+  canManage: boolean
   onDelete: (id: string) => void
   view?: 'grid' | 'list'
 }
 
-export function BoardCard({ board, onDelete, view = 'grid' }: BoardCardProps) {
+export function BoardCard({ board, canManage, onDelete, view = 'grid' }: BoardCardProps) {
   const router = useRouter()
   const [confirmOpen, setConfirmOpen] = useState(false)
 
@@ -22,17 +23,29 @@ export function BoardCard({ board, onDelete, view = 'grid' }: BoardCardProps) {
   return (
     <>
       {view === 'grid' ? (
-        <BoardCardGrid board={board} onNavigate={navigate} onDeleteRequest={() => setConfirmOpen(true)} />
+        <BoardCardGrid
+          board={board}
+          canManage={canManage}
+          onNavigate={navigate}
+          onDeleteRequest={() => setConfirmOpen(true)}
+        />
       ) : (
-        <BoardCardList board={board} onNavigate={navigate} onDeleteRequest={() => setConfirmOpen(true)} />
+        <BoardCardList
+          board={board}
+          canManage={canManage}
+          onNavigate={navigate}
+          onDeleteRequest={() => setConfirmOpen(true)}
+        />
       )}
 
-      <DeleteBoardDialog
-        boardName={board.name}
-        open={confirmOpen}
-        onOpenChange={setConfirmOpen}
-        onConfirm={() => onDelete(board.id)}
-      />
+      {canManage ? (
+        <DeleteBoardDialog
+          boardName={board.name}
+          open={confirmOpen}
+          onOpenChange={setConfirmOpen}
+          onConfirm={() => onDelete(board.id)}
+        />
+      ) : null}
     </>
   )
 }

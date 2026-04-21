@@ -11,6 +11,7 @@ export interface Board {
   id: string
   name: string
   workspaceId: string
+  createdById: string
   data: unknown
   createdAt: string
   updatedAt: string

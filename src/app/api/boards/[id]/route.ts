@@ -63,6 +63,13 @@ export async function PATCH(request: Request, { params }: RouteContext): Promise
   const updateData: { name?: string; data?: object } = {}
 
   if ('name' in payload) {
+    if (board.createdById !== session.user.id) {
+      return NextResponse.json(
+        { error: 'Only the board creator can rename this board' },
+        { status: 403 },
+      )
+    }
+
     if (typeof payload.name !== 'string' || !payload.name.trim()) {
       return NextResponse.json({ error: 'Name must be a non-empty string' }, { status: 400 })
     }
@@ -96,10 +103,9 @@ export async function DELETE(_request: Request, { params }: RouteContext): Promi
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  const memberRole = board.workspace.members[0]?.role
-  if (!memberRole || !['owner', 'admin'].includes(memberRole)) {
+  if (board.createdById !== session.user.id) {
     return NextResponse.json(
-      { error: 'Only workspace owners and admins can delete boards' },
+      { error: 'Only the board creator can delete this board' },
       { status: 403 },
     )
   }

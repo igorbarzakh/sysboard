@@ -30,7 +30,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       ],
     },
     select: {
-      workspace: { select: { plan: true } },
+      workspace: { select: { owner: { select: { plan: true } } } },
     },
   })
 
@@ -39,7 +39,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   const liveblocks = getLiveblocks()
-  const limit = PLAN_LIMITS[board.workspace.plan as UserPlan].maxMembersPerBoard
+  const limit = PLAN_LIMITS[board.workspace.owner.plan as UserPlan].maxMembersPerBoard
   const { data: activeUsers } = await liveblocks.getActiveUsers(roomId)
   const isAlreadyConnected = activeUsers.some((u) => u.id === session.user.id)
 

@@ -12,11 +12,17 @@ import styles from './BoardCardMenu.module.scss'
 
 interface BoardCardMenuProps {
   boardId: string
+  canManage: boolean
   children: ReactElement
   onDeleteRequest: () => void
 }
 
-export function BoardCardMenu({ boardId, children, onDeleteRequest }: BoardCardMenuProps) {
+export function BoardCardMenu({
+  boardId,
+  canManage,
+  children,
+  onDeleteRequest,
+}: BoardCardMenuProps) {
   const router = useRouter()
 
   return (
@@ -28,14 +34,16 @@ export function BoardCardMenu({ boardId, children, onDeleteRequest }: BoardCardM
           className={styles.item}>
           Open
         </ContextMenuItem>
-        <ContextMenuItem className={styles.item}>Rename</ContextMenuItem>
+        {canManage ? <ContextMenuItem className={styles.item}>Rename</ContextMenuItem> : null}
         <ContextMenuItem className={styles.item}>Share</ContextMenuItem>
-        <ContextMenuItem
-          variant="destructive"
-          onClick={onDeleteRequest}
-          className={styles.itemDestructive}>
-          Delete
-        </ContextMenuItem>
+        {canManage ? (
+          <ContextMenuItem
+            variant="destructive"
+            onClick={onDeleteRequest}
+            className={styles.itemDestructive}>
+            Delete
+          </ContextMenuItem>
+        ) : null}
       </ContextMenuContent>
     </ContextMenu>
   )

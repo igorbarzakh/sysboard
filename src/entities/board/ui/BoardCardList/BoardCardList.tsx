@@ -9,11 +9,17 @@ import styles from './BoardCardList.module.scss'
 
 interface BoardCardListProps {
   board: Board
+  canManage: boolean
   onNavigate: () => void
   onDeleteRequest: () => void
 }
 
-export function BoardCardList({ board, onNavigate, onDeleteRequest }: BoardCardListProps) {
+export function BoardCardList({
+  board,
+  canManage,
+  onNavigate,
+  onDeleteRequest,
+}: BoardCardListProps) {
   function handleKeyDown(event: KeyboardEvent<HTMLElement>) {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
@@ -22,7 +28,7 @@ export function BoardCardList({ board, onNavigate, onDeleteRequest }: BoardCardL
   }
 
   return (
-    <BoardCardMenu boardId={board.id} onDeleteRequest={onDeleteRequest}>
+    <BoardCardMenu boardId={board.id} canManage={canManage} onDeleteRequest={onDeleteRequest}>
       <article
         className={styles.card}
         role="button"

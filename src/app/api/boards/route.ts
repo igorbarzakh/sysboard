@@ -51,7 +51,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   const workspace = await prisma.workspace.findFirst({
     where: { ownerId: session.user.id },
-    select: { id: true, plan: true },
+    select: { id: true },
   })
 
   if (!workspace) {
@@ -61,7 +61,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     )
   }
 
-  const limit = PLAN_LIMITS[workspace.plan as UserPlan].maxBoardsPerWorkspace
+  const limit = PLAN_LIMITS[(session.user.plan ?? 'free') as UserPlan].maxBoardsPerWorkspace
   const boardCount = await prisma.board.count({ where: { workspaceId: workspace.id } })
 
   if (boardCount >= limit) {
@@ -75,6 +75,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     data: {
       name,
       workspaceId: workspace.id,
+      createdById: session.user.id,
       members: {
         create: { userId: session.user.id, role: 'editor' },
       },

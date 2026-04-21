@@ -14,11 +14,11 @@ export default async function NewBoardPage({ searchParams }: PageProps) {
 
   const workspace = await prisma.workspace.findFirst({
     where: { slug, members: { some: { userId: session.user.id } } },
-    select: { id: true, plan: true, slug: true },
+    select: { id: true, owner: { select: { plan: true } }, slug: true },
   })
   if (!workspace) redirect('/')
 
-  const plan = workspace.plan as UserPlan
+  const plan = workspace.owner.plan as UserPlan
   const limit = PLAN_LIMITS[plan].maxBoardsPerWorkspace
   const boardCount = await prisma.board.count({ where: { workspaceId: workspace.id } })
   if (boardCount >= limit) redirect(`/workspace/${workspace.slug}`)
@@ -29,6 +29,7 @@ export default async function NewBoardPage({ searchParams }: PageProps) {
     data: {
       name,
       workspaceId: workspace.id,
+      createdById: session.user.id,
       members: { create: { userId: session.user.id, role: 'editor' } },
     },
     select: { id: true },
