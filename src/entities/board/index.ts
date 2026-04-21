@@ -1,6 +1,3 @@
 export type { Board, BoardMember } from './model/types'
 export { getBoards, getBoardsByWorkspace, deleteBoard, updateBoard } from './api/boardApi'
 export { BoardCard } from './ui/BoardCard/BoardCard'
-export { TrackBoardVisit } from './ui/TrackBoardVisit/TrackBoardVisit'
-export { useRecentBoards } from './hooks/useRecentBoards'
-export type { RecentBoard } from './hooks/useRecentBoards'
