@@ -21,12 +21,16 @@ export function UserMenu() {
 
   if (!user) return null
 
+  const isPro = user.plan === 'pro'
+
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger className={styles.trigger}>
           <div className={styles.triggerInner}>
-            <Avatar name={user.name} image={user.image} size="sm" />
+            <span className={styles.avatarWrap} data-plan={user.plan}>
+              <Avatar name={user.name} image={user.image} size="sm" />
+            </span>
             <span className={styles.triggerName}>{user.name ?? user.email}</span>
           </div>
           <ChevronDown size={14} className={styles.triggerChevron} />
@@ -39,9 +43,14 @@ export function UserMenu() {
           className={styles.content}
         >
           <div className={styles.profile}>
-            <Avatar name={user.name} image={user.image} size="lg" />
+            <span className={styles.profileAvatarWrap} data-plan={user.plan}>
+              <Avatar name={user.name} image={user.image} size="lg" />
+            </span>
             <div className={styles.profileInfo}>
-              <p className={styles.profileName}>{user.name ?? 'User'}</p>
+              <p className={styles.profileNameRow}>
+                <span className={styles.profileName}>{user.name ?? 'User'}</span>
+                <span className={styles.planBadge} data-plan={user.plan}>{isPro ? 'Pro' : 'Free'}</span>
+              </p>
               <p className={styles.profileEmail}>{user.email}</p>
             </div>
           </div>

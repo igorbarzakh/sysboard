@@ -20,6 +20,21 @@
   gap: var(--space-2);
 }
 
+.avatarWrap,
+.profileAvatarWrap {
+  display: inline-flex;
+  border-radius: var(--radius-pill);
+
+  &[data-plan='pro'] {
+    padding: 2px;
+    background:
+      linear-gradient(var(--bg-base), var(--bg-base)) padding-box,
+      linear-gradient(135deg, var(--accent), #9fb2ff) border-box;
+    border: 1px solid transparent;
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+}
+
 .triggerName {
   overflow: hidden;
   max-width: 160px;
@@ -28,6 +43,22 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--text-primary);
+}
+
+.planBadge {
+  flex: 0 0 auto;
+  padding: 2px 6px;
+  font-size: var(--text-caption);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-muted);
+  background: var(--bg-surface);
+  border-radius: var(--radius-pill);
+
+  &[data-plan='pro'] {
+    color: var(--text-accent);
+    background: var(--accent-soft);
+  }
 }
 
 .triggerChevron {
@@ -50,9 +81,15 @@
   text-align: center;
 }
 
+.profileNameRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: 200px;
+}
+
 .profileName {
   overflow: hidden;
-  max-width: 180px;
   font-size: var(--text-body);
   font-weight: 600;
   text-overflow: ellipsis;
