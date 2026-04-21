@@ -64,7 +64,6 @@ export async function POST(request: Request): Promise<NextResponse> {
       name,
       slug: deriveSlug(),
       ownerId: session.user.id,
-      plan: plan,
       members: {
         create: { userId: session.user.id, role: 'owner' },
       },

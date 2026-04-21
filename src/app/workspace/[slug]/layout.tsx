@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions, prisma } from '@shared/lib'
-import type { UserPlan } from '@shared/lib'
 import { AppHeader } from '@widgets/app-header/ui'
 import { WorkspaceSidebar } from '@widgets/workspace-sidebar/ui'
 import type { Workspace } from '@entities/workspace/model'
@@ -35,7 +34,6 @@ export default async function WorkspaceLayout({ children, params }: LayoutProps)
 
   const workspace: Workspace = {
     ...raw,
-    plan: raw.plan as UserPlan,
     createdAt: raw.createdAt.toISOString(),
     updatedAt: raw.updatedAt.toISOString(),
     members: raw.members.map((m) => ({

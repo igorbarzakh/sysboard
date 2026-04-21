@@ -54,11 +54,22 @@ export const authOptions: NextAuthOptions = {
         token.plan = dbUser?.plan ?? 'free'
         token.profileRole = dbUser?.profileRole ?? null
         token.provider = dbAccount?.provider ?? null
-      } else if (token.provider === undefined) {
-        const dbAccount = await prisma.account.findFirst({
-          where: { userId: token.id },
-          select: { provider: true },
-        })
+      } else if (typeof token.id === 'string') {
+        const [dbUser, dbAccount] = await Promise.all([
+          prisma.user.findUnique({
+            where: { id: token.id },
+            select: { plan: true, profileRole: true },
+          }),
+          token.provider === undefined
+            ? prisma.account.findFirst({
+                where: { userId: token.id },
+                select: { provider: true },
+              })
+            : Promise.resolve(null),
+        ])
+
+        token.plan = dbUser?.plan ?? token.plan ?? 'free'
+        token.profileRole = dbUser?.profileRole ?? null
         token.provider = dbAccount?.provider ?? null
       }
       return token
@@ -88,7 +99,6 @@ export const authOptions: NextAuthOptions = {
             name: workspaceName,
             slug: deriveSlug(),
             ownerId: user.id,
-            plan: 'free',
             members: {
               create: { userId: user.id, role: 'owner' },
             },

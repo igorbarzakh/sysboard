@@ -1,5 +1,3 @@
-import type { UserPlan } from '@shared/lib'
-
 export type WorkspaceRole = 'owner' | 'admin' | 'member'
 
 export interface WorkspaceMember {
@@ -14,7 +12,6 @@ export interface Workspace {
   name: string
   slug: string
   ownerId: string
-  plan: UserPlan
   createdAt: string
   updatedAt: string
   members: WorkspaceMember[]

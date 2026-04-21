@@ -79,7 +79,6 @@ async function createWorkspacesForMemberlessUsers(): Promise<number> {
         name: workspaceName,
         slug,
         ownerId: user.id,
-        plan: 'free',
         members: {
           create: { userId: user.id, role: 'owner' },
         },

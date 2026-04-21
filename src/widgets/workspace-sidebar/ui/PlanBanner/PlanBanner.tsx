@@ -1,13 +1,13 @@
 'use client'
 
 import { ArrowRight, Sparkles, Zap } from 'lucide-react'
-import type { Workspace } from '@entities/workspace/model'
+import type { UserPlan } from '@shared/lib'
 import { PLAN_LIMITS } from '@shared/lib/constants'
 import { Button } from '@shared/ui'
 import styles from '../WorkspaceSidebar/WorkspaceSidebar.module.scss'
 
 interface PlanBannerProps {
-  plan: Workspace['plan']
+  plan: UserPlan
 }
 
 export function PlanBanner({ plan }: PlanBannerProps) {
