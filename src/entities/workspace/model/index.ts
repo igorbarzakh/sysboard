@@ -1,3 +1,4 @@
+export { workspaceQueryKeys } from './queryKeys'
 export type {
   Workspace,
   WorkspaceBoard,

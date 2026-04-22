@@ -1,10 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ChevronDown, Check, Plus } from 'lucide-react'
-import { getWorkspaces } from '@entities/workspace/api'
-import type { Workspace } from '@entities/workspace/model'
+import { useWorkspacesQuery } from '@entities/workspace/hooks'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -18,20 +16,11 @@ export function WorkspaceSwitcher() {
   const params = useParams()
   const router = useRouter()
   const currentSlug = typeof params?.slug === 'string' ? params.slug : null
-
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    getWorkspaces()
-      .then(setWorkspaces)
-      .catch(() => {})
-      .finally(() => setLoading(false))
-  }, [])
+  const { data: workspaces = [], isPending } = useWorkspacesQuery()
 
   const current = workspaces.find((w) => w.slug === currentSlug) ?? null
 
-  if (loading) {
+  if (isPending) {
     return <div className={styles.skeleton} />
   }
 

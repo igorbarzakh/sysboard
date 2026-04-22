@@ -22,3 +22,4 @@ export {
 } from './api/workspaceApi'
 
 export { useCurrentWorkspace } from './hooks/useCurrentWorkspace'
+export { useWorkspacesQuery } from './hooks/useWorkspacesQuery'
