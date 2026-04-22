@@ -22,7 +22,8 @@ async function requireWorkspaceMember(slug: string, userId: string) {
           acceptedAt: null,
           expiresAt: { gt: new Date() },
         },
-        select: { id: true },
+        orderBy: { createdAt: 'desc' },
+        select: { id: true, createdAt: true, expiresAt: true, token: true },
       },
       members: {
         select: {
@@ -48,7 +49,18 @@ export async function GET(_request: Request, { params }: RouteContext): Promise<
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  return NextResponse.json(workspace.members)
+  return NextResponse.json({
+    activeInvites: workspace.invites.map((invite) => ({
+      id: invite.id,
+      token: invite.token,
+      createdAt: invite.createdAt.toISOString(),
+      expiresAt: invite.expiresAt.toISOString(),
+    })),
+    members: workspace.members.map((member) => ({
+      ...member,
+      joinedAt: member.joinedAt.toISOString(),
+    })),
+  })
 }
 
 export async function POST(request: Request, { params }: RouteContext): Promise<NextResponse> {

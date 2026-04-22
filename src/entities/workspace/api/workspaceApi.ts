@@ -3,6 +3,7 @@ import type {
   WorkspaceBoard,
   WorkspaceInviteLink,
   WorkspaceMember,
+  WorkspaceMembersData,
 } from '../model'
 
 interface ApiError {
@@ -56,6 +57,20 @@ export async function getWorkspaceMembers(slug: string): Promise<WorkspaceMember
   const res = await fetch(`/api/workspaces/${slug}/members`)
   if (!res.ok) throw new Error(await parseError(res))
   return res.json() as Promise<WorkspaceMember[]>
+}
+
+export async function getWorkspaceMembersData(
+  slug: string,
+): Promise<WorkspaceMembersData> {
+  const res = await fetch(`/api/workspaces/${slug}/members`)
+  if (!res.ok) throw new Error(await parseError(res))
+  const body = (await res.json()) as WorkspaceMember[] | WorkspaceMembersData
+
+  if (Array.isArray(body)) {
+    return { activeInvites: [], members: body }
+  }
+
+  return body
 }
 
 export async function createWorkspaceInvite(

@@ -18,6 +18,11 @@ export interface WorkspaceInviteLink extends WorkspaceInvite {
   inviteUrl: string
 }
 
+export interface WorkspaceMembersData {
+  activeInvites: WorkspaceInvite[]
+  members: WorkspaceMember[]
+}
+
 export interface Workspace {
   id: string
   name: string

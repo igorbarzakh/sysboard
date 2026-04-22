@@ -4,6 +4,7 @@ export {
   updateWorkspace,
   deleteWorkspace,
   getWorkspaceMembers,
+  getWorkspaceMembersData,
   createWorkspaceInvite,
   revokeWorkspaceInvite,
   removeMember,

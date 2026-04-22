@@ -4,6 +4,7 @@ export type {
   WorkspaceBoard,
   WorkspaceInvite,
   WorkspaceInviteLink,
+  WorkspaceMembersData,
   WorkspaceMember,
   WorkspaceRole,
 } from './types'

@@ -3,6 +3,7 @@ export type {
   WorkspaceMember,
   WorkspaceInvite,
   WorkspaceInviteLink,
+  WorkspaceMembersData,
   WorkspaceRole,
   WorkspaceBoard,
 } from './model/types'
@@ -13,6 +14,7 @@ export {
   updateWorkspace,
   deleteWorkspace,
   getWorkspaceMembers,
+  getWorkspaceMembersData,
   createWorkspaceInvite,
   revokeWorkspaceInvite,
   removeMember,
@@ -22,4 +24,10 @@ export {
 } from './api/workspaceApi'
 
 export { useCurrentWorkspace } from './hooks/useCurrentWorkspace'
+export {
+  useCreateWorkspaceInviteMutation,
+  useRemoveWorkspaceMemberMutation,
+  useRevokeWorkspaceInviteMutation,
+} from './hooks/useWorkspaceMemberMutations'
+export { useWorkspaceMembersQuery } from './hooks/useWorkspaceMembersQuery'
 export { useWorkspacesQuery } from './hooks/useWorkspacesQuery'

@@ -2,10 +2,11 @@
 
 import { useState } from 'react'
 import {
-  createWorkspaceInvite,
-  removeWorkspaceMember,
-  revokeWorkspaceInvite,
-} from '@entities/workspace/api'
+  useCreateWorkspaceInviteMutation,
+  useRemoveWorkspaceMemberMutation,
+  useRevokeWorkspaceInviteMutation,
+  useWorkspaceMembersQuery,
+} from '@entities/workspace/hooks'
 import type {
   WorkspaceInvite,
   WorkspaceInviteLink,
@@ -40,18 +41,23 @@ export function WorkspaceMembersPage({
 }: WorkspaceMembersPageProps) {
   const [error, setError] = useState<string | null>(null)
   const [invite, setInvite] = useState<WorkspaceInviteLink | null>(null)
-  const [isInviting, setIsInviting] = useState(false)
-  const [members, setMembers] = useState(initialMembers)
-  const [activeInvites, setActiveInvites] = useState<ActiveInviteState[]>(
-    initialActiveInvites.map((activeInvite) => ({
-      ...activeInvite,
-      revoking: false,
-    })),
-  )
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [copiedMain, setCopiedMain] = useState(false)
   const [pendingOpen, setPendingOpen] = useState(false)
   const [removingUserId, setRemovingUserId] = useState<string | null>(null)
+  const [revokingInviteId, setRevokingInviteId] = useState<string | null>(null)
+  const { data } = useWorkspaceMembersQuery(workspaceSlug)
+  const createInviteMutation = useCreateWorkspaceInviteMutation(workspaceSlug)
+  const revokeInviteMutation = useRevokeWorkspaceInviteMutation(workspaceSlug)
+  const removeMemberMutation = useRemoveWorkspaceMemberMutation(workspaceSlug)
+  const members = data?.members ?? initialMembers
+  const activeInvites: ActiveInviteState[] = (
+    data?.activeInvites ?? initialActiveInvites
+  ).map((activeInvite) => ({
+    ...activeInvite,
+    revoking: activeInvite.id === revokingInviteId,
+  }))
+  const isInviting = createInviteMutation.isPending
 
   const canCreateInvite = canManageMembers && plan === 'pro'
   const maxMembers = PLAN_LIMITS[plan].maxWorkspaceMembers
@@ -64,30 +70,16 @@ export function WorkspaceMembersPage({
     if (!canManageMembers || isInviting) return
 
     setError(null)
-    setIsInviting(true)
 
     try {
-      const nextInvite = await createWorkspaceInvite(workspaceSlug)
-
+      const nextInvite = await createInviteMutation.mutateAsync()
       setInvite(nextInvite)
-      setActiveInvites((prev) => [
-        {
-          id: nextInvite.id,
-          token: nextInvite.token,
-          createdAt: nextInvite.createdAt,
-          expiresAt: nextInvite.expiresAt,
-          revoking: false,
-        },
-        ...prev,
-      ])
     } catch (inviteError) {
       setError(
         inviteError instanceof Error
           ? inviteError.message
           : 'Unable to invite member',
       )
-    } finally {
-      setIsInviting(false)
     }
   }
 
@@ -99,43 +91,37 @@ export function WorkspaceMembersPage({
   }
 
   async function handleRevokeInvite(id: string) {
-    setActiveInvites((prev) =>
-      prev.map((activeInvite) =>
-        activeInvite.id === id
-          ? { ...activeInvite, revoking: true }
-          : activeInvite,
-      ),
-    )
+    const isLast = activeInvites.length === 1
+    const revokedVisibleInvite = invite?.id === id ? invite : null
+
+    if (isLast) {
+      setPendingOpen(false)
+    }
+
+    if (revokedVisibleInvite) {
+      setInvite(null)
+    }
+
+    setRevokingInviteId(id)
 
     try {
-      await revokeWorkspaceInvite(workspaceSlug, id)
+      await revokeInviteMutation.mutateAsync(id)
 
-      const isLast = activeInvites.length === 1
       if (isLast) {
         setPendingOpen(false)
-        setTimeout(() => {
-          setActiveInvites([])
-          if (invite?.id === id) setInvite(null)
-        }, 200)
-      } else {
-        setActiveInvites((prev) =>
-          prev.filter((activeInvite) => activeInvite.id !== id),
-        )
-        if (invite?.id === id) setInvite(null)
       }
     } catch (revokeError) {
+      if (revokedVisibleInvite) {
+        setInvite(revokedVisibleInvite)
+      }
+
       setError(
         revokeError instanceof Error
           ? revokeError.message
           : 'Unable to revoke invite',
       )
-      setActiveInvites((prev) =>
-        prev.map((activeInvite) =>
-          activeInvite.id === id
-            ? { ...activeInvite, revoking: false }
-            : activeInvite,
-        ),
-      )
+    } finally {
+      setRevokingInviteId(null)
     }
   }
 
@@ -146,8 +132,7 @@ export function WorkspaceMembersPage({
     setRemovingUserId(userId)
 
     try {
-      await removeWorkspaceMember(workspaceSlug, userId)
-      setMembers((prev) => prev.filter((member) => member.userId !== userId))
+      await removeMemberMutation.mutateAsync(userId)
     } catch (removeError) {
       setError(
         removeError instanceof Error
