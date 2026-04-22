@@ -19,11 +19,20 @@ export async function GET(): Promise<NextResponse> {
     },
     include: {
       workspace: { select: { id: true, name: true, slug: true } },
+      views: {
+        where: { userId: session.user.id },
+        select: { lastViewedAt: true },
+      },
     },
     orderBy: { updatedAt: 'desc' },
   })
 
-  return NextResponse.json(boards)
+  return NextResponse.json(
+    boards.map(({ views, ...board }) => ({
+      ...board,
+      lastViewedAt: views[0]?.lastViewedAt.toISOString() ?? null,
+    })),
+  )
 }
 
 export async function POST(request: Request): Promise<NextResponse> {

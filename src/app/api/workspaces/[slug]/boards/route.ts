@@ -39,11 +39,20 @@ export async function GET(_request: Request, { params }: RouteContext): Promise<
       members: {
         include: { user: { select: { id: true, name: true, image: true } } },
       },
+      views: {
+        where: { userId: session.user.id },
+        select: { lastViewedAt: true },
+      },
     },
     orderBy: { updatedAt: 'desc' },
   })
 
-  return NextResponse.json(boards)
+  return NextResponse.json(
+    boards.map(({ views, ...board }) => ({
+      ...board,
+      lastViewedAt: views[0]?.lastViewedAt.toISOString() ?? null,
+    })),
+  )
 }
 
 export async function POST(request: Request, { params }: RouteContext): Promise<NextResponse> {

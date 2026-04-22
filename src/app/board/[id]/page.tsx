@@ -39,6 +39,7 @@ export default async function BoardPage({ params }: PageProps) {
     ...row,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
+    lastViewedAt: null,
     members: row.members.map((m) => ({
       userId: m.userId,
       role: m.role as 'editor',
