@@ -12,6 +12,7 @@ interface BoardCardProps {
   board: Board
   canManage: boolean
   onDelete: (id: string) => void
+  onNavigate?: () => void
   onRename: (id: string, name: string) => Promise<void>
   view?: 'grid' | 'list'
 }
@@ -20,6 +21,7 @@ export function BoardCard({
   board,
   canManage,
   onDelete,
+  onNavigate,
   onRename,
   view = 'grid',
 }: BoardCardProps) {
@@ -31,7 +33,10 @@ export function BoardCard({
   const inputRef = useRef<HTMLInputElement>(null)
   const commitPendingRef = useRef(false)
 
-  const navigate = () => router.push(`/board/${board.id}`)
+  function navigate() {
+    onNavigate?.()
+    router.push(`/board/${board.id}`)
+  }
 
   useEffect(() => {
     if (isRenaming) {

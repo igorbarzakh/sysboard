@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { getBoardsByWorkspace, updateBoard } from '@entities/board/api'
 import { BoardCard } from '@entities/board/ui'
@@ -27,6 +27,7 @@ export function BoardList({
   const [boards, setBoards] = useState<Board[]>([])
   const [filter, setFilter] = useState<BoardFilter>('recent')
   const [isLoading, setIsLoading] = useState(true)
+  const shouldRefreshOnPageShow = useRef(false)
   const { mounted, setSortBy, setView, sortBy, view } =
     useBoardListPreferences()
   const { deleteBoard } = useDeleteBoard()
@@ -44,17 +45,21 @@ export function BoardList({
 
   useEffect(() => {
     function refreshBoards() {
+      if (!shouldRefreshOnPageShow.current) return
+      shouldRefreshOnPageShow.current = false
       void loadBoards()
     }
 
-    window.addEventListener('focus', refreshBoards)
     window.addEventListener('pageshow', refreshBoards)
 
     return () => {
-      window.removeEventListener('focus', refreshBoards)
       window.removeEventListener('pageshow', refreshBoards)
     }
   }, [loadBoards])
+
+  function handleBoardNavigate() {
+    shouldRefreshOnPageShow.current = true
+  }
 
   async function handleDelete(id: string) {
     setBoards((prev) => prev.filter((b) => b.id !== id))
@@ -67,10 +72,12 @@ export function BoardList({
   }
 
   async function handleRename(id: string, name: string) {
-    setBoards((prev) => prev.map((board) => {
-      if (board.id !== id) return board
-      return { ...board, name }
-    }))
+    setBoards((prev) =>
+      prev.map((board) => {
+        if (board.id !== id) return board
+        return { ...board, name }
+      }),
+    )
 
     try {
       await updateBoard(id, { name })
@@ -138,20 +145,21 @@ export function BoardList({
           <BoardListSkeleton view={view} />
         ) : (
           <div key={resultKey} className={styles.grid}>
-            {filteredBoardCount > 0 ? (
-              filteredBoards.map((board) => (
-                <BoardCard
-                  key={board.id}
-                  board={board}
-                  canManage={
-                    board.createdById === currentUserId ||
-                    board.workspace.ownerId === currentUserId
-                  }
-                  onDelete={handleDelete}
-                  onRename={handleRename}
-                />
-              ))
-            ) : null}
+            {filteredBoardCount > 0
+              ? filteredBoards.map((board) => (
+                  <BoardCard
+                    key={board.id}
+                    board={board}
+                    canManage={
+                      board.createdById === currentUserId ||
+                      board.workspace.ownerId === currentUserId
+                    }
+                    onDelete={handleDelete}
+                    onNavigate={handleBoardNavigate}
+                    onRename={handleRename}
+                  />
+                ))
+              : null}
           </div>
         )
       ) : (
@@ -165,23 +173,22 @@ export function BoardList({
           ) : null}
           {isLoading ? (
             <BoardListSkeleton view={view} />
-          ) : (
-            filteredBoardCount > 0 ? (
-              filteredBoards.map((board) => (
-                <BoardCard
-                  key={board.id}
-                  board={board}
-                  canManage={
-                    board.createdById === currentUserId ||
-                    board.workspace.ownerId === currentUserId
-                  }
-                  onDelete={handleDelete}
-                  onRename={handleRename}
-                  view="list"
-                />
-              ))
-            ) : null
-          )}
+          ) : filteredBoardCount > 0 ? (
+            filteredBoards.map((board) => (
+              <BoardCard
+                key={board.id}
+                board={board}
+                canManage={
+                  board.createdById === currentUserId ||
+                  board.workspace.ownerId === currentUserId
+                }
+                onDelete={handleDelete}
+                onNavigate={handleBoardNavigate}
+                onRename={handleRename}
+                view="list"
+              />
+            ))
+          ) : null}
         </div>
       )}
     </div>
