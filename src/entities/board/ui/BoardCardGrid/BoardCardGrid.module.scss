@@ -49,6 +49,7 @@
   overflow: hidden;
   flex: 1;
   min-width: 0;
+  height: 18px;
   font-size: var(--text-body);
   font-weight: 500;
   text-overflow: ellipsis;
@@ -60,24 +61,22 @@
   flex: 1;
   padding: 0;
   min-width: 0;
+  height: 18px;
   font: inherit;
   font-size: var(--text-body);
   font-weight: 500;
   color: var(--text-primary);
   background: transparent;
   border: 0;
-  border-bottom: 0.5px solid var(--border-default);
-  box-shadow: none;
+  box-shadow: 0 1px 0 0 var(--border-default);
   outline: none;
   cursor: text;
 
   &:focus {
-    box-shadow: none;
     outline: none;
   }
 
   &:focus-visible {
-    box-shadow: none;
     outline: none !important;
     outline-offset: 0;
   }
