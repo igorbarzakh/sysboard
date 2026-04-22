@@ -19,6 +19,7 @@ Core stack:
 - Liveblocks for realtime collaboration.
 - NextAuth.js for authentication.
 - Prisma + Postgres for persistence.
+- TanStack Query for client-side server-state caching.
 - Base UI primitives, lucide-react icons.
 - SCSS Modules and CSS custom properties for styling.
 
@@ -338,6 +339,32 @@ Use `"use client"` only when a component needs client behavior: hooks, local sta
 Prefer server components for data loading and route composition.
 
 For `next/image` with `fill`, always provide a `sizes` prop.
+
+## TanStack Query
+
+TanStack Query is the standard tool for client-side server state that needs caching, invalidation, optimistic updates, or shared loading state.
+
+The root provider lives in `src/app/providers/QueryProvider.tsx` and is composed by `AppProviders`.
+
+Follow FSD boundaries:
+
+- Query keys live in the owning entity model subgroup, such as `src/entities/board/model/queryKeys.ts`.
+- Query and mutation hooks live in the owning entity hooks subgroup, such as `src/entities/board/hooks`.
+- Low-level fetch functions stay in the entity api subgroup.
+- Widgets and page slices consume entity hooks; they should not own query keys or broad cache-update logic.
+
+Use TanStack Query for product lists and mutation flows such as boards, workspaces, members, and invites.
+
+Do not use TanStack Query for high-frequency canvas autosave writes. Keep `CanvasEditor` board `data` persistence as direct API calls unless there is a specific product requirement to change it.
+
+For optimistic updates, keep server data authoritative:
+
+- Use `onMutate` snapshots for rollback.
+- Restore snapshots in `onError`.
+- Invalidate or reconcile from mutation responses in `onSettled` or `onSuccess`.
+- Prefer server timestamps over client-generated timestamps for persisted fields.
+
+TanStack Query Devtools are development-only. The browser extension uses `window.__TANSTACK_QUERY_CLIENT__`, which should only be assigned in development.
 
 ## TypeScript Rules
 
