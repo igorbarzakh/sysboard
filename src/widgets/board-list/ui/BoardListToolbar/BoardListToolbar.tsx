@@ -82,7 +82,11 @@ export function BoardListToolbar({
             />
           </label>
 
-          <BoardListViewToggle value={view} onChange={onViewChange} />
+          <BoardListViewToggle
+            value={view}
+            disabled={isLoading || boardCount === 0}
+            onChange={onViewChange}
+          />
         </div>
       </div>
     </div>

@@ -26,10 +26,27 @@
     color: var(--text-primary);
   }
 
+  &:disabled {
+    color: var(--text-secondary);
+    opacity: 0.55;
+    cursor: default;
+  }
+
+  &:disabled:hover {
+    color: var(--text-secondary);
+  }
+
   &[data-active='true'] {
     color: var(--text-primary);
     background: var(--bg-elevated);
     box-shadow: inset 0 0 0 1px var(--border-default);
+    cursor: default;
+  }
+
+  &:disabled[data-active='true'] {
+    color: var(--text-secondary);
+    background: transparent;
+    box-shadow: none;
     cursor: default;
   }
 
