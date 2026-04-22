@@ -18,7 +18,7 @@ export const BoardPreview = memo(function BoardPreview({
       snapshot={data as TLStoreSnapshot}
       format="svg"
       background={true}
-      padding={8}
+      padding={64}
       darkMode={false}
     />
   )
