@@ -1,4 +1,5 @@
 .card {
+  position: relative;
   overflow: hidden;
   width: 100%;
   border: 1px solid var(--border-default);
@@ -15,6 +16,55 @@
     outline: 2px solid var(--border-outline);
     outline-offset: 2px;
   }
+}
+
+.favoriteButton {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  opacity: 0;
+  cursor: pointer;
+  transition:
+    opacity var(--duration-base) var(--ease-standard),
+    color var(--duration-slow) var(--ease-standard),
+    background var(--duration-slow) var(--ease-standard),
+    border-color var(--duration-slow) var(--ease-standard);
+
+  &:hover {
+    color: #f59f00;
+    background: var(--bg-elevated);
+    border-color: var(--border-default);
+  }
+
+  &[data-active='true'] {
+    color: #f59f00;
+    background: var(--bg-elevated);
+    border-color: var(--border-default);
+    opacity: 1;
+  }
+
+  &[data-active='true'] svg {
+    fill: currentcolor;
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.card:hover .favoriteButton,
+.card:focus-within .favoriteButton {
+  opacity: 1;
 }
 
 .preview {

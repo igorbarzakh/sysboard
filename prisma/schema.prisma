@@ -23,6 +23,7 @@ model User {
   workspaceMembers     WorkspaceMember[]
   boardMembers         BoardMember[]
   boardViews           BoardView[]
+  boardFavorites       BoardFavorite[]
   sentWorkspaceInvites WorkspaceInvite[] @relation("WorkspaceInviteSender")
   accounts             Account[]
   sessions             Session[]
@@ -90,9 +91,22 @@ model Board {
   createdBy User          @relation("BoardCreator", fields: [createdById], references: [id], onDelete: Cascade)
   members   BoardMember[]
   views     BoardView[]
+  favorites BoardFavorite[]
 
   @@index([workspaceId])
   @@index([createdById])
+}
+
+model BoardFavorite {
+  boardId   String
+  userId    String
+  createdAt DateTime @default(now())
+
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([boardId, userId])
+  @@index([userId, createdAt])
 }
 
 model BoardView {

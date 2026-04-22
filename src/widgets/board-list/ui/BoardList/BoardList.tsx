@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import {
   useDeleteBoardMutation,
   useRenameBoardMutation,
+  useToggleBoardFavoriteMutation,
   useWorkspaceBoardsQuery,
 } from '@entities/board/hooks'
 import { BoardCard } from '@entities/board/ui'
@@ -27,6 +28,9 @@ export function BoardList({
   workspaceSlug,
 }: BoardListProps) {
   const [filter, setFilter] = useState<BoardFilter>('all')
+  const [pendingFavoriteIds, setPendingFavoriteIds] = useState<Set<string>>(
+    () => new Set(),
+  )
   const { mounted, setSortBy, setView, sortBy, view } =
     useBoardListPreferences()
   const {
@@ -38,6 +42,10 @@ export function BoardList({
     workspaceSlug,
   })
   const renameBoardMutation = useRenameBoardMutation({
+    currentUserId,
+    workspaceSlug,
+  })
+  const toggleFavoriteMutation = useToggleBoardFavoriteMutation({
     currentUserId,
     workspaceSlug,
   })
@@ -54,6 +62,22 @@ export function BoardList({
     await renameBoardMutation.mutateAsync({ id, name })
   }
 
+  async function handleFavoriteToggle(id: string, isFavorite: boolean) {
+    if (pendingFavoriteIds.has(id)) return
+
+    setPendingFavoriteIds((ids) => new Set(ids).add(id))
+
+    try {
+      await toggleFavoriteMutation.mutateAsync({ id, isFavorite })
+    } finally {
+      setPendingFavoriteIds((ids) => {
+        const nextIds = new Set(ids)
+        nextIds.delete(id)
+        return nextIds
+      })
+    }
+  }
+
   const sortedBoards = useMemo(() => {
     return sortBoards(boards, sortBy)
   }, [boards, sortBy])
@@ -66,6 +90,10 @@ export function BoardList({
 
       if (filter === 'shared') {
         return board.createdById !== currentUserId
+      }
+
+      if (filter === 'favorites') {
+        return Boolean(board.isFavorite)
       }
 
       return true
@@ -118,7 +146,9 @@ export function BoardList({
                       board.createdById === currentUserId ||
                       board.workspace.ownerId === currentUserId
                     }
+                    isFavoritePending={pendingFavoriteIds.has(board.id)}
                     onDelete={handleDelete}
+                    onFavoriteToggle={handleFavoriteToggle}
                     onRename={handleRename}
                   />
                 ))
@@ -145,7 +175,9 @@ export function BoardList({
                   board.createdById === currentUserId ||
                   board.workspace.ownerId === currentUserId
                 }
+                isFavoritePending={pendingFavoriteIds.has(board.id)}
                 onDelete={handleDelete}
+                onFavoriteToggle={handleFavoriteToggle}
                 onRename={handleRename}
                 view="list"
               />

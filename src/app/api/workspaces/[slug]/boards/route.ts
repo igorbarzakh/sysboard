@@ -43,13 +43,18 @@ export async function GET(_request: Request, { params }: RouteContext): Promise<
         where: { userId: session.user.id },
         select: { lastViewedAt: true },
       },
+      favorites: {
+        where: { userId: session.user.id },
+        select: { createdAt: true },
+      },
     },
     orderBy: { updatedAt: 'desc' },
   })
 
   return NextResponse.json(
-    boards.map(({ views, ...board }) => ({
+    boards.map(({ favorites, views, ...board }) => ({
       ...board,
+      isFavorite: favorites.length > 0,
       lastViewedAt: views[0]?.lastViewedAt.toISOString() ?? null,
     })),
   )
@@ -110,8 +115,16 @@ export async function POST(request: Request, { params }: RouteContext): Promise<
       members: {
         include: { user: { select: { id: true, name: true, image: true } } },
       },
+      favorites: {
+        where: { userId: session.user.id },
+        select: { createdAt: true },
+      },
     },
   })
 
-  return NextResponse.json(board, { status: 201 })
+  const { favorites, ...responseBoard } = board
+  return NextResponse.json(
+    { ...responseBoard, isFavorite: favorites.length > 0 },
+    { status: 201 },
+  )
 }

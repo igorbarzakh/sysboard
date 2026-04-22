@@ -2,12 +2,13 @@ import type { Board } from '@entities/board/model'
 
 export type ViewMode = 'grid' | 'list'
 export type SortBy = 'name' | 'created' | 'viewed'
-export type BoardFilter = 'all' | 'created' | 'shared'
+export type BoardFilter = 'all' | 'created' | 'shared' | 'favorites'
 
 export const BOARD_FILTER_OPTIONS = [
   { value: 'all', label: 'All boards' },
   { value: 'created', label: 'Created by me' },
   { value: 'shared', label: 'Shared with me' },
+  { value: 'favorites', label: 'Favorites' },
 ] satisfies Array<{ value: BoardFilter; label: string }>
 
 export const SORT_BY_LABELS: Record<SortBy, string> = {

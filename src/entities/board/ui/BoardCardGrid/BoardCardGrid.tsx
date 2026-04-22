@@ -1,6 +1,7 @@
 'use client'
 
 import type { ChangeEvent, KeyboardEvent, RefObject } from 'react'
+import { Star } from 'lucide-react'
 import { formatRelativeTime } from '@shared/lib'
 import type { Board } from '../../model'
 import { BoardCardMenu } from '../BoardCardMenu/BoardCardMenu'
@@ -12,11 +13,13 @@ interface BoardCardGridProps {
   canManage: boolean
   draftName: string
   inputRef: RefObject<HTMLInputElement | null>
+  isFavoritePending: boolean
   isRenaming: boolean
   isSavingName: boolean
   maxNameLength: number
   onNavigate: () => void
   onDeleteRequest: () => void
+  onFavoriteToggle: () => void
   onRenameCommit: () => void
   onRenameDraftChange: (event: ChangeEvent<HTMLInputElement>) => void
   onRenameKeyDown: (event: KeyboardEvent<HTMLInputElement>) => void
@@ -28,11 +31,13 @@ export function BoardCardGrid({
   canManage,
   draftName,
   inputRef,
+  isFavoritePending,
   isRenaming,
   isSavingName,
   maxNameLength,
   onNavigate,
   onDeleteRequest,
+  onFavoriteToggle,
   onRenameCommit,
   onRenameDraftChange,
   onRenameKeyDown,
@@ -60,6 +65,21 @@ export function BoardCardGrid({
         onClick={onNavigate}
         onKeyDown={handleKeyDown}
       >
+        <button
+          type="button"
+          aria-label={board.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          aria-pressed={Boolean(board.isFavorite)}
+          className={styles.favoriteButton}
+          data-active={board.isFavorite ? 'true' : undefined}
+          disabled={isFavoritePending}
+          onClick={(event) => {
+            event.stopPropagation()
+            onFavoriteToggle()
+          }}
+          onKeyDown={(event) => event.stopPropagation()}
+        >
+          <Star size={15} />
+        </button>
         <div className={styles.preview}>
           <BoardPreview data={board.data} />
         </div>

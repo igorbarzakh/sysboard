@@ -4,6 +4,7 @@ export {
   getBoardsByWorkspace,
   deleteBoard,
   trackBoardView,
+  toggleBoardFavorite,
   updateBoard,
 } from './api/boardApi'
 export { BoardCard } from './ui/BoardCard/BoardCard'

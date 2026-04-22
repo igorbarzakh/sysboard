@@ -11,7 +11,9 @@ import { DeleteBoardDialog } from '../DeleteBoardDialog/DeleteBoardDialog'
 interface BoardCardProps {
   board: Board
   canManage: boolean
+  isFavoritePending: boolean
   onDelete: (id: string) => void
+  onFavoriteToggle: (id: string, isFavorite: boolean) => Promise<void>
   onNavigate?: () => void
   onRename: (id: string, name: string) => Promise<void>
   view?: 'grid' | 'list'
@@ -20,7 +22,9 @@ interface BoardCardProps {
 export function BoardCard({
   board,
   canManage,
+  isFavoritePending,
   onDelete,
+  onFavoriteToggle,
   onNavigate,
   onRename,
   view = 'grid',
@@ -53,6 +57,11 @@ export function BoardCard({
 
   function handleDraftNameChange(event: ChangeEvent<HTMLInputElement>) {
     setDraftName(event.target.value)
+  }
+
+  function toggleFavorite() {
+    if (isFavoritePending) return
+    void onFavoriteToggle(board.id, !board.isFavorite)
   }
 
   function commitRename() {
@@ -102,10 +111,12 @@ export function BoardCard({
           canManage={canManage}
           draftName={draftName}
           inputRef={inputRef}
+          isFavoritePending={isFavoritePending}
           isRenaming={isRenaming}
           isSavingName={isSavingName}
           onNavigate={navigate}
           onDeleteRequest={() => setConfirmOpen(true)}
+          onFavoriteToggle={toggleFavorite}
           onRenameCommit={commitRename}
           onRenameDraftChange={handleDraftNameChange}
           onRenameKeyDown={handleRenameKeyDown}

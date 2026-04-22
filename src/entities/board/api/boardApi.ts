@@ -52,3 +52,20 @@ export async function trackBoardView(id: string): Promise<TrackBoardViewResult> 
   if (!res.ok) throw new Error(await parseError(res))
   return res.json() as Promise<TrackBoardViewResult>
 }
+
+interface ToggleBoardFavoriteResult {
+  isFavorite: boolean
+}
+
+export async function toggleBoardFavorite(
+  id: string,
+  isFavorite: boolean,
+): Promise<ToggleBoardFavoriteResult> {
+  const res = await fetch(`/api/boards/${id}/favorite`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ isFavorite }),
+  })
+  if (!res.ok) throw new Error(await parseError(res))
+  return res.json() as Promise<ToggleBoardFavoriteResult>
+}
