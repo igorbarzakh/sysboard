@@ -4,12 +4,17 @@ import { CanvasEditor } from '@widgets/canvas-editor/ui'
 
 interface BoardRoomPageProps {
   board: Board
+  currentUserId: string
 }
 
-export function BoardRoomPage({ board }: BoardRoomPageProps) {
+export function BoardRoomPage({ board, currentUserId }: BoardRoomPageProps) {
   return (
     <>
-      <BoardVisitTracker boardId={board.id} />
+      <BoardVisitTracker
+        boardId={board.id}
+        currentUserId={currentUserId}
+        workspaceSlug={board.workspace.slug}
+      />
       <CanvasEditor board={board} />
     </>
   )

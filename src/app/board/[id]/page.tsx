@@ -48,5 +48,5 @@ export default async function BoardPage({ params }: PageProps) {
     })),
   }
 
-  return <BoardRoomPage board={board} />
+  return <BoardRoomPage board={board} currentUserId={session.user.id} />
 }

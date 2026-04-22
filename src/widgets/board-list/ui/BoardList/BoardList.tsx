@@ -1,11 +1,13 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import { getBoardsByWorkspace, updateBoard } from '@entities/board/api'
+import {
+  useDeleteBoardMutation,
+  useRenameBoardMutation,
+  useWorkspaceBoardsQuery,
+} from '@entities/board/hooks'
 import { BoardCard } from '@entities/board/ui'
-import type { Board } from '@entities/board/model'
-import { useDeleteBoard } from '@features/delete-board/hooks'
 import { useBoardListPreferences } from '../../hooks'
 import { sortBoards, type BoardFilter } from '../../model'
 import { BoardListToolbar } from '../BoardListToolbar/BoardListToolbar'
@@ -24,66 +26,32 @@ export function BoardList({
   currentUserId,
   workspaceSlug,
 }: BoardListProps) {
-  const [boards, setBoards] = useState<Board[]>([])
-  const [filter, setFilter] = useState<BoardFilter>('recent')
-  const [isLoading, setIsLoading] = useState(true)
-  const shouldRefreshOnPageShow = useRef(false)
+  const [filter, setFilter] = useState<BoardFilter>('all')
   const { mounted, setSortBy, setView, sortBy, view } =
     useBoardListPreferences()
-  const { deleteBoard } = useDeleteBoard()
-
-  const loadBoards = useCallback(async () => {
-    const nextBoards = await getBoardsByWorkspace(workspaceSlug)
-    setBoards(nextBoards)
-  }, [workspaceSlug])
-
-  useEffect(() => {
-    getBoardsByWorkspace(workspaceSlug)
-      .then(setBoards)
-      .finally(() => setIsLoading(false))
-  }, [workspaceSlug])
-
-  useEffect(() => {
-    function refreshBoards() {
-      if (!shouldRefreshOnPageShow.current) return
-      shouldRefreshOnPageShow.current = false
-      void loadBoards()
-    }
-
-    window.addEventListener('pageshow', refreshBoards)
-
-    return () => {
-      window.removeEventListener('pageshow', refreshBoards)
-    }
-  }, [loadBoards])
-
-  function handleBoardNavigate() {
-    shouldRefreshOnPageShow.current = true
-  }
+  const {
+    data: boards = [],
+    isPending: isLoading,
+  } = useWorkspaceBoardsQuery({ currentUserId, workspaceSlug })
+  const deleteBoardMutation = useDeleteBoardMutation({
+    currentUserId,
+    workspaceSlug,
+  })
+  const renameBoardMutation = useRenameBoardMutation({
+    currentUserId,
+    workspaceSlug,
+  })
 
   async function handleDelete(id: string) {
-    setBoards((prev) => prev.filter((b) => b.id !== id))
     try {
-      await deleteBoard(id)
+      await deleteBoardMutation.mutateAsync(id)
     } catch {
-      void loadBoards()
       toast.error('Failed to delete board')
     }
   }
 
   async function handleRename(id: string, name: string) {
-    setBoards((prev) =>
-      prev.map((board) => {
-        if (board.id !== id) return board
-        return { ...board, name }
-      }),
-    )
-
-    try {
-      await updateBoard(id, { name })
-    } catch {
-      void loadBoards()
-    }
+    await renameBoardMutation.mutateAsync({ id, name })
   }
 
   const sortedBoards = useMemo(() => {
@@ -92,10 +60,6 @@ export function BoardList({
 
   const filteredBoards = useMemo(() => {
     return sortedBoards.filter((board) => {
-      if (filter === 'recent') {
-        return Boolean(board.lastViewedAt)
-      }
-
       if (filter === 'created') {
         return board.createdById === currentUserId
       }
@@ -155,7 +119,6 @@ export function BoardList({
                       board.workspace.ownerId === currentUserId
                     }
                     onDelete={handleDelete}
-                    onNavigate={handleBoardNavigate}
                     onRename={handleRename}
                   />
                 ))
@@ -183,7 +146,6 @@ export function BoardList({
                   board.workspace.ownerId === currentUserId
                 }
                 onDelete={handleDelete}
-                onNavigate={handleBoardNavigate}
                 onRename={handleRename}
                 view="list"
               />

@@ -2,10 +2,10 @@ import type { Board } from '@entities/board/model'
 
 export type ViewMode = 'grid' | 'list'
 export type SortBy = 'name' | 'created' | 'viewed'
-export type BoardFilter = 'recent' | 'created' | 'shared'
+export type BoardFilter = 'all' | 'created' | 'shared'
 
 export const BOARD_FILTER_OPTIONS = [
-  { value: 'recent', label: 'Recently viewed' },
+  { value: 'all', label: 'All boards' },
   { value: 'created', label: 'Created by me' },
   { value: 'shared', label: 'Shared with me' },
 ] satisfies Array<{ value: BoardFilter; label: string }>

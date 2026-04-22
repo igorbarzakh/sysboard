@@ -43,7 +43,12 @@ export async function updateBoard(
   return res.json() as Promise<Board>
 }
 
-export async function trackBoardView(id: string): Promise<void> {
+interface TrackBoardViewResult {
+  lastViewedAt: string
+}
+
+export async function trackBoardView(id: string): Promise<TrackBoardViewResult> {
   const res = await fetch(`/api/boards/${id}/view`, { method: 'POST' })
   if (!res.ok) throw new Error(await parseError(res))
+  return res.json() as Promise<TrackBoardViewResult>
 }
