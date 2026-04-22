@@ -14,11 +14,16 @@ import { BoardListEmpty } from '../BoardListEmpty/BoardListEmpty'
 import styles from './BoardList.module.scss'
 
 interface BoardListProps {
+  boardLimit: number
   currentUserId: string
   workspaceSlug: string
 }
 
-export function BoardList({ currentUserId, workspaceSlug }: BoardListProps) {
+export function BoardList({
+  boardLimit,
+  currentUserId,
+  workspaceSlug,
+}: BoardListProps) {
   const [boards, setBoards] = useState<Board[]>([])
   const [filter, setFilter] = useState<BoardFilter>('recent')
   const [isLoading, setIsLoading] = useState(true)
@@ -93,6 +98,7 @@ export function BoardList({ currentUserId, workspaceSlug }: BoardListProps) {
       {!isEmpty && (
         <BoardListToolbar
           boardCount={boards.length}
+          boardLimit={boardLimit}
           filter={filter}
           isLoading={isLoading}
           onFilterChange={setFilter}
@@ -108,6 +114,7 @@ export function BoardList({ currentUserId, workspaceSlug }: BoardListProps) {
         <BoardListEmpty
           workspaceSlug={workspaceSlug}
           boardCount={0}
+          boardLimit={boardLimit}
         />
       ) : !isLoading && filteredBoardCount === 0 ? (
         <div className={styles.filteredEmpty}>
@@ -123,7 +130,10 @@ export function BoardList({ currentUserId, workspaceSlug }: BoardListProps) {
                 <BoardCard
                   key={board.id}
                   board={board}
-                  canManage={board.createdById === currentUserId}
+                  canManage={
+                    board.createdById === currentUserId ||
+                    board.workspace.ownerId === currentUserId
+                  }
                   onDelete={handleDelete}
                 />
               ))
@@ -147,7 +157,10 @@ export function BoardList({ currentUserId, workspaceSlug }: BoardListProps) {
                 <BoardCard
                   key={board.id}
                   board={board}
-                  canManage={board.createdById === currentUserId}
+                  canManage={
+                    board.createdById === currentUserId ||
+                    board.workspace.ownerId === currentUserId
+                  }
                   onDelete={handleDelete}
                   view="list"
                 />

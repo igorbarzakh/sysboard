@@ -35,7 +35,7 @@ export async function GET(_request: Request, { params }: RouteContext): Promise<
   const boards = await prisma.board.findMany({
     where: { workspaceId: workspace.id },
     include: {
-      workspace: { select: { id: true, name: true, slug: true } },
+      workspace: { select: { id: true, name: true, ownerId: true, slug: true } },
       members: {
         include: { user: { select: { id: true, name: true, image: true } } },
       },
@@ -106,7 +106,7 @@ export async function POST(request: Request, { params }: RouteContext): Promise<
       },
     },
     include: {
-      workspace: { select: { id: true, name: true, slug: true } },
+      workspace: { select: { id: true, name: true, ownerId: true, slug: true } },
       members: {
         include: { user: { select: { id: true, name: true, image: true } } },
       },

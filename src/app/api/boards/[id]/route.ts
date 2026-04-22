@@ -17,6 +17,7 @@ async function requireBoardAccess(boardId: string, userId: string) {
       workspace: {
         select: {
           id: true,
+          ownerId: true,
           members: { where: { userId }, select: { role: true } },
         },
       },
@@ -103,9 +104,12 @@ export async function DELETE(_request: Request, { params }: RouteContext): Promi
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  if (board.createdById !== session.user.id) {
+  if (
+    board.createdById !== session.user.id &&
+    board.workspace.ownerId !== session.user.id
+  ) {
     return NextResponse.json(
-      { error: 'Only the board creator can delete this board' },
+      { error: 'Only the board creator or workspace owner can delete this board' },
       { status: 403 },
     )
   }

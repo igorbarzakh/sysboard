@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@shared/lib/server'
+import { PLAN_LIMITS } from '@shared/lib'
+import { authOptions, prisma } from '@shared/lib/server'
+import type { UserPlan } from '@shared/lib'
 import { WorkspaceOverviewPage } from '@pages/workspace-overview'
 
 type PageProps = { params: Promise<{ slug: string }> }
@@ -15,6 +17,21 @@ export default async function WorkspacePage({ params }: PageProps) {
   if (!session?.user?.id) redirect('/')
 
   const { slug } = await params
+  const workspace = await prisma.workspace.findFirst({
+    where: { slug, members: { some: { userId: session.user.id } } },
+    select: { owner: { select: { plan: true } } },
+  })
 
-  return <WorkspaceOverviewPage currentUserId={session.user.id} workspaceSlug={slug} />
+  if (!workspace) redirect('/workspace')
+
+  const boardLimit =
+    PLAN_LIMITS[workspace.owner.plan as UserPlan].maxBoardsPerWorkspace
+
+  return (
+    <WorkspaceOverviewPage
+      boardLimit={boardLimit}
+      currentUserId={session.user.id}
+      workspaceSlug={slug}
+    />
+  )
 }

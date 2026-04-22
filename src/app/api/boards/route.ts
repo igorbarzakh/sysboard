@@ -18,7 +18,7 @@ export async function GET(): Promise<NextResponse> {
       ],
     },
     include: {
-      workspace: { select: { id: true, name: true, slug: true } },
+      workspace: { select: { id: true, name: true, ownerId: true, slug: true } },
       views: {
         where: { userId: session.user.id },
         select: { lastViewedAt: true },
@@ -42,16 +42,16 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   const body: unknown = await request.json()
-  if (
-    typeof body !== 'object' ||
-    body === null ||
-    !('name' in body) ||
-    typeof (body as Record<string, unknown>).name !== 'string'
-  ) {
+  if (typeof body !== 'object' || body === null) {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
   }
 
-  const name = ((body as Record<string, unknown>).name as string).trim()
+  const payload = body as Record<string, unknown>
+  if (!('name' in payload) || typeof payload.name !== 'string') {
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+  }
+
+  const name = payload.name.trim()
   if (!name) {
     return NextResponse.json({ error: 'Name is required' }, { status: 400 })
   }
@@ -59,9 +59,19 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: 'Name must be 100 characters or fewer' }, { status: 400 })
   }
 
+  const workspaceSlug =
+    typeof payload.workspaceSlug === 'string' ? payload.workspaceSlug : null
+
   const workspace = await prisma.workspace.findFirst({
-    where: { ownerId: session.user.id },
-    select: { id: true },
+    where: {
+      ...(workspaceSlug ? { slug: workspaceSlug } : {}),
+      members: { some: { userId: session.user.id } },
+    },
+    orderBy: { createdAt: 'asc' },
+    select: {
+      id: true,
+      owner: { select: { plan: true } },
+    },
   })
 
   if (!workspace) {
@@ -71,12 +81,13 @@ export async function POST(request: Request): Promise<NextResponse> {
     )
   }
 
-  const limit = PLAN_LIMITS[(session.user.plan ?? 'free') as UserPlan].maxBoardsPerWorkspace
+  const plan = workspace.owner.plan as UserPlan
+  const limit = PLAN_LIMITS[plan].maxBoardsPerWorkspace
   const boardCount = await prisma.board.count({ where: { workspaceId: workspace.id } })
 
   if (boardCount >= limit) {
     return NextResponse.json(
-      { error: `Workspace board limit reached (max ${limit})` },
+      { error: `Workspace board limit reached (max ${limit} on ${plan} plan)` },
       { status: 403 },
     )
   }
@@ -91,7 +102,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       },
     },
     include: {
-      workspace: { select: { id: true, name: true, slug: true } },
+      workspace: { select: { id: true, name: true, ownerId: true, slug: true } },
     },
   })
 

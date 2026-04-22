@@ -16,6 +16,6 @@ export interface Board {
   createdAt: string
   lastViewedAt?: string | null
   updatedAt: string
-  workspace: { id: string; name: string; slug: string }
+  workspace: { id: string; name: string; ownerId?: string; slug: string }
   members: BoardMember[]
 }

@@ -26,7 +26,7 @@ export default async function BoardPage({ params }: PageProps) {
       ],
     },
     include: {
-      workspace: { select: { id: true, name: true, slug: true } },
+      workspace: { select: { id: true, name: true, ownerId: true, slug: true } },
       members: {
         include: { user: { select: { id: true, name: true, image: true } } },
       },

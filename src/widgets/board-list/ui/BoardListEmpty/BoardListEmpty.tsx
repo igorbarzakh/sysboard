@@ -4,9 +4,14 @@ import styles from './BoardListEmpty.module.scss'
 interface BoardListEmptyProps {
   workspaceSlug: string
   boardCount: number
+  boardLimit: number
 }
 
-export function BoardListEmpty({ workspaceSlug, boardCount }: BoardListEmptyProps) {
+export function BoardListEmpty({
+  workspaceSlug,
+  boardCount,
+  boardLimit,
+}: BoardListEmptyProps) {
   return (
     <section className={styles.empty} aria-labelledby="boards-empty-title">
       <div className={styles.content}>
@@ -52,6 +57,7 @@ export function BoardListEmpty({ workspaceSlug, boardCount }: BoardListEmptyProp
         <CreateBoardButton
           workspaceSlug={workspaceSlug}
           boardCount={boardCount}
+          limit={boardLimit}
         />
       </div>
     </section>
