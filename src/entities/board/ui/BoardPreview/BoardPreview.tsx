@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { TldrawImage } from 'tldraw'
 import type { TLStoreSnapshot } from 'tldraw'
 
@@ -7,7 +8,9 @@ interface BoardPreviewProps {
   data: unknown
 }
 
-export function BoardPreview({ data }: BoardPreviewProps) {
+export const BoardPreview = memo(function BoardPreview({
+  data,
+}: BoardPreviewProps) {
   if (!data || typeof data !== 'object') return null
 
   return (
@@ -19,4 +22,4 @@ export function BoardPreview({ data }: BoardPreviewProps) {
       darkMode={false}
     />
   )
-}
+})

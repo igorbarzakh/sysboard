@@ -14,7 +14,12 @@ interface BoardCardProps {
   view?: 'grid' | 'list'
 }
 
-export function BoardCard({ board, canManage, onDelete, view = 'grid' }: BoardCardProps) {
+export function BoardCard({
+  board,
+  canManage,
+  onDelete,
+  view = 'grid',
+}: BoardCardProps) {
   const router = useRouter()
   const [confirmOpen, setConfirmOpen] = useState(false)
 
