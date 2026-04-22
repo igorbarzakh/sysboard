@@ -3,8 +3,10 @@
 import { CreateBoardButton } from '@features/create-board/ui'
 import { Select } from '@shared/ui'
 import {
+  BOARD_FILTER_OPTIONS,
   SORT_BY_LABELS,
   SORT_BY_OPTIONS,
+  type BoardFilter,
   type SortBy,
   type ViewMode,
 } from '../../model'
@@ -13,7 +15,9 @@ import styles from './BoardListToolbar.module.scss'
 
 interface BoardListToolbarProps {
   boardCount: number
+  filter: BoardFilter
   isLoading: boolean
+  onFilterChange: (value: BoardFilter) => void
   onSortChange: (value: SortBy) => void
   onViewChange: (value: ViewMode) => void
   sortBy: SortBy
@@ -23,7 +27,9 @@ interface BoardListToolbarProps {
 
 export function BoardListToolbar({
   boardCount,
+  filter,
   isLoading,
+  onFilterChange,
   onSortChange,
   onViewChange,
   sortBy,
@@ -44,17 +50,37 @@ export function BoardListToolbar({
       </div>
 
       <div className={styles.headerControls}>
-        <label className={styles.sortControl}>
-          <Select<SortBy>
-            value={sortBy}
-            onChange={onSortChange}
-            options={SORT_BY_OPTIONS}
-            renderValue={(value) => SORT_BY_LABELS[value]}
-            disabled={isLoading || boardCount === 0}
-          />
-        </label>
+        <div className={styles.tabs} role="tablist" aria-label="Board filters">
+          {BOARD_FILTER_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              role="tab"
+              aria-selected={filter === option.value}
+              className={styles.tab}
+              data-active={filter === option.value}
+              disabled={isLoading || boardCount === 0}
+              onClick={() => onFilterChange(option.value)}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
 
-        <BoardListViewToggle value={view} onChange={onViewChange} />
+        <div className={styles.viewControls}>
+          <label className={styles.sortControl}>
+            <Select<SortBy>
+              value={sortBy}
+              onChange={onSortChange}
+              options={SORT_BY_OPTIONS}
+              renderValue={(value) => SORT_BY_LABELS[value]}
+              disabled={isLoading || boardCount === 0}
+              triggerClassName={styles.sortTrigger}
+            />
+          </label>
+
+          <BoardListViewToggle value={view} onChange={onViewChange} />
+        </div>
       </div>
     </div>
   )

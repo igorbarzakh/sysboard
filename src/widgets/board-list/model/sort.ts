@@ -2,6 +2,13 @@ import type { Board } from '@entities/board/model'
 
 export type ViewMode = 'grid' | 'list'
 export type SortBy = 'name' | 'created' | 'viewed'
+export type BoardFilter = 'recent' | 'created' | 'shared'
+
+export const BOARD_FILTER_OPTIONS = [
+  { value: 'recent', label: 'Recently viewed' },
+  { value: 'created', label: 'Created by me' },
+  { value: 'shared', label: 'Shared with me' },
+] satisfies Array<{ value: BoardFilter; label: string }>
 
 export const SORT_BY_LABELS: Record<SortBy, string> = {
   name: 'Alphabetical',
@@ -37,8 +44,10 @@ export function sortBoards(boards: Board[], sortBy: SortBy): Board[] {
       return a.name.localeCompare(b.name)
     }
 
-    const aDate = sortBy === 'created' ? a.createdAt : a.updatedAt
-    const bDate = sortBy === 'created' ? b.createdAt : b.updatedAt
+    const aDate =
+      sortBy === 'created' ? a.createdAt : (a.lastViewedAt ?? a.updatedAt)
+    const bDate =
+      sortBy === 'created' ? b.createdAt : (b.lastViewedAt ?? b.updatedAt)
 
     return Date.parse(bDate) - Date.parse(aDate)
   })

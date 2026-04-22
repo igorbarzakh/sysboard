@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { getBoardsByWorkspace } from '@entities/board/api'
 import { BoardCard } from '@entities/board/ui'
 import type { Board } from '@entities/board/model'
 import { useDeleteBoard } from '@features/delete-board/hooks'
 import { useBoardListPreferences } from '../../hooks'
-import { sortBoards } from '../../model'
+import { sortBoards, type BoardFilter } from '../../model'
 import { BoardListToolbar } from '../BoardListToolbar/BoardListToolbar'
 import { BoardListSkeleton } from '../BoardListSkeleton'
 import { BoardListEmpty } from '../BoardListEmpty/BoardListEmpty'
@@ -20,10 +20,16 @@ interface BoardListProps {
 
 export function BoardList({ currentUserId, workspaceSlug }: BoardListProps) {
   const [boards, setBoards] = useState<Board[]>([])
+  const [filter, setFilter] = useState<BoardFilter>('recent')
   const [isLoading, setIsLoading] = useState(true)
   const { mounted, setSortBy, setView, sortBy, view } =
     useBoardListPreferences()
   const { deleteBoard } = useDeleteBoard()
+
+  const loadBoards = useCallback(async () => {
+    const nextBoards = await getBoardsByWorkspace(workspaceSlug)
+    setBoards(nextBoards)
+  }, [workspaceSlug])
 
   useEffect(() => {
     getBoardsByWorkspace(workspaceSlug)
@@ -31,12 +37,26 @@ export function BoardList({ currentUserId, workspaceSlug }: BoardListProps) {
       .finally(() => setIsLoading(false))
   }, [workspaceSlug])
 
+  useEffect(() => {
+    function refreshBoards() {
+      void loadBoards()
+    }
+
+    window.addEventListener('focus', refreshBoards)
+    window.addEventListener('pageshow', refreshBoards)
+
+    return () => {
+      window.removeEventListener('focus', refreshBoards)
+      window.removeEventListener('pageshow', refreshBoards)
+    }
+  }, [loadBoards])
+
   async function handleDelete(id: string) {
     setBoards((prev) => prev.filter((b) => b.id !== id))
     try {
       await deleteBoard(id)
     } catch {
-      getBoardsByWorkspace(workspaceSlug).then(setBoards)
+      void loadBoards()
       toast.error('Failed to delete board')
     }
   }
@@ -45,6 +65,27 @@ export function BoardList({ currentUserId, workspaceSlug }: BoardListProps) {
     return sortBoards(boards, sortBy)
   }, [boards, sortBy])
 
+  const filteredBoards = useMemo(() => {
+    return sortedBoards.filter((board) => {
+      if (filter === 'recent') {
+        return Boolean(board.lastViewedAt)
+      }
+
+      if (filter === 'created') {
+        return board.createdById === currentUserId
+      }
+
+      if (filter === 'shared') {
+        return board.createdById !== currentUserId
+      }
+
+      return true
+    })
+  }, [currentUserId, filter, sortedBoards])
+
+  const filteredBoardCount = filteredBoards.length
+  const resultKey = `${view}-${filter}-${sortBy}`
+
   const isEmpty = !isLoading && boards.length === 0
 
   return (
@@ -52,7 +93,9 @@ export function BoardList({ currentUserId, workspaceSlug }: BoardListProps) {
       {!isEmpty && (
         <BoardListToolbar
           boardCount={boards.length}
+          filter={filter}
           isLoading={isLoading}
+          onFilterChange={setFilter}
           onSortChange={setSortBy}
           onViewChange={setView}
           sortBy={sortBy}
@@ -66,40 +109,50 @@ export function BoardList({ currentUserId, workspaceSlug }: BoardListProps) {
           workspaceSlug={workspaceSlug}
           boardCount={0}
         />
+      ) : !isLoading && filteredBoardCount === 0 ? (
+        <div className={styles.filteredEmpty}>
+          Could not find any matches. Try adjusting your filters.
+        </div>
       ) : view === 'grid' ? (
         isLoading ? (
           <BoardListSkeleton view={view} />
         ) : (
-          <div className={styles.grid}>
-            {sortedBoards.map((board) => (
-              <BoardCard
-                key={board.id}
-                board={board}
-                canManage={board.createdById === currentUserId}
-                onDelete={handleDelete}
-              />
-            ))}
+          <div key={resultKey} className={styles.grid}>
+            {filteredBoardCount > 0 ? (
+              filteredBoards.map((board) => (
+                <BoardCard
+                  key={board.id}
+                  board={board}
+                  canManage={board.createdById === currentUserId}
+                  onDelete={handleDelete}
+                />
+              ))
+            ) : null}
           </div>
         )
       ) : (
-        <div className={styles.list}>
-          <div className={styles.listHeader}>
-            <span className={styles.listHeaderCell}>Name</span>
-            <span className={styles.listHeaderCell}>Last modified</span>
-            <span className={styles.listHeaderCell}>Created</span>
-          </div>
+        <div key={resultKey} className={styles.list}>
+          {filteredBoardCount > 0 ? (
+            <div className={styles.listHeader}>
+              <span className={styles.listHeaderCell}>Name</span>
+              <span className={styles.listHeaderCell}>Last modified</span>
+              <span className={styles.listHeaderCell}>Created</span>
+            </div>
+          ) : null}
           {isLoading ? (
             <BoardListSkeleton view={view} />
           ) : (
-            sortedBoards.map((board) => (
-              <BoardCard
-                key={board.id}
-                board={board}
-                canManage={board.createdById === currentUserId}
-                onDelete={handleDelete}
-                view="list"
-              />
-            ))
+            filteredBoardCount > 0 ? (
+              filteredBoards.map((board) => (
+                <BoardCard
+                  key={board.id}
+                  board={board}
+                  canManage={board.createdById === currentUserId}
+                  onDelete={handleDelete}
+                  view="list"
+                />
+              ))
+            ) : null
           )}
         </div>
       )}
