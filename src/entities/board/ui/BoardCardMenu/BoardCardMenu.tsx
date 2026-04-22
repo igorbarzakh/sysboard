@@ -2,6 +2,7 @@
 
 import type { ReactElement } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import {
   ContextMenu,
   ContextMenuTrigger,
@@ -15,6 +16,7 @@ interface BoardCardMenuProps {
   canManage: boolean
   children: ReactElement
   onDeleteRequest: () => void
+  onRenameRequest: () => void
 }
 
 export function BoardCardMenu({
@@ -22,8 +24,18 @@ export function BoardCardMenu({
   canManage,
   children,
   onDeleteRequest,
+  onRenameRequest,
 }: BoardCardMenuProps) {
   const router = useRouter()
+
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/board/${boardId}`)
+      toast.success('Link copied to clipboard')
+    } catch {
+      toast.error('Failed to copy link')
+    }
+  }
 
   return (
     <ContextMenu>
@@ -34,7 +46,14 @@ export function BoardCardMenu({
           className={styles.item}>
           Open
         </ContextMenuItem>
-        {canManage ? <ContextMenuItem className={styles.item}>Rename</ContextMenuItem> : null}
+        {canManage ? (
+          <ContextMenuItem onClick={onRenameRequest} className={styles.item}>
+            Rename
+          </ContextMenuItem>
+        ) : null}
+        <ContextMenuItem onClick={() => void copyLink()} className={styles.item}>
+          Copy link
+        </ContextMenuItem>
         <ContextMenuItem className={styles.item}>Share</ContextMenuItem>
         {canManage ? (
           <ContextMenuItem

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+import { BOARD_NAME_MAX_LENGTH } from '@entities/board/model'
 import { authOptions, prisma } from '@shared/lib/server'
 
 type RouteContext = { params: Promise<{ id: string }> }
@@ -61,12 +62,15 @@ export async function PATCH(request: Request, { params }: RouteContext): Promise
   }
 
   const payload = body as Record<string, unknown>
-  const updateData: { name?: string; data?: object } = {}
+  const updateData: { name?: string; data?: object; updatedAt?: Date } = {}
 
   if ('name' in payload) {
-    if (board.createdById !== session.user.id) {
+    if (
+      board.createdById !== session.user.id &&
+      board.workspace.ownerId !== session.user.id
+    ) {
       return NextResponse.json(
-        { error: 'Only the board creator can rename this board' },
+        { error: 'Only the board creator or workspace owner can rename this board' },
         { status: 403 },
       )
     }
@@ -74,8 +78,11 @@ export async function PATCH(request: Request, { params }: RouteContext): Promise
     if (typeof payload.name !== 'string' || !payload.name.trim()) {
       return NextResponse.json({ error: 'Name must be a non-empty string' }, { status: 400 })
     }
-    if (payload.name.trim().length > 100) {
-      return NextResponse.json({ error: 'Name must be 100 characters or fewer' }, { status: 400 })
+    if (payload.name.trim().length > BOARD_NAME_MAX_LENGTH) {
+      return NextResponse.json(
+        { error: `Name must be ${BOARD_NAME_MAX_LENGTH} characters or fewer` },
+        { status: 400 },
+      )
     }
     updateData.name = payload.name.trim()
   }
@@ -85,6 +92,10 @@ export async function PATCH(request: Request, { params }: RouteContext): Promise
       return NextResponse.json({ error: 'Data must be an object' }, { status: 400 })
     }
     updateData.data = payload.data as object
+  }
+
+  if ('name' in payload && !('data' in payload)) {
+    updateData.updatedAt = board.updatedAt
   }
 
   const updated = await prisma.board.update({ where: { id }, data: updateData })

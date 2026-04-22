@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import { getBoardsByWorkspace } from '@entities/board/api'
+import { getBoardsByWorkspace, updateBoard } from '@entities/board/api'
 import { BoardCard } from '@entities/board/ui'
 import type { Board } from '@entities/board/model'
 import { useDeleteBoard } from '@features/delete-board/hooks'
@@ -63,6 +63,19 @@ export function BoardList({
     } catch {
       void loadBoards()
       toast.error('Failed to delete board')
+    }
+  }
+
+  async function handleRename(id: string, name: string) {
+    setBoards((prev) => prev.map((board) => {
+      if (board.id !== id) return board
+      return { ...board, name }
+    }))
+
+    try {
+      await updateBoard(id, { name })
+    } catch {
+      void loadBoards()
     }
   }
 
@@ -135,6 +148,7 @@ export function BoardList({
                     board.workspace.ownerId === currentUserId
                   }
                   onDelete={handleDelete}
+                  onRename={handleRename}
                 />
               ))
             ) : null}
@@ -162,6 +176,7 @@ export function BoardList({
                     board.workspace.ownerId === currentUserId
                   }
                   onDelete={handleDelete}
+                  onRename={handleRename}
                   view="list"
                 />
               ))
