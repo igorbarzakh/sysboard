@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { ChevronDown, LogOut, UserRound } from 'lucide-react'
 import { useCurrentUser } from '@entities/user/hooks'
 import { UserSettingsModal } from '@features/user-settings-modal'
-import { Avatar } from '@shared/ui'
+import { Avatar, Skeleton } from '@shared/ui'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -16,8 +16,13 @@ import {
 import styles from './UserMenu.module.scss'
 
 export function UserMenu() {
+  const { status } = useSession()
   const user = useCurrentUser()
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+
+  if (status === 'loading') {
+    return <Skeleton className={styles.skeletonTrigger} />
+  }
 
   if (!user) return null
 

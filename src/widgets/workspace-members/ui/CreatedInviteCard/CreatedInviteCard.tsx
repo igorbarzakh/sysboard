@@ -1,7 +1,7 @@
 import { Check, Copy } from 'lucide-react'
 import type { WorkspaceInviteLink } from '@entities/workspace/model'
 import { WORKSPACE_INVITE_TTL_LABEL } from '@shared/lib'
-import { Button } from '@shared/ui'
+import { Button, Skeleton } from '@shared/ui'
 import styles from './CreatedInviteCard.module.scss'
 
 interface CreatedInviteCardProps {
@@ -21,9 +21,9 @@ export function CreatedInviteCard({
     <div className={styles.root}>
       {isInviting ? (
         <div className={styles.skeleton}>
-          <div className={styles.skeletonLine} style={{ width: '40%' }} />
-          <div className={styles.skeletonLine} style={{ width: '65%' }} />
-          <div className={styles.skeletonLine} style={{ width: '90%' }} />
+          <Skeleton className={styles.skeletonLine} style={{ width: '40%' }} />
+          <Skeleton className={styles.skeletonLine} style={{ width: '65%' }} />
+          <Skeleton className={styles.skeletonLine} style={{ width: '90%' }} />
         </div>
       ) : (
         <>

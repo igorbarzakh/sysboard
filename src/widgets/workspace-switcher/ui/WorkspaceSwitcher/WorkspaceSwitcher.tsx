@@ -9,6 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  Skeleton,
 } from '@shared/ui'
 import styles from './WorkspaceSwitcher.module.scss'
 
@@ -21,7 +22,7 @@ export function WorkspaceSwitcher() {
   const current = workspaces.find((w) => w.slug === currentSlug) ?? null
 
   if (isPending) {
-    return <div className={styles.skeleton} />
+    return <Skeleton className={styles.skeleton} />
   }
 
   if (!current && workspaces.length === 0) {

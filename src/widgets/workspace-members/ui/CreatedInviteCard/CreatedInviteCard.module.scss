@@ -19,20 +19,7 @@
 
 .skeletonLine {
   height: 12px;
-  background: var(--border-subtle);
   border-radius: var(--radius-pill);
-  animation: shimmer 1.2s ease-in-out infinite;
-}
-
-@keyframes shimmer {
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.4;
-  }
 }
 
 .text {

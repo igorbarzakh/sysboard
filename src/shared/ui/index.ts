@@ -41,5 +41,6 @@ export {
 export { Logo } from './Logo'
 export { Avatar } from './Avatar/Avatar'
 export { DangerDialog } from './DangerDialog'
+export { Skeleton } from './Skeleton'
 export { Toaster } from './Toaster'
 export { Tooltip } from './Tooltip/Tooltip'

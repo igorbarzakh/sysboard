@@ -1,13 +1,3 @@
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
-}
-
 .root {
   overflow: hidden;
   max-height: calc(100dvh - 180px);
@@ -16,7 +6,7 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: var(--space-4);
+  gap: var(--space-6);
 }
 
 .list {
@@ -33,36 +23,34 @@
 }
 
 .skeletonCardPreview {
+  display: block;
   aspect-ratio: 16 / 9;
-  background: var(--bg-surface);
-  animation: pulse 2s var(--ease-standard) infinite;
+  border-radius: 0;
 }
 
 .skeletonCardBody {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-1);
   box-sizing: border-box;
   padding: var(--space-3) 14px;
-  min-height: 70px;
   background: var(--bg-base);
   border-top: 1px solid var(--bg-surface);
 }
 
 .skeletonLine {
   height: 14px;
-  background: var(--bg-surface);
   border-radius: var(--radius-sm);
-  animation: pulse 2s var(--ease-standard) infinite;
 }
 
 .cardTitleLine {
-  width: 55%;
+  width: 75%;
+  height: 18px;
 }
 
 .cardMetaLine {
-  width: 30%;
-  height: 12px;
+  width: 45%;
+  height: 15px;
 }
 
 .rowNameLine {
@@ -93,8 +81,6 @@
   flex-shrink: 0;
   width: 100px;
   height: 64px;
-  background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  animation: pulse 2s var(--ease-standard) infinite;
 }
