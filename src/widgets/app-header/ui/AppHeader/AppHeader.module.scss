@@ -1,6 +1,5 @@
 .header {
   display: flex;
-  flex-shrink: 0;
   align-items: center;
   justify-content: flex-end;
   gap: var(--space-4);
@@ -8,8 +7,4 @@
   height: var(--shell-header-height);
   background: var(--bg-app);
   border-bottom: 1px solid var(--border-default);
-}
-
-.actions {
-  flex-shrink: 0;
 }
