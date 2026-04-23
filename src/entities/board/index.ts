@@ -1,5 +1,7 @@
 export type { Board, BoardMember } from './model/types'
 export {
+  createBoard,
+  getBoard,
   getBoards,
   getBoardsByWorkspace,
   deleteBoard,

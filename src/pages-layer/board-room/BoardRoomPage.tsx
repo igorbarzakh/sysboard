@@ -1,13 +1,30 @@
+'use client'
+
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useBoardQuery } from '@entities/board/hooks'
 import { BoardVisitTracker } from '@entities/board/ui'
-import type { Board } from '@entities/board/model'
 import { CanvasEditor } from '@widgets/canvas-editor/ui'
 
 interface BoardRoomPageProps {
-  board: Board
+  boardId: string
   currentUserId: string
 }
 
-export function BoardRoomPage({ board, currentUserId }: BoardRoomPageProps) {
+export function BoardRoomPage({ boardId, currentUserId }: BoardRoomPageProps) {
+  const router = useRouter()
+  const { data: board, error, isPending } = useBoardQuery({ boardId, currentUserId })
+
+  useEffect(() => {
+    if (error) {
+      router.replace('/')
+    }
+  }, [error, router])
+
+  if (!board || isPending) {
+    return null
+  }
+
   return (
     <>
       <BoardVisitTracker

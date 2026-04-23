@@ -109,6 +109,7 @@ export function BoardList({
         <BoardListToolbar
           boardCount={boards.length}
           boardLimit={boardLimit}
+          currentUserId={currentUserId}
           filter={filter}
           isLoading={isLoading}
           onFilterChange={setFilter}
@@ -124,6 +125,7 @@ export function BoardList({
         <BoardListEmpty
           boardCount={0}
           boardLimit={boardLimit}
+          currentUserId={currentUserId}
           workspaceSlug={workspaceSlug}
         />
       ) : !isLoading && filteredBoardCount === 0 ? (

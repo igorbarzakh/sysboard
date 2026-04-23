@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { BOARD_NAME_MAX_LENGTH } from '@entities/board/model'
+import type { Board } from '@entities/board/model'
 import { authOptions, prisma } from '@shared/lib/server'
 
 type RouteContext = { params: Promise<{ id: string }> }
@@ -18,15 +19,44 @@ async function requireBoardAccess(boardId: string, userId: string) {
       workspace: {
         select: {
           id: true,
+          name: true,
           ownerId: true,
+          slug: true,
           members: { where: { userId }, select: { role: true } },
         },
       },
       members: {
-        include: { user: { select: { id: true, name: true, email: true, image: true } } },
+        include: { user: { select: { id: true, name: true, image: true } } },
+      },
+      views: {
+        where: { userId },
+        select: { lastViewedAt: true },
+      },
+      favorites: {
+        where: { userId },
+        select: { createdAt: true },
       },
     },
   })
+}
+
+function serializeBoard(board: Awaited<ReturnType<typeof requireBoardAccess>>): Board | null {
+  if (!board) return null
+
+  const { favorites, views, ...rest } = board
+
+  return {
+    ...rest,
+    createdAt: rest.createdAt.toISOString(),
+    updatedAt: rest.updatedAt.toISOString(),
+    isFavorite: favorites.length > 0,
+    lastViewedAt: views[0]?.lastViewedAt.toISOString() ?? null,
+    members: rest.members.map((member) => ({
+      ...member,
+      joinedAt: member.joinedAt.toISOString(),
+      role: 'editor',
+    })),
+  }
 }
 
 export async function GET(_request: Request, { params }: RouteContext): Promise<NextResponse> {
@@ -41,7 +71,7 @@ export async function GET(_request: Request, { params }: RouteContext): Promise<
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  return NextResponse.json(board)
+  return NextResponse.json(serializeBoard(board))
 }
 
 export async function PATCH(request: Request, { params }: RouteContext): Promise<NextResponse> {

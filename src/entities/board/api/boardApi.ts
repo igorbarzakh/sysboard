@@ -25,6 +25,25 @@ export async function getBoardsByWorkspace(slug: string): Promise<Board[]> {
   return res.json() as Promise<Board[]>
 }
 
+export async function getBoard(id: string): Promise<Board> {
+  const res = await fetch(`/api/boards/${id}`)
+  if (!res.ok) throw new Error(await parseError(res))
+  return res.json() as Promise<Board>
+}
+
+export async function createBoard(
+  workspaceSlug: string,
+  name: string,
+): Promise<Board> {
+  const res = await fetch(`/api/workspaces/${workspaceSlug}/boards`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name }),
+  })
+  if (!res.ok) throw new Error(await parseError(res))
+  return res.json() as Promise<Board>
+}
+
 export async function deleteBoard(id: string): Promise<void> {
   const res = await fetch(`/api/boards/${id}`, { method: 'DELETE' })
   if (!res.ok) throw new Error(await parseError(res))

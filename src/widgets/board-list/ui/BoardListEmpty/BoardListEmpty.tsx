@@ -4,12 +4,14 @@ import styles from './BoardListEmpty.module.scss'
 interface BoardListEmptyProps {
   boardCount: number
   boardLimit: number
+  currentUserId: string
   workspaceSlug: string
 }
 
 export function BoardListEmpty({
   boardCount,
   boardLimit,
+  currentUserId,
   workspaceSlug,
 }: BoardListEmptyProps) {
   return (
@@ -26,6 +28,7 @@ export function BoardListEmpty({
 
         <CreateBoardButton
           boardCount={boardCount}
+          currentUserId={currentUserId}
           limit={boardLimit}
           workspaceSlug={workspaceSlug}
         />

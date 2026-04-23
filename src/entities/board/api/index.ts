@@ -1,4 +1,6 @@
 export {
+  createBoard,
+  getBoard,
   getBoards,
   getBoardsByWorkspace,
   deleteBoard,

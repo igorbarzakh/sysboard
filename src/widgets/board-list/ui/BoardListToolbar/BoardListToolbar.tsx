@@ -16,6 +16,7 @@ import styles from './BoardListToolbar.module.scss'
 interface BoardListToolbarProps {
   boardCount: number
   boardLimit: number
+  currentUserId: string
   filter: BoardFilter
   isLoading: boolean
   onFilterChange: (value: BoardFilter) => void
@@ -29,6 +30,7 @@ interface BoardListToolbarProps {
 export function BoardListToolbar({
   boardCount,
   boardLimit,
+  currentUserId,
   filter,
   isLoading,
   onFilterChange,
@@ -46,6 +48,7 @@ export function BoardListToolbar({
         {boardCount > 0 && !isLoading && (
           <CreateBoardButton
             boardCount={boardCount}
+            currentUserId={currentUserId}
             limit={boardLimit}
             workspaceSlug={workspaceSlug}
           />

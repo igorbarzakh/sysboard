@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+import type { Board } from '@entities/board/model'
 import { PLAN_LIMITS } from '@shared/lib'
 import { authOptions, prisma } from '@shared/lib/server'
 import type { UserPlan } from '@shared/lib'
@@ -7,17 +8,41 @@ import type { UserPlan } from '@shared/lib'
 type RouteContext = { params: Promise<{ slug: string }> }
 
 async function requireWorkspaceMember(slug: string, userId: string) {
-  return prisma.workspace.findFirst({
-    where: {
-      slug,
-      members: { some: { userId } },
-    },
+  return prisma.workspace.findUnique({
+    where: { slug },
     select: {
       id: true,
+      name: true,
+      ownerId: true,
+      slug: true,
       owner: { select: { plan: true } },
       members: { where: { userId }, select: { role: true } },
+      _count: { select: { boards: true } },
     },
   })
+}
+
+function serializeBoard(
+  board: {
+    id: string
+    name: string
+    workspaceId: string
+    createdById: string
+    data: unknown
+    createdAt: Date
+    updatedAt: Date
+  },
+  workspace: { id: string; name: string; ownerId: string; slug: string },
+): Board {
+  return {
+    ...board,
+    createdAt: board.createdAt.toISOString(),
+    updatedAt: board.updatedAt.toISOString(),
+    isFavorite: false,
+    lastViewedAt: null,
+    members: [],
+    workspace,
+  }
 }
 
 export async function GET(_request: Request, { params }: RouteContext): Promise<NextResponse> {
@@ -67,8 +92,9 @@ export async function POST(request: Request, { params }: RouteContext): Promise<
   }
 
   const { slug } = await params
+
   const workspace = await requireWorkspaceMember(slug, session.user.id)
-  if (!workspace) {
+  if (!workspace || workspace.members.length === 0) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
@@ -92,7 +118,8 @@ export async function POST(request: Request, { params }: RouteContext): Promise<
 
   const plan = workspace.owner.plan as UserPlan
   const limit = PLAN_LIMITS[plan].maxBoardsPerWorkspace
-  const boardCount = await prisma.board.count({ where: { workspaceId: workspace.id } })
+
+  const boardCount = workspace._count.boards
 
   if (boardCount >= limit) {
     return NextResponse.json(
@@ -110,21 +137,24 @@ export async function POST(request: Request, { params }: RouteContext): Promise<
         create: { userId: session.user.id, role: 'editor' },
       },
     },
-    include: {
-      workspace: { select: { id: true, name: true, ownerId: true, slug: true } },
-      members: {
-        include: { user: { select: { id: true, name: true, image: true } } },
-      },
-      favorites: {
-        where: { userId: session.user.id },
-        select: { createdAt: true },
-      },
+    select: {
+      id: true,
+      name: true,
+      workspaceId: true,
+      createdById: true,
+      data: true,
+      createdAt: true,
+      updatedAt: true,
     },
   })
 
-  const { favorites, ...responseBoard } = board
   return NextResponse.json(
-    { ...responseBoard, isFavorite: favorites.length > 0 },
+    serializeBoard(board, {
+      id: workspace.id,
+      name: workspace.name,
+      ownerId: workspace.ownerId,
+      slug: workspace.slug,
+    }),
     { status: 201 },
   )
 }
