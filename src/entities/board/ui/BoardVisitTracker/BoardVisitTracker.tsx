@@ -5,6 +5,9 @@ import { useQueryClient } from '@tanstack/react-query'
 import { boardQueryKeys, type Board } from '../../model'
 import { trackBoardView } from '../../api/boardApi'
 
+const VIEW_TRACK_DEDUP_MS = 5000
+const recentTrackedViews = new Map<string, number>()
+
 interface BoardVisitTrackerProps {
   board: Board
   currentUserId: string
@@ -19,6 +22,16 @@ export function BoardVisitTracker({
   const queryClient = useQueryClient()
 
   useEffect(() => {
+    const visitKey = `${currentUserId}:${board.id}`
+    const lastTrackedAt = recentTrackedViews.get(visitKey)
+    const now = Date.now()
+
+    if (lastTrackedAt && now - lastTrackedAt < VIEW_TRACK_DEDUP_MS) {
+      return
+    }
+
+    recentTrackedViews.set(visitKey, now)
+
     const queryKey = boardQueryKeys.workspaceBoards(workspaceSlug, currentUserId)
 
     queryClient.setQueryData<Board[]>(queryKey, (boards) => {

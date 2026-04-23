@@ -14,18 +14,27 @@ export async function POST(
   }
 
   const { id } = await params
-  const board = await prisma.board.findFirst({
-    where: {
-      id,
-      OR: [
-        { workspace: { members: { some: { userId: session.user.id } } } },
-        { members: { some: { userId: session.user.id } } },
-      ],
+
+  const board = await prisma.board.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      members: {
+        where: { userId: session.user.id },
+        select: { userId: true },
+      },
+      workspace: {
+        select: {
+          members: {
+            where: { userId: session.user.id },
+            select: { userId: true },
+          },
+        },
+      },
     },
-    select: { id: true },
   })
 
-  if (!board) {
+  if (!board || (board.members.length === 0 && board.workspace.members.length === 0)) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 

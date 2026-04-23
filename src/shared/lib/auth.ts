@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt',
   },
   callbacks: {
-    async jwt({ token, user, trigger, session }) {
+    async jwt({ token, user, trigger, session, account }) {
       const updatedUser = trigger === 'update' ? getUpdatedSessionUser(session) : {}
       if ('image' in updatedUser) {
         token.picture = updatedUser.image ?? null
@@ -41,36 +41,17 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id
         token.picture = user.image
+        token.name = user.name
         const [dbUser, dbAccount] = await Promise.all([
           prisma.user.findUnique({
             where: { id: user.id },
             select: { plan: true, profileRole: true },
           }),
-          prisma.account.findFirst({
-            where: { userId: user.id },
-            select: { provider: true },
-          }),
+          Promise.resolve(account?.provider ?? null),
         ])
         token.plan = dbUser?.plan ?? 'free'
         token.profileRole = dbUser?.profileRole ?? null
-        token.provider = dbAccount?.provider ?? null
-      } else if (typeof token.id === 'string') {
-        const [dbUser, dbAccount] = await Promise.all([
-          prisma.user.findUnique({
-            where: { id: token.id },
-            select: { plan: true, profileRole: true },
-          }),
-          token.provider === undefined
-            ? prisma.account.findFirst({
-                where: { userId: token.id },
-                select: { provider: true },
-              })
-            : Promise.resolve(null),
-        ])
-
-        token.plan = dbUser?.plan ?? token.plan ?? 'free'
-        token.profileRole = dbUser?.profileRole ?? null
-        token.provider = dbAccount?.provider ?? null
+        token.provider = dbAccount
       }
       return token
     },
