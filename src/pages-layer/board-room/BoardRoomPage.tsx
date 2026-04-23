@@ -11,7 +11,7 @@ export function BoardRoomPage({ board, currentUserId }: BoardRoomPageProps) {
   return (
     <>
       <BoardVisitTracker
-        boardId={board.id}
+        board={board}
         currentUserId={currentUserId}
         workspaceSlug={board.workspace.slug}
       />

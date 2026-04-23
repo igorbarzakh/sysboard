@@ -122,9 +122,9 @@ export function BoardList({
 
       {!mounted ? null : boards.length === 0 && !isLoading ? (
         <BoardListEmpty
-          workspaceSlug={workspaceSlug}
           boardCount={0}
           boardLimit={boardLimit}
+          workspaceSlug={workspaceSlug}
         />
       ) : !isLoading && filteredBoardCount === 0 ? (
         <div className={styles.filteredEmpty}>

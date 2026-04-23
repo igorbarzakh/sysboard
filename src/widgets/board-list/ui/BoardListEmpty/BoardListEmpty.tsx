@@ -2,15 +2,15 @@ import { CreateBoardButton } from '@features/create-board/ui'
 import styles from './BoardListEmpty.module.scss'
 
 interface BoardListEmptyProps {
-  workspaceSlug: string
   boardCount: number
   boardLimit: number
+  workspaceSlug: string
 }
 
 export function BoardListEmpty({
-  workspaceSlug,
   boardCount,
   boardLimit,
+  workspaceSlug,
 }: BoardListEmptyProps) {
   return (
     <section className={styles.empty} aria-labelledby="boards-empty-title">
@@ -25,9 +25,9 @@ export function BoardListEmpty({
         </div>
 
         <CreateBoardButton
-          workspaceSlug={workspaceSlug}
           boardCount={boardCount}
           limit={boardLimit}
+          workspaceSlug={workspaceSlug}
         />
       </div>
     </section>

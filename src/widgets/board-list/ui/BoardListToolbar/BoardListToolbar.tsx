@@ -45,9 +45,9 @@ export function BoardListToolbar({
 
         {boardCount > 0 && !isLoading && (
           <CreateBoardButton
-            workspaceSlug={workspaceSlug}
             boardCount={boardCount}
             limit={boardLimit}
+            workspaceSlug={workspaceSlug}
           />
         )}
       </div>

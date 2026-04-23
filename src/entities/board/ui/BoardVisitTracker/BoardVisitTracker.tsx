@@ -6,27 +6,33 @@ import { boardQueryKeys, type Board } from '../../model'
 import { trackBoardView } from '../../api/boardApi'
 
 interface BoardVisitTrackerProps {
-  boardId: string
+  board: Board
   currentUserId: string
   workspaceSlug: string
 }
 
 export function BoardVisitTracker({
-  boardId,
+  board,
   currentUserId,
   workspaceSlug,
 }: BoardVisitTrackerProps) {
   const queryClient = useQueryClient()
 
   useEffect(() => {
-    trackBoardView(boardId)
-      .then(({ lastViewedAt }) => {
-        const queryKey = boardQueryKeys.workspaceBoards(workspaceSlug, currentUserId)
+    const queryKey = boardQueryKeys.workspaceBoards(workspaceSlug, currentUserId)
 
+    queryClient.setQueryData<Board[]>(queryKey, (boards) => {
+      if (!boards) return [board]
+      if (boards.some((item) => item.id === board.id)) return boards
+      return [board, ...boards]
+    })
+
+    trackBoardView(board.id)
+      .then(({ lastViewedAt }) => {
         queryClient.setQueryData<Board[]>(queryKey, (boards) =>
-          boards?.map((board) => {
-            if (board.id !== boardId) return board
-            return { ...board, lastViewedAt }
+          boards?.map((item) => {
+            if (item.id !== board.id) return item
+            return { ...item, lastViewedAt }
           }),
         )
 
@@ -35,7 +41,7 @@ export function BoardVisitTracker({
         })
       })
       .catch(() => {})
-  }, [boardId, currentUserId, queryClient, workspaceSlug])
+  }, [board, currentUserId, queryClient, workspaceSlug])
 
   return null
 }

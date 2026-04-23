@@ -6,22 +6,22 @@ import { FREE_PLAN } from '@shared/lib'
 import { Button } from '@shared/ui'
 
 interface CreateBoardButtonProps {
-  workspaceSlug: string
   boardCount: number
   limit?: number
+  workspaceSlug: string
 }
 
 export function CreateBoardButton({
-  workspaceSlug,
   boardCount,
   limit = FREE_PLAN.maxBoardsPerWorkspace,
+  workspaceSlug,
 }: CreateBoardButtonProps) {
   const router = useRouter()
   const isAtLimit = boardCount >= limit
 
   function handleClick() {
     if (isAtLimit) return
-    router.push(`/board/new?workspace=${workspaceSlug}&n=${boardCount + 1}`)
+    router.push(`/board/new?workspace=${workspaceSlug}`)
   }
 
   return (
