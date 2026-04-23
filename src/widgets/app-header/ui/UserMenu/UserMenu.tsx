@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { signOut } from 'next-auth/react'
-import { ChevronDown, Settings, LogOut } from 'lucide-react'
+import { ChevronDown, LogOut, UserRound } from 'lucide-react'
 import { useCurrentUser } from '@entities/user/hooks'
 import { UserSettingsModal } from '@features/user-settings-modal'
 import { Avatar } from '@shared/ui'
@@ -31,7 +31,9 @@ export function UserMenu() {
             <span className={styles.avatarWrap} data-plan={user.plan}>
               <Avatar name={user.name} image={user.image} size="sm" />
             </span>
-            <span className={styles.triggerName}>{user.name ?? user.email}</span>
+            <span className={styles.triggerName}>
+              {user.name ?? user.email}
+            </span>
           </div>
           <ChevronDown size={14} className={styles.triggerChevron} />
         </DropdownMenuTrigger>
@@ -47,11 +49,12 @@ export function UserMenu() {
               <Avatar name={user.name} image={user.image} size="lg" />
             </span>
             <div className={styles.profileInfo}>
-              <p className={styles.profileNameRow}>
-                <span className={styles.profileName}>{user.name ?? 'User'}</span>
-                <span className={styles.planBadge} data-plan={user.plan}>{isPro ? 'Pro' : 'Free'}</span>
-              </p>
+              <p className={styles.profileName}>{user.name ?? 'User'}</p>
+
               <p className={styles.profileEmail}>{user.email}</p>
+              <span className={styles.planBadge} data-plan={user.plan}>
+                {isPro ? 'Pro' : 'Free'}
+              </span>
             </div>
           </div>
 
@@ -62,8 +65,8 @@ export function UserMenu() {
               className={styles.item}
               onClick={() => setIsSettingsOpen(true)}
             >
-              <Settings size={16} />
-              Settings
+              <UserRound size={16} />
+              Profile
             </DropdownMenuItem>
 
             <DropdownMenuItem

@@ -191,7 +191,7 @@ export function UserSettingsModal({
           <form className={styles.form} onSubmit={handleSave}>
             <DialogHeader className={styles.header}>
               <DialogTitle className={styles.title}>
-                Profile Settings
+                Edit profile
               </DialogTitle>
             </DialogHeader>
 

@@ -39,6 +39,7 @@ export function AvatarSettingsSection({
             accept="image/jpeg,image/png,image/webp"
             className={styles.fileInput}
             onChange={onAvatarChange}
+            tabIndex={-1}
           />
           <Button
             type="button"
