@@ -78,15 +78,7 @@ export function BoardCardList({
               onKeyDown={onRenameKeyDown}
             />
           ) : (
-            <h3
-              className={styles.name}
-              title={board.name}
-              onClick={(event) => {
-                if (!canManage) return
-                event.stopPropagation()
-                onRenameRequest()
-              }}
-            >
+            <h3 className={styles.name} title={board.name}>
               {board.name}
             </h3>
           )}

@@ -67,7 +67,9 @@ export function BoardCardGrid({
       >
         <button
           type="button"
-          aria-label={board.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          aria-label={
+            board.isFavorite ? 'Remove from favorites' : 'Add to favorites'
+          }
           aria-pressed={Boolean(board.isFavorite)}
           className={styles.favoriteButton}
           data-active={board.isFavorite ? 'true' : undefined}
@@ -99,15 +101,7 @@ export function BoardCardGrid({
                 onKeyDown={onRenameKeyDown}
               />
             ) : (
-              <h3
-                className={styles.name}
-                title={board.name}
-                onClick={(event) => {
-                  if (!canManage) return
-                  event.stopPropagation()
-                  onRenameRequest()
-                }}
-              >
+              <h3 className={styles.name} title={board.name}>
                 {board.name}
               </h3>
             )}
