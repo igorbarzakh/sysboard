@@ -1,0 +1,36 @@
+.loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-canvas);
+}
+
+.loadingLoader {
+  --height-of-loader: 4px;
+  --loader-color: var(--accent);
+  position: relative;
+  width: 180px;
+  height: var(--height-of-loader);
+  background: rgba(28, 28, 30, 0.14);
+  border-radius: 30px;
+}
+
+.loadingLoader::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background: var(--loader-color);
+  border-radius: 30px;
+  animation: loading-fill 4s ease-out forwards;
+  content: '';
+}
+
+@keyframes loading-fill {
+  100% {
+    width: 100%;
+  }
+}

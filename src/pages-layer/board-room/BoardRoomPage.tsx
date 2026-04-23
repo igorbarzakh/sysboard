@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useBoardQuery } from '@entities/board/hooks'
 import { BoardVisitTracker } from '@entities/board/ui'
 import { CanvasEditor } from '@widgets/canvas-editor/ui'
+import styles from './BoardRoomPage.module.scss'
 
 interface BoardRoomPageProps {
   boardId: string
@@ -13,7 +14,11 @@ interface BoardRoomPageProps {
 
 export function BoardRoomPage({ boardId, currentUserId }: BoardRoomPageProps) {
   const router = useRouter()
-  const { data: board, error, isPending } = useBoardQuery({ boardId, currentUserId })
+  const {
+    data: board,
+    error,
+    isPending,
+  } = useBoardQuery({ boardId, currentUserId })
 
   useEffect(() => {
     if (error) {
@@ -22,7 +27,11 @@ export function BoardRoomPage({ boardId, currentUserId }: BoardRoomPageProps) {
   }, [error, router])
 
   if (!board || isPending) {
-    return null
+    return (
+      <div className={styles.loading}>
+        <div className={styles.loadingLoader} aria-hidden="true" />
+      </div>
+    )
   }
 
   return (
