@@ -103,11 +103,9 @@ export function BoardList({
   const filteredBoardCount = filteredBoards.length
   const resultKey = `${view}-${filter}-${sortBy}`
 
-  const isEmpty = !isLoading && boards.length === 0
-
   return (
     <div className={styles.root}>
-      {!isEmpty && (
+      {mounted ? (
         <BoardListToolbar
           boardCount={boards.length}
           boardLimit={boardLimit}
@@ -120,7 +118,7 @@ export function BoardList({
           view={view}
           workspaceSlug={workspaceSlug}
         />
-      )}
+      ) : null}
 
       {!mounted ? null : boards.length === 0 && !isLoading ? (
         <BoardListEmpty

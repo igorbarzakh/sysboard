@@ -3,77 +3,26 @@
   flex: 1;
   align-items: center;
   justify-content: center;
-  min-height: 0;
 }
 
 .content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-6);
   margin-top: calc(var(--shell-header-height) * -1);
   padding: var(--space-8) var(--space-6);
   text-align: center;
 }
 
-.illustration {
-  width: 200px;
-
-  svg {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-}
-
-.cardBack {
-  opacity: 0.65;
-  fill: var(--bg-surface);
-  stroke: var(--border-subtle);
-  stroke-width: 1.2;
-}
-
-.cardFront {
-  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.06));
-  fill: var(--bg-elevated);
-  stroke: var(--border-default);
-  stroke-width: 1.2;
-}
-
-.iconArea {
-  fill: var(--bg-surface);
-  stroke: var(--border-subtle);
-  stroke-width: 1;
-}
-
-.iconNode {
-  fill: var(--border-default);
-}
-
-.iconLine {
-  stroke: var(--border-default);
-  stroke-linecap: round;
-  stroke-width: 1;
-}
-
-.skeleton {
-  fill: var(--bg-surface-hover);
-}
-
-.skeletonDim {
-  fill: var(--bg-surface);
-}
-
 .text {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  max-width: 320px;
+  margin-bottom: 16px;
 }
 
 .title {
+  margin-bottom: 8px;
   font-size: var(--text-title);
   font-weight: 600;
+  line-height: 1;
   color: var(--text-primary);
 }
 
