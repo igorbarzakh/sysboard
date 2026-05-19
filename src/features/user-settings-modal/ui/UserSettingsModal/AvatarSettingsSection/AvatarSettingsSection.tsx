@@ -29,7 +29,12 @@ export function AvatarSettingsSection({
   return (
     <div className={styles.root}>
       <div className={styles.preview}>
-        <Avatar name={name || userEmail} image={displayImage} size="xl" />
+        <Avatar
+          name={name || userEmail}
+          image={displayImage}
+          color="blue"
+          size="xl"
+        />
       </div>
       <div className={styles.content}>
         <div className={styles.actions}>

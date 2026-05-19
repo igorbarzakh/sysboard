@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { ChevronDown, Check, Plus } from 'lucide-react'
 import { useWorkspacesQuery } from '@entities/workspace/hooks'
 import {
+  Avatar,
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
@@ -32,6 +33,16 @@ export function WorkspaceSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className={styles.trigger}>
+        {current ? (
+          <Avatar
+            name={current.name}
+            image={current.image}
+            color="orange"
+            initialsLength={1}
+            shape="rounded"
+            size="sm"
+          />
+        ) : null}
         <span className={styles.triggerName}>
           {current?.name ?? 'Select workspace'}
         </span>
@@ -51,9 +62,14 @@ export function WorkspaceSwitcher() {
             className={styles.item}
             data-active={workspace.slug === currentSlug ? 'true' : undefined}
           >
-            <div className={styles.itemIcon}>
-              {workspace.name.slice(0, 1).toUpperCase()}
-            </div>
+            <Avatar
+              name={workspace.name}
+              image={workspace.image}
+              color="orange"
+              initialsLength={1}
+              shape="rounded"
+              size="sm"
+            />
             <span className={styles.itemName}>{workspace.name}</span>
             {workspace.slug === currentSlug && (
               <Check size={14} className={styles.itemCheck} />

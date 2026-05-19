@@ -34,7 +34,12 @@ export function UserMenu() {
         <DropdownMenuTrigger className={styles.trigger}>
           <div className={styles.triggerInner}>
             <span className={styles.avatarWrap} data-plan={user.plan}>
-              <Avatar name={user.name} image={user.image} size="sm" />
+              <Avatar
+                name={user.name}
+                image={user.image}
+                color="blue"
+                size="sm"
+              />
             </span>
             <span className={styles.triggerName}>
               {user.name ?? user.email}
@@ -51,7 +56,12 @@ export function UserMenu() {
         >
           <div className={styles.profile}>
             <span className={styles.profileAvatarWrap} data-plan={user.plan}>
-              <Avatar name={user.name} image={user.image} size="lg" />
+              <Avatar
+                name={user.name}
+                image={user.image}
+                color="blue"
+                size="lg"
+              />
             </span>
             <div className={styles.profileInfo}>
               <p className={styles.profileName}>{user.name ?? 'User'}</p>

@@ -28,7 +28,12 @@ export function MembersList({
 
         return (
           <div key={member.userId} className={styles.memberRow}>
-            <Avatar name={displayName} image={member.user.image} size="md" />
+            <Avatar
+              name={displayName}
+              image={member.user.image}
+              color="blue"
+              size="md"
+            />
             <div className={styles.memberInfo}>
               <p className={styles.memberName}>
                 <span>{displayName}</span>
