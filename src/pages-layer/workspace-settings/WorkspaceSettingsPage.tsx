@@ -57,6 +57,8 @@ export function WorkspaceSettingsPage({
   const [imageError, setImageError] = useState<string | null>(null)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [leaveOpen, setLeaveOpen] = useState(false)
+  const [isDeletingWorkspace, setIsDeletingWorkspace] = useState(false)
+  const [isLeavingWorkspace, setIsLeavingWorkspace] = useState(false)
   const updateWorkspaceMutation = useUpdateWorkspaceMutation(workspace.slug)
   const deleteWorkspaceMutation = useDeleteWorkspaceMutation(workspace.slug)
   const leaveWorkspaceMutation = useLeaveWorkspaceMutation(workspace.slug)
@@ -76,7 +78,9 @@ export function WorkspaceSettingsPage({
   const isBusy =
     updateWorkspaceMutation.isPending ||
     deleteWorkspaceMutation.isPending ||
-    leaveWorkspaceMutation.isPending
+    isDeletingWorkspace ||
+    leaveWorkspaceMutation.isPending ||
+    isLeavingWorkspace
   const planLimits = PLAN_LIMITS[workspace.plan]
   const usedMemberSlots = workspace.memberCount + workspace.activeInviteCount
   const memberUsageLabel =
@@ -178,6 +182,7 @@ export function WorkspaceSettingsPage({
     if (!canDeleteWorkspace || isBusy) return
 
     setError(null)
+    setIsDeletingWorkspace(true)
 
     try {
       await deleteWorkspaceMutation.mutateAsync()
@@ -189,6 +194,7 @@ export function WorkspaceSettingsPage({
           ? deleteError.message
           : 'Unable to delete workspace',
       )
+      setIsDeletingWorkspace(false)
     }
   }
 
@@ -196,6 +202,7 @@ export function WorkspaceSettingsPage({
     if (!canLeaveWorkspace || isBusy) return
 
     setError(null)
+    setIsLeavingWorkspace(true)
 
     try {
       await leaveWorkspaceMutation.mutateAsync()
@@ -207,6 +214,7 @@ export function WorkspaceSettingsPage({
           ? leaveError.message
           : 'Unable to leave workspace',
       )
+      setIsLeavingWorkspace(false)
     }
   }
 
@@ -421,27 +429,31 @@ export function WorkspaceSettingsPage({
 
       <DangerDialog
         open={deleteOpen}
-        onOpenChange={setDeleteOpen}
+        onOpenChange={(open) => {
+          if (!isDeletingWorkspace) setDeleteOpen(open)
+        }}
         icon={<AlertTriangle size={20} />}
         title="Delete workspace?"
         description={`This will permanently delete "${workspace.name}" and all boards inside it.`}
         confirmLabel={
-          deleteWorkspaceMutation.isPending ? 'Deleting...' : 'Delete workspace'
+          isDeletingWorkspace ? 'Deleting...' : 'Delete workspace'
         }
-        isConfirming={deleteWorkspaceMutation.isPending}
+        isConfirming={isDeletingWorkspace}
         onConfirm={() => void handleDelete()}
       />
 
       <DangerDialog
         open={leaveOpen}
-        onOpenChange={setLeaveOpen}
+        onOpenChange={(open) => {
+          if (!isLeavingWorkspace) setLeaveOpen(open)
+        }}
         icon={<LogOut size={20} />}
         title="Leave workspace?"
         description={`You will lose access to "${workspace.name}" and its boards.`}
         confirmLabel={
-          leaveWorkspaceMutation.isPending ? 'Leaving...' : 'Leave workspace'
+          isLeavingWorkspace ? 'Leaving...' : 'Leave workspace'
         }
-        isConfirming={leaveWorkspaceMutation.isPending}
+        isConfirming={isLeavingWorkspace}
         onConfirm={() => void handleLeave()}
       />
     </section>
