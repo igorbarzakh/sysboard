@@ -11,7 +11,6 @@ interface WorkspaceNavProps {
 }
 
 interface NavItem {
-  badge?: number
   href: string
   icon: ReactNode
   label: string
@@ -28,7 +27,6 @@ export function WorkspaceNav({ workspace }: WorkspaceNavProps) {
       label: 'Boards',
     },
     {
-      badge: workspace.members.length,
       href: `/workspace/${workspace.slug}/members`,
       icon: <Users size={18} />,
       label: 'Members',
@@ -77,9 +75,6 @@ function WorkspaceNavButton({
     >
       <span className={styles.icon}>{item.icon}</span>
       <span className={styles.label}>{item.label}</span>
-      {item.badge !== undefined && (
-        <span className={styles.badge}>{item.badge}</span>
-      )}
     </button>
   )
 }
