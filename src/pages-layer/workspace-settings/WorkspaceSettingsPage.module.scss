@@ -1,0 +1,266 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  margin-right: auto;
+  margin-left: auto;
+  padding: var(--space-8);
+  width: 100%;
+  max-width: 782px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-8);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.3334;
+  color: var(--text-primary);
+}
+
+.description {
+  margin-top: var(--space-1);
+  max-width: 560px;
+  font-size: var(--text-body);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.error {
+  font-size: var(--text-body);
+  color: var(--danger);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  background: var(--bg-elevated);
+
+  &:not(:last-child) {
+    margin-bottom: var(--space-9);
+  }
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.cardTitle {
+  font-size: var(--text-title);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+.cardDescription {
+  margin-top: var(--space-1);
+  font-size: var(--text-small);
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.label,
+.limitLabel {
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.charCount {
+  font-size: var(--text-small);
+  color: var(--text-muted);
+}
+
+.fieldError {
+  font-size: var(--text-small);
+  color: var(--danger);
+}
+
+.pictureSection {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.pictureContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.pictureActions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.fileInput {
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  margin: -1px;
+  padding: 0;
+  width: 1px;
+  height: 1px;
+  white-space: nowrap;
+  border: 0;
+}
+
+.pictureHint {
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.readOnlySummary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.readOnlyName {
+  font-size: var(--text-title);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.readOnlyContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.readOnlyDescription {
+  max-width: 520px;
+  font-size: var(--text-body);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.limitValue {
+  font-size: var(--text-body);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.badge,
+.planBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--space-2);
+  height: 22px;
+  font-size: var(--text-caption);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border-radius: var(--radius-pill);
+}
+
+.planBadge {
+  text-transform: uppercase;
+  color: var(--text-accent);
+  background: var(--accent-soft);
+}
+
+.planActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.limitList {
+  display: flex;
+  flex-direction: column;
+}
+
+.limitItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--border-subtle);
+
+  &:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+}
+
+.limitHint {
+  margin-top: var(--space-1);
+  font-size: var(--text-small);
+  color: var(--text-muted);
+}
+
+.dangerCard {
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--border-subtle);
+  border-color: var(--border-subtle);
+}
+
+.dangerButton {
+  align-self: flex-start;
+  color: var(--danger) !important;
+  background: var(--danger-soft) !important;
+  border-color: transparent !important;
+
+  &:hover:not(:disabled) {
+    color: var(--bg-base) !important;
+    background: var(--danger) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .header,
+  .cardHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .root {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .actions {
+    justify-content: flex-start;
+  }
+
+  .pictureSection,
+  .pictureActions,
+  .readOnlySummary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
