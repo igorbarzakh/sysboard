@@ -35,13 +35,23 @@ export default async function InvitePage({ params }: PageProps) {
 
   const currentUserIsMember = invite.workspace.members?.length > 0
 
-  if (invite.acceptedAt || currentUserIsMember) {
+  if (currentUserIsMember) {
+    return (
+      <InviteAcceptPage
+        status="already_member"
+        token={token}
+        workspaceName={invite.workspace.name}
+        workspaceSlug={invite.workspace.slug}
+      />
+    )
+  }
+
+  if (invite.acceptedAt) {
     return (
       <InviteAcceptPage
         status="accepted"
         token={token}
         workspaceName={invite.workspace.name}
-        workspaceSlug={invite.workspace.slug}
       />
     )
   }

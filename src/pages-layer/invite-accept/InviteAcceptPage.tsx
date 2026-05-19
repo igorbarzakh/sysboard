@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import { AlertCircle, CheckCircle2, LogIn, Users } from 'lucide-react'
+import { DiscordIcon, GoogleIcon } from '@features/auth-modal/ui'
 import { Button } from '@shared/ui'
 import styles from './InviteAcceptPage.module.scss'
 
@@ -13,6 +14,7 @@ type InviteStatus =
   | 'not_found'
   | 'expired'
   | 'accepted'
+  | 'already_member'
 
 interface InviteAcceptPageProps {
   status: InviteStatus
@@ -56,7 +58,6 @@ export function InviteAcceptPage({
       router.refresh()
     } catch (acceptError) {
       setError(acceptError instanceof Error ? acceptError.message : 'Unable to accept invite')
-    } finally {
       setIsAccepting(false)
     }
   }
@@ -65,7 +66,7 @@ export function InviteAcceptPage({
     <section className={styles.page}>
       <div className={styles.card}>
         <div className={styles.icon} data-status={status}>
-          {status === 'ready' || status === 'accepted' ? (
+          {status === 'ready' || status === 'already_member' ? (
             <CheckCircle2 size={24} />
           ) : status === 'unauthenticated' ? (
             <LogIn size={24} />
@@ -76,7 +77,18 @@ export function InviteAcceptPage({
 
         <div className={styles.heading}>
           <p className={styles.kicker}>Workspace invite</p>
-          <h1 className={styles.title}>{getTitle(status, workspaceName)}</h1>
+          <h1 className={styles.title}>
+            {status === 'ready' ? (
+              <>
+                Join{' '}
+                <span className={styles.workspaceName}>
+                  {workspaceName ?? 'workspace'}
+                </span>
+              </>
+            ) : (
+              getTitle(status, workspaceName)
+            )}
+          </h1>
           <p className={styles.description}>{getDescription(status)}</p>
         </div>
 
@@ -85,24 +97,45 @@ export function InviteAcceptPage({
         <div className={styles.actions}>
           {status === 'unauthenticated' ? (
             <>
-              <Button type="button" variant="outline" onClick={() => signIn('google', { callbackUrl })}>
+              <Button
+                type="button"
+                variant="outline"
+                className={styles.actionButton}
+                onClick={() => signIn('google', { callbackUrl })}
+              >
+                <GoogleIcon />
                 Continue with Google
               </Button>
-              <Button type="button" variant="outline" onClick={() => signIn('discord', { callbackUrl })}>
+              <Button
+                type="button"
+                variant="outline"
+                className={styles.actionButton}
+                onClick={() => signIn('discord', { callbackUrl })}
+              >
+                <DiscordIcon />
                 Continue with Discord
               </Button>
             </>
           ) : null}
 
           {status === 'ready' ? (
-            <Button type="button" disabled={isAccepting} onClick={handleAccept}>
+            <Button
+              type="button"
+              className={styles.actionButton}
+              disabled={isAccepting}
+              onClick={handleAccept}
+            >
               <Users size={16} />
               {isAccepting ? 'Joining...' : 'Join workspace'}
             </Button>
           ) : null}
 
-          {status === 'accepted' && workspaceSlug ? (
-            <Button type="button" onClick={() => router.push(`/workspace/${workspaceSlug}`)}>
+          {status === 'already_member' && workspaceSlug ? (
+            <Button
+              type="button"
+              className={styles.actionButton}
+              onClick={() => router.push(`/workspace/${workspaceSlug}`)}
+            >
               Open workspace
             </Button>
           ) : null}
@@ -116,15 +149,17 @@ function getTitle(status: InviteStatus, workspaceName?: string): string {
   if (status === 'ready') return `Join ${workspaceName ?? 'workspace'}`
   if (status === 'unauthenticated') return 'Sign in to accept'
   if (status === 'expired') return 'Invite expired'
-  if (status === 'accepted') return 'Invite already used'
+  if (status === 'accepted') return 'Invite unavailable'
+  if (status === 'already_member') return 'Already a member'
   return 'Invite not found'
 }
 
 function getDescription(status: InviteStatus): string {
-  if (status === 'ready') return 'Accept the invite to access boards and create new ones.'
+  if (status === 'ready') return 'Accept the invite to access boards.'
   if (status === 'unauthenticated') return 'Sign in to join this workspace with this invite link.'
   if (status === 'expired') return 'Ask the workspace owner to create a new invite link.'
-  if (status === 'accepted') return 'This invite has already been accepted.'
+  if (status === 'accepted') return 'This invite link has already been used. Ask the workspace owner for a new invite.'
+  if (status === 'already_member') return 'You already have access to this workspace.'
   return 'The link is invalid or has been removed.'
 }
 
