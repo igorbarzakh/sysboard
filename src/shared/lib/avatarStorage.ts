@@ -9,6 +9,13 @@ interface UploadUserAvatarParams {
   userId: string
 }
 
+interface UploadWorkspaceAvatarParams {
+  contentType: string
+  data: ArrayBuffer
+  source: 'manual'
+  workspaceId: string
+}
+
 interface SupabaseStorageObject {
   name?: unknown
 }
@@ -113,9 +120,46 @@ export async function uploadUserAvatar({
   return getPublicAvatarUrl(url, bucket, path)
 }
 
-async function listUserAvatarPaths(userId: string) {
+export async function uploadWorkspaceAvatar({
+  contentType,
+  data,
+  source,
+  workspaceId,
+}: UploadWorkspaceAvatarParams) {
+  const extension = getAvatarExtension(contentType)
+
+  if (!extension || !isAllowedAvatarSize(data.byteLength)) {
+    throw new Error('Invalid workspace image file')
+  }
+
   const { bucket, serviceRoleKey, url } = getSupabaseStorageConfig()
-  const prefix = `users/${userId}/`
+  const path = `workspaces/${workspaceId}/${source}-${Date.now()}.${extension}`
+  const uploadUrl = `${url}/storage/v1/object/${encodeURIComponent(bucket)}/${path
+    .split('/')
+    .map(encodeURIComponent)
+    .join('/')}`
+
+  const response = await fetch(uploadUrl, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${serviceRoleKey}`,
+      'Cache-Control': '31536000',
+      'Content-Type': contentType,
+      apikey: serviceRoleKey,
+      'x-upsert': 'false',
+    },
+    body: data,
+  })
+
+  if (!response.ok) {
+    throw new Error(`Supabase workspace image upload failed with status ${response.status}`)
+  }
+
+  return getPublicAvatarUrl(url, bucket, path)
+}
+
+async function listAvatarPaths(prefix: string) {
+  const { bucket, serviceRoleKey, url } = getSupabaseStorageConfig()
   const limit = 100
   const paths: string[] = []
   let offset = 0
@@ -157,6 +201,14 @@ async function listUserAvatarPaths(userId: string) {
   return paths
 }
 
+async function listUserAvatarPaths(userId: string) {
+  return listAvatarPaths(`users/${userId}/`)
+}
+
+async function listWorkspaceAvatarPaths(workspaceId: string) {
+  return listAvatarPaths(`workspaces/${workspaceId}/`)
+}
+
 export async function deleteAvatarByUrl(imageUrl: string): Promise<void> {
   const { bucket, serviceRoleKey, url } = getSupabaseStorageConfig()
   const path = extractStoragePath(imageUrl, url, bucket)
@@ -195,6 +247,27 @@ export async function deleteUserAvatars(userId: string) {
 
   if (!response.ok) {
     throw new Error(`Supabase avatar delete failed with status ${response.status}`)
+  }
+}
+
+export async function deleteWorkspaceAvatars(workspaceId: string) {
+  const { bucket, serviceRoleKey, url } = getSupabaseStorageConfig()
+  const paths = await listWorkspaceAvatarPaths(workspaceId)
+
+  if (paths.length === 0) return
+
+  const response = await fetch(`${url}/storage/v1/object/${encodeURIComponent(bucket)}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${serviceRoleKey}`,
+      'Content-Type': 'application/json',
+      apikey: serviceRoleKey,
+    },
+    body: JSON.stringify({ prefixes: paths }),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Supabase workspace avatar delete failed with status ${response.status}`)
   }
 }
 

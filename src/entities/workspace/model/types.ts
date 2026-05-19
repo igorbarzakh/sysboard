@@ -26,6 +26,8 @@ export interface WorkspaceMembersData {
 export interface Workspace {
   id: string
   name: string
+  description: string | null
+  image: string | null
   slug: string
   ownerId: string
   createdAt: string

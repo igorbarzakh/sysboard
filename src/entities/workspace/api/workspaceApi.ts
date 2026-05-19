@@ -37,7 +37,7 @@ export async function createWorkspace(name: string): Promise<Workspace> {
 
 export async function updateWorkspace(
   slug: string,
-  patch: { name: string },
+  patch: { description?: string | null; image?: string | null; name?: string },
 ): Promise<Workspace> {
   const res = await fetch(`/api/workspaces/${slug}`, {
     method: 'PATCH',
@@ -46,6 +46,25 @@ export async function updateWorkspace(
   })
   if (!res.ok) throw new Error(await parseError(res))
   return res.json() as Promise<Workspace>
+}
+
+export async function uploadWorkspaceImage(
+  slug: string,
+  file: File,
+): Promise<string> {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const res = await fetch(`/api/workspaces/${slug}/avatar`, {
+    method: 'POST',
+    body: formData,
+  })
+  if (!res.ok) throw new Error(await parseError(res))
+  const body: unknown = await res.json()
+  if (!isWorkspaceImageResponse(body)) {
+    throw new Error('Workspace image upload failed')
+  }
+  return body.image
 }
 
 export async function deleteWorkspace(slug: string): Promise<void> {
@@ -109,6 +128,15 @@ export async function removeWorkspaceMember(
   if (!res.ok) throw new Error(await parseError(res))
 }
 
+export async function leaveWorkspace(slug: string): Promise<void> {
+  const res = await fetch(`/api/workspaces/${slug}/members`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ self: true }),
+  })
+  if (!res.ok) throw new Error(await parseError(res))
+}
+
 export const removeMember = removeWorkspaceMember
 
 export async function getWorkspaceBoards(slug: string): Promise<WorkspaceBoard[]> {
@@ -141,5 +169,14 @@ function isWorkspaceInviteLink(value: unknown): value is WorkspaceInviteLink {
     typeof value.expiresAt === 'string' &&
     'inviteUrl' in value &&
     typeof value.inviteUrl === 'string'
+  )
+}
+
+function isWorkspaceImageResponse(value: unknown): value is { image: string } {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'image' in value &&
+    typeof value.image === 'string'
   )
 }

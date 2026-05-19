@@ -139,22 +139,28 @@ export async function DELETE(request: Request, { params }: RouteContext): Promis
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  const callerRole = workspace.members.find((m) => m.userId === session.user.id)?.role
-  if (callerRole !== 'owner') {
-    return NextResponse.json({ error: 'Only workspace owners can remove members' }, { status: 403 })
-  }
-
   const body: unknown = await request.json()
-  if (
-    typeof body !== 'object' ||
-    body === null ||
-    !('userId' in body) ||
-    typeof (body as Record<string, unknown>).userId !== 'string'
-  ) {
+  if (typeof body !== 'object' || body === null) {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
   }
 
-  const targetUserId = (body as Record<string, unknown>).userId as string
+  const payload = body as Record<string, unknown>
+  const callerRole = workspace.members.find((m) => m.userId === session.user.id)?.role
+  const isSelfLeave = payload.self === true
+
+  if (!isSelfLeave && callerRole !== 'owner') {
+    return NextResponse.json({ error: 'Only workspace owners can remove members' }, { status: 403 })
+  }
+
+  const targetUserId = isSelfLeave
+    ? session.user.id
+    : typeof payload.userId === 'string'
+      ? payload.userId
+      : null
+
+  if (!targetUserId) {
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+  }
 
   const targetMember = workspace.members.find((m) => m.userId === targetUserId)
   if (!targetMember) {

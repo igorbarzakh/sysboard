@@ -12,7 +12,9 @@ export {
   getWorkspaces,
   createWorkspace,
   updateWorkspace,
+  uploadWorkspaceImage,
   deleteWorkspace,
+  leaveWorkspace,
   getWorkspaceMembers,
   getWorkspaceMembersData,
   createWorkspaceInvite,
@@ -30,4 +32,9 @@ export {
   useRevokeWorkspaceInviteMutation,
 } from './hooks/useWorkspaceMemberMutations'
 export { useWorkspaceMembersQuery } from './hooks/useWorkspaceMembersQuery'
-export { useWorkspacesQuery } from './hooks/useWorkspacesQuery'
+export {
+  useDeleteWorkspaceMutation,
+  useLeaveWorkspaceMutation,
+  useUpdateWorkspaceMutation,
+  useWorkspacesQuery,
+} from './hooks/useWorkspacesQuery'

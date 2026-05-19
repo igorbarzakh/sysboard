@@ -32,6 +32,8 @@ model User {
 model Workspace {
   id        String   @id @default(cuid())
   name      String
+  description String?
+  image     String?
   slug      String   @unique
   ownerId   String
   createdAt DateTime @default(now())

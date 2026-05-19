@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+import {
+  deleteAvatarByUrl,
+  deleteWorkspaceAvatars,
+} from '@shared/lib/avatarStorage'
 import { authOptions, prisma } from '@shared/lib/server'
 
 type RouteContext = { params: Promise<{ slug: string }> }
@@ -59,28 +63,68 @@ export async function PATCH(request: Request, { params }: RouteContext): Promise
   }
 
   const body: unknown = await request.json()
-  if (
-    typeof body !== 'object' ||
-    body === null ||
-    !('name' in body) ||
-    typeof (body as Record<string, unknown>).name !== 'string'
-  ) {
+  if (typeof body !== 'object' || body === null) {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
   }
 
-  const name = ((body as Record<string, unknown>).name as string).trim()
-  if (!name) {
-    return NextResponse.json({ error: 'Name is required' }, { status: 400 })
+  const patch = body as Record<string, unknown>
+  const data: { description?: string | null; image?: string | null; name?: string } = {}
+
+  if ('name' in patch) {
+    if (typeof patch.name !== 'string') {
+      return NextResponse.json({ error: 'Name must be a string' }, { status: 400 })
+    }
+
+    const name = patch.name.trim()
+    if (!name) {
+      return NextResponse.json({ error: 'Name is required' }, { status: 400 })
+    }
+    if (name.length > 70) {
+      return NextResponse.json({ error: 'Name must be 70 characters or fewer' }, { status: 400 })
+    }
+
+    data.name = name
   }
-  if (name.length > 50) {
-    return NextResponse.json({ error: 'Name must be 50 characters or fewer' }, { status: 400 })
+
+  if ('image' in patch) {
+    if (typeof patch.image !== 'string' && patch.image !== null) {
+      return NextResponse.json({ error: 'Image must be a string or null' }, { status: 400 })
+    }
+
+    data.image = patch.image
+  }
+
+  if ('description' in patch) {
+    if (typeof patch.description !== 'string' && patch.description !== null) {
+      return NextResponse.json({ error: 'Description must be a string or null' }, { status: 400 })
+    }
+
+    const description =
+      typeof patch.description === 'string' ? patch.description.trim() : null
+
+    if (description && description.length > 280) {
+      return NextResponse.json(
+        { error: 'Description must be 280 characters or fewer' },
+        { status: 400 },
+      )
+    }
+
+    data.description = description || null
+  }
+
+  if (!('name' in data) && !('image' in data) && !('description' in data)) {
+    return NextResponse.json({ error: 'No changes provided' }, { status: 400 })
   }
 
   const updated = await prisma.workspace.update({
     where: { slug },
-    data: { name },
+    data,
     include: workspaceInclude,
   })
+
+  if ('image' in data && workspace.image && workspace.image !== data.image) {
+    await deleteAvatarByUrl(workspace.image).catch(() => {})
+  }
 
   return NextResponse.json(updated)
 }
@@ -103,5 +147,7 @@ export async function DELETE(_request: Request, { params }: RouteContext): Promi
   }
 
   await prisma.workspace.delete({ where: { slug } })
+  await deleteWorkspaceAvatars(workspace.id).catch(() => {})
+
   return new NextResponse(null, { status: 204 })
 }

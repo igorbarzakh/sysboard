@@ -5,4 +5,9 @@ export {
   useRevokeWorkspaceInviteMutation,
 } from './useWorkspaceMemberMutations'
 export { useWorkspaceMembersQuery } from './useWorkspaceMembersQuery'
-export { useWorkspacesQuery } from './useWorkspacesQuery'
+export {
+  useDeleteWorkspaceMutation,
+  useLeaveWorkspaceMutation,
+  useUpdateWorkspaceMutation,
+  useWorkspacesQuery,
+} from './useWorkspacesQuery'
