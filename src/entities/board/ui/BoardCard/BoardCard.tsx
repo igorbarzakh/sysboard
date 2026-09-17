@@ -15,6 +15,11 @@ interface BoardCardProps {
   onDelete: (id: string) => void
   onFavoriteToggle: (id: string, isFavorite: boolean) => Promise<void>
   onNavigate?: () => void
+  onPreviewReady: (
+    id: string,
+    previewUrl: string | null,
+    previewVersion: number,
+  ) => void
   onRename: (id: string, name: string) => Promise<void>
   view?: 'grid' | 'list'
 }
@@ -26,6 +31,7 @@ export function BoardCard({
   onDelete,
   onFavoriteToggle,
   onNavigate,
+  onPreviewReady,
   onRename,
   view = 'grid',
 }: BoardCardProps) {
@@ -115,6 +121,7 @@ export function BoardCard({
           isRenaming={isRenaming}
           isSavingName={isSavingName}
           onNavigate={navigate}
+          onPreviewReady={onPreviewReady}
           onDeleteRequest={() => setConfirmOpen(true)}
           onFavoriteToggle={toggleFavorite}
           onRenameCommit={commitRename}
@@ -132,6 +139,7 @@ export function BoardCard({
           isRenaming={isRenaming}
           isSavingName={isSavingName}
           onNavigate={navigate}
+          onPreviewReady={onPreviewReady}
           onDeleteRequest={() => setConfirmOpen(true)}
           onRenameCommit={commitRename}
           onRenameDraftChange={handleDraftNameChange}

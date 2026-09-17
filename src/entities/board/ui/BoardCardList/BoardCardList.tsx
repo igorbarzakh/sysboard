@@ -16,6 +16,11 @@ interface BoardCardListProps {
   isSavingName: boolean
   maxNameLength: number
   onNavigate: () => void
+  onPreviewReady: (
+    id: string,
+    previewUrl: string | null,
+    previewVersion: number,
+  ) => void
   onDeleteRequest: () => void
   onRenameCommit: () => void
   onRenameDraftChange: (event: ChangeEvent<HTMLInputElement>) => void
@@ -32,6 +37,7 @@ export function BoardCardList({
   isSavingName,
   maxNameLength,
   onNavigate,
+  onPreviewReady,
   onDeleteRequest,
   onRenameCommit,
   onRenameDraftChange,
@@ -62,7 +68,14 @@ export function BoardCardList({
       >
         <div className={styles.cell}>
           <div className={styles.thumb}>
-            <BoardPreview data={board.data} />
+            <BoardPreview
+              boardId={board.id}
+              data={board.data}
+              dataVersion={board.dataVersion}
+              onPreviewReady={onPreviewReady}
+              previewUrl={board.previewUrl}
+              previewVersion={board.previewVersion}
+            />
           </div>
           {isRenaming ? (
             <input

@@ -62,6 +62,35 @@ export async function updateBoard(
   return res.json() as Promise<Board>
 }
 
+export interface BoardPreviewResult {
+  previewUrl: string | null
+  previewVersion: number
+}
+
+export async function uploadBoardPreview(
+  id: string,
+  version: number,
+  file: Blob | null,
+  keepalive = false,
+): Promise<BoardPreviewResult> {
+  const formData = new FormData()
+  formData.set('version', String(version))
+
+  if (file) {
+    formData.set('file', file, `preview-${version}.png`)
+  } else {
+    formData.set('empty', 'true')
+  }
+
+  const res = await fetch(`/api/boards/${id}/preview`, {
+    method: 'POST',
+    body: formData,
+    keepalive,
+  })
+  if (!res.ok) throw new Error(await parseError(res))
+  return res.json() as Promise<BoardPreviewResult>
+}
+
 interface TrackBoardViewResult {
   lastViewedAt: string
 }

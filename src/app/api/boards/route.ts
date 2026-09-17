@@ -34,6 +34,10 @@ export async function GET(): Promise<NextResponse> {
   return NextResponse.json(
     boards.map(({ favorites, views, ...board }) => ({
       ...board,
+      data:
+        !board.previewUrl && board.previewVersion < board.dataVersion
+          ? board.data
+          : null,
       isFavorite: favorites.length > 0,
       lastViewedAt: views[0]?.lastViewedAt.toISOString() ?? null,
     })),

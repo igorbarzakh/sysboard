@@ -1,0 +1,30 @@
+.root,
+.image,
+.livePreview {
+  width: 100%;
+  height: 100%;
+}
+
+.root {
+  position: relative;
+}
+
+.image {
+  display: block;
+  object-fit: cover;
+}
+
+.livePreview {
+  overflow: hidden;
+}
+
+.generator {
+  position: absolute;
+  top: 0;
+  left: -10000px;
+  overflow: hidden;
+  width: 1280px;
+  height: 720px;
+  opacity: 0;
+  pointer-events: none;
+}

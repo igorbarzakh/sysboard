@@ -1,0 +1,8 @@
+ALTER TABLE "Board"
+ADD COLUMN "dataVersion" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN "previewUrl" TEXT,
+ADD COLUMN "previewVersion" INTEGER NOT NULL DEFAULT 0;
+
+UPDATE "Board"
+SET "dataVersion" = 1
+WHERE "data" IS NOT NULL;

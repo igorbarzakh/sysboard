@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { BOARD_NAME_MAX_LENGTH } from '@entities/board/model'
 import type { Board } from '@entities/board/model'
 import { authOptions, prisma } from '@shared/lib/server'
+import { deleteBoardPreviews } from '@shared/lib/avatarStorage'
 
 type RouteContext = { params: Promise<{ id: string }> }
 
@@ -92,7 +93,12 @@ export async function PATCH(request: Request, { params }: RouteContext): Promise
   }
 
   const payload = body as Record<string, unknown>
-  const updateData: { name?: string; data?: object; updatedAt?: Date } = {}
+  const updateData: {
+    name?: string
+    data?: object
+    dataVersion?: { increment: number }
+    updatedAt?: Date
+  } = {}
 
   if ('name' in payload) {
     if (
@@ -122,6 +128,7 @@ export async function PATCH(request: Request, { params }: RouteContext): Promise
       return NextResponse.json({ error: 'Data must be an object' }, { status: 400 })
     }
     updateData.data = payload.data as object
+    updateData.dataVersion = { increment: 1 }
   }
 
   if ('name' in payload && !('data' in payload)) {
@@ -156,5 +163,6 @@ export async function DELETE(_request: Request, { params }: RouteContext): Promi
   }
 
   await prisma.board.delete({ where: { id } })
+  await deleteBoardPreviews(id).catch(() => {})
   return new NextResponse(null, { status: 204 })
 }

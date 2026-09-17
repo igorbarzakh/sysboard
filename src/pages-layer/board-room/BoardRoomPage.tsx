@@ -41,7 +41,7 @@ export function BoardRoomPage({ boardId, currentUserId }: BoardRoomPageProps) {
         currentUserId={currentUserId}
         workspaceSlug={board.workspace.slug}
       />
-      <CanvasEditor board={board} />
+      <CanvasEditor board={board} currentUserId={currentUserId} />
     </>
   )
 }

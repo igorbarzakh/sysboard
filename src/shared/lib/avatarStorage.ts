@@ -2,6 +2,7 @@ import { DeleteObjectCommand, DeleteObjectsCommand, ListObjectsV2Command, PutObj
 
 const DEFAULT_AVATAR_BUCKET = 'avatars'
 const MAX_AVATAR_BYTES = 2 * 1024 * 1024
+const MAX_BOARD_PREVIEW_BYTES = 5 * 1024 * 1024
 const ALLOWED_AVATAR_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
 
 interface UploadUserAvatarParams {
@@ -16,6 +17,12 @@ interface UploadWorkspaceAvatarParams {
   data: ArrayBuffer
   source: 'manual'
   workspaceId: string
+}
+
+interface UploadBoardPreviewParams {
+  boardId: string
+  data: ArrayBuffer
+  version: number
 }
 
 function getStorageConfig() {
@@ -116,6 +123,32 @@ export async function uploadWorkspaceAvatar({ contentType, data, source, workspa
   return uploadAvatar(contentType, data, `workspaces/${workspaceId}`, source)
 }
 
+export function isAllowedBoardPreviewSize(size: number) {
+  return size > 0 && size <= MAX_BOARD_PREVIEW_BYTES
+}
+
+export async function uploadBoardPreview({
+  boardId,
+  data,
+  version,
+}: UploadBoardPreviewParams) {
+  if (!isAllowedBoardPreviewSize(data.byteLength)) {
+    throw new Error('Invalid board preview file')
+  }
+
+  const { bucket } = getStorageConfig()
+  const path = `boards/${boardId}/preview-${version}-${Date.now()}.png`
+  await getStorageClient().send(new PutObjectCommand({
+    Bucket: bucket,
+    Key: path,
+    Body: new Uint8Array(data),
+    ContentType: 'image/png',
+    CacheControl: 'public, max-age=31536000, immutable',
+  }))
+
+  return `${getPublicAvatarPrefix()}${path.split('/').map(encodeURIComponent).join('/')}`
+}
+
 async function deleteAvatarPrefix(prefix: string) {
   const { bucket } = getStorageConfig()
   const paths: string[] = []
@@ -157,6 +190,10 @@ export async function deleteUserAvatars(userId: string) {
 
 export async function deleteWorkspaceAvatars(workspaceId: string) {
   return deleteAvatarPrefix(`workspaces/${workspaceId}/`)
+}
+
+export async function deleteBoardPreviews(boardId: string) {
+  return deleteAvatarPrefix(`boards/${boardId}/`)
 }
 
 export async function importOAuthAvatar(userId: string, imageUrl: string | null | undefined) {

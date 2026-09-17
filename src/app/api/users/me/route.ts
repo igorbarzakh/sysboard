@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { isProfileRole } from '@entities/user/model'
 import {
   deleteAvatarByUrl,
+  deleteBoardPreviews,
   deleteUserAvatars,
   isOwnedAvatarUrl,
 } from '@shared/lib/avatarStorage'
@@ -107,12 +108,24 @@ export async function DELETE(): Promise<NextResponse> {
       where: { id: session.user.id },
       select: { image: true },
     })
+    const boards = await prisma.board.findMany({
+      where: {
+        OR: [
+          { createdById: session.user.id },
+          { workspace: { ownerId: session.user.id } },
+        ],
+      },
+      select: { id: true },
+    })
 
     if (current?.image && isOwnedAvatarUrl(current.image)) {
       await deleteUserAvatars(session.user.id)
     }
 
     await prisma.user.delete({ where: { id: session.user.id } })
+    await Promise.all(
+      boards.map(({ id }) => deleteBoardPreviews(id).catch(() => {})),
+    )
     return NextResponse.json({ ok: true })
   } catch {
     return NextResponse.json({ error: 'Account deletion failed' }, { status: 500 })

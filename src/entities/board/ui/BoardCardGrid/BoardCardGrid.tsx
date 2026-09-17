@@ -18,6 +18,11 @@ interface BoardCardGridProps {
   isSavingName: boolean
   maxNameLength: number
   onNavigate: () => void
+  onPreviewReady: (
+    id: string,
+    previewUrl: string | null,
+    previewVersion: number,
+  ) => void
   onDeleteRequest: () => void
   onFavoriteToggle: () => void
   onRenameCommit: () => void
@@ -36,6 +41,7 @@ export function BoardCardGrid({
   isSavingName,
   maxNameLength,
   onNavigate,
+  onPreviewReady,
   onDeleteRequest,
   onFavoriteToggle,
   onRenameCommit,
@@ -83,7 +89,14 @@ export function BoardCardGrid({
           <Star size={15} />
         </button>
         <div className={styles.preview}>
-          <BoardPreview data={board.data} />
+          <BoardPreview
+            boardId={board.id}
+            data={board.data}
+            dataVersion={board.dataVersion}
+            onPreviewReady={onPreviewReady}
+            previewUrl={board.previewUrl}
+            previewVersion={board.previewVersion}
+          />
         </div>
         <div className={styles.body}>
           <div className={styles.row}>

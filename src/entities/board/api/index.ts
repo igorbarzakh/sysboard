@@ -7,3 +7,5 @@ export {
   toggleBoardFavorite,
   updateBoard,
 } from './boardApi'
+export { uploadBoardPreview } from './boardApi'
+export type { BoardPreviewResult } from './boardApi'

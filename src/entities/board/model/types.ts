@@ -13,6 +13,9 @@ export interface Board {
   workspaceId: string
   createdById: string
   data: unknown
+  dataVersion: number
+  previewUrl: string | null
+  previewVersion: number
   createdAt: string
   isFavorite?: boolean
   lastViewedAt?: string | null

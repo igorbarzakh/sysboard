@@ -6,12 +6,13 @@ import styles from './CanvasEditor.module.scss'
 
 interface Props {
   board: Board
+  currentUserId: string
 }
 
-export function CanvasEditor({ board }: Props) {
+export function CanvasEditor({ board, currentUserId }: Props) {
   return (
     <div className={styles.canvas}>
-      <TldrawCanvas board={board} />
+      <TldrawCanvas board={board} currentUserId={currentUserId} />
     </div>
   )
 }

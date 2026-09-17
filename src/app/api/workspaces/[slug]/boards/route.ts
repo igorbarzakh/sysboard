@@ -29,6 +29,9 @@ function serializeBoard(
     workspaceId: string
     createdById: string
     data: unknown
+    dataVersion: number
+    previewUrl: string | null
+    previewVersion: number
     createdAt: Date
     updatedAt: Date
   },
@@ -79,6 +82,10 @@ export async function GET(_request: Request, { params }: RouteContext): Promise<
   return NextResponse.json(
     boards.map(({ favorites, views, ...board }) => ({
       ...board,
+      data:
+        !board.previewUrl && board.previewVersion < board.dataVersion
+          ? board.data
+          : null,
       isFavorite: favorites.length > 0,
       lastViewedAt: views[0]?.lastViewedAt.toISOString() ?? null,
     })),
@@ -143,6 +150,9 @@ export async function POST(request: Request, { params }: RouteContext): Promise<
       workspaceId: true,
       createdById: true,
       data: true,
+      dataVersion: true,
+      previewUrl: true,
+      previewVersion: true,
       createdAt: true,
       updatedAt: true,
     },

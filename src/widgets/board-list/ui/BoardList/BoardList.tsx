@@ -1,6 +1,7 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
   useDeleteBoardMutation,
@@ -8,6 +9,7 @@ import {
   useToggleBoardFavoriteMutation,
   useWorkspaceBoardsQuery,
 } from '@entities/board/hooks'
+import { boardQueryKeys, type Board } from '@entities/board/model'
 import { BoardCard } from '@entities/board/ui'
 import { useBoardListPreferences } from '../../hooks'
 import { sortBoards, type BoardFilter } from '../../model'
@@ -27,6 +29,7 @@ export function BoardList({
   currentUserId,
   workspaceSlug,
 }: BoardListProps) {
+  const queryClient = useQueryClient()
   const [filter, setFilter] = useState<BoardFilter>('all')
   const [pendingFavoriteIds, setPendingFavoriteIds] = useState<Set<string>>(
     () => new Set(),
@@ -77,6 +80,20 @@ export function BoardList({
       })
     }
   }
+
+  const handlePreviewReady = useCallback((
+    id: string,
+    previewUrl: string | null,
+    previewVersion: number,
+  ) => {
+    const queryKey = boardQueryKeys.workspaceBoards(workspaceSlug, currentUserId)
+    queryClient.setQueryData<Board[]>(queryKey, (boards) =>
+      boards?.map((board) => board.id === id
+        ? { ...board, data: null, previewUrl, previewVersion }
+        : board,
+      ),
+    )
+  }, [currentUserId, queryClient, workspaceSlug])
 
   const sortedBoards = useMemo(() => {
     return sortBoards(boards, sortBy)
@@ -149,6 +166,7 @@ export function BoardList({
                     isFavoritePending={pendingFavoriteIds.has(board.id)}
                     onDelete={handleDelete}
                     onFavoriteToggle={handleFavoriteToggle}
+                    onPreviewReady={handlePreviewReady}
                     onRename={handleRename}
                   />
                 ))
@@ -178,6 +196,7 @@ export function BoardList({
                 isFavoritePending={pendingFavoriteIds.has(board.id)}
                 onDelete={handleDelete}
                 onFavoriteToggle={handleFavoriteToggle}
+                onPreviewReady={handlePreviewReady}
                 onRename={handleRename}
                 view="list"
               />

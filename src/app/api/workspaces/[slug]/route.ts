@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import {
   deleteAvatarByUrl,
+  deleteBoardPreviews,
   deleteWorkspaceAvatars,
 } from '@shared/lib/avatarStorage'
 import { authOptions, prisma } from '@shared/lib/server'
@@ -146,8 +147,16 @@ export async function DELETE(_request: Request, { params }: RouteContext): Promi
     return NextResponse.json({ error: 'Only the workspace owner can delete it' }, { status: 403 })
   }
 
+  const boards = await prisma.board.findMany({
+    where: { workspaceId: workspace.id },
+    select: { id: true },
+  })
+
   await prisma.workspace.delete({ where: { slug } })
   await deleteWorkspaceAvatars(workspace.id).catch(() => {})
+  await Promise.all(
+    boards.map(({ id }) => deleteBoardPreviews(id).catch(() => {})),
+  )
 
   return new NextResponse(null, { status: 204 })
 }
