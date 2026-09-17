@@ -1,3 +1,5 @@
+import { DeleteObjectCommand, DeleteObjectsCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+
 const DEFAULT_AVATAR_BUCKET = 'avatars'
 const MAX_AVATAR_BYTES = 2 * 1024 * 1024
 const ALLOWED_AVATAR_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
@@ -16,52 +18,60 @@ interface UploadWorkspaceAvatarParams {
   workspaceId: string
 }
 
-interface SupabaseStorageObject {
-  name?: unknown
+function getStorageConfig() {
+  const endpoint = process.env.AWS_ENDPOINT_URL_S3
+  const accessKeyId = process.env.AWS_ACCESS_KEY_ID
+  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY
+  const region = process.env.AWS_REGION
+  const bucket = process.env.AWS_S3_BUCKET ?? DEFAULT_AVATAR_BUCKET
+
+  if (!endpoint || !accessKeyId || !secretAccessKey || !region) {
+    throw new Error('Neon avatar storage is not configured')
+  }
+
+  return { endpoint: endpoint.replace(/\/$/, ''), accessKeyId, secretAccessKey, region, bucket }
 }
 
-function getSupabaseStorageConfig() {
-  const url = process.env.SUPABASE_URL
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  const bucket = process.env.SUPABASE_AVATARS_BUCKET ?? DEFAULT_AVATAR_BUCKET
+let client: S3Client | undefined
 
-  if (!url || !serviceRoleKey) {
-    throw new Error('Supabase avatar storage is not configured')
+function getStorageClient() {
+  if (!client) {
+    const { endpoint, accessKeyId, secretAccessKey, region } = getStorageConfig()
+    client = new S3Client({
+      endpoint,
+      region,
+      credentials: { accessKeyId, secretAccessKey },
+      forcePathStyle: true,
+      requestChecksumCalculation: 'WHEN_REQUIRED',
+    })
   }
-
-  return {
-    bucket,
-    serviceRoleKey,
-    url: url.replace(/\/$/, ''),
-  }
+  return client
 }
 
 function getAvatarExtension(contentType: string) {
   switch (contentType) {
-    case 'image/jpeg':
-      return 'jpg'
-    case 'image/png':
-      return 'png'
-    case 'image/webp':
-      return 'webp'
-    default:
-      return null
+    case 'image/jpeg': return 'jpg'
+    case 'image/png': return 'png'
+    case 'image/webp': return 'webp'
+    default: return null
   }
 }
 
-function getPublicAvatarUrl(baseUrl: string, bucket: string, path: string) {
-  const encodedPath = path.split('/').map(encodeURIComponent).join('/')
-  return `${baseUrl}/storage/v1/object/public/${encodeURIComponent(bucket)}/${encodedPath}`
+function getPublicAvatarPrefix() {
+  const { endpoint, bucket } = getStorageConfig()
+  return `${endpoint}/${encodeURIComponent(bucket)}/`
 }
 
-function extractStoragePath(publicUrl: string, baseUrl: string, bucket: string): string | null {
-  const prefix = `${baseUrl}/storage/v1/object/public/${encodeURIComponent(bucket)}/`
+function extractStoragePath(publicUrl: string): string | null {
+  const prefix = getPublicAvatarPrefix()
   if (!publicUrl.startsWith(prefix)) return null
-  return publicUrl
-    .slice(prefix.length)
-    .split('/')
-    .map(decodeURIComponent)
-    .join('/')
+  try {
+    const url = new URL(publicUrl)
+    if (!url.href.startsWith(prefix) || url.search || url.hash) return null
+    return url.href.slice(prefix.length).split('/').map(decodeURIComponent).join('/') || null
+  } catch {
+    return null
+  }
 }
 
 export function isAllowedAvatarType(contentType: string) {
@@ -70,9 +80,7 @@ export function isAllowedAvatarType(contentType: string) {
 
 export function isOwnedAvatarUrl(imageUrl: string): boolean {
   try {
-    const { bucket, url } = getSupabaseStorageConfig()
-    const prefix = `${url}/storage/v1/object/public/${encodeURIComponent(bucket)}/`
-    return imageUrl.startsWith(prefix)
+    return extractStoragePath(imageUrl) !== null
   } catch {
     return false
   }
@@ -82,193 +90,73 @@ export function isAllowedAvatarSize(size: number) {
   return size > 0 && size <= MAX_AVATAR_BYTES
 }
 
-export async function uploadUserAvatar({
-  contentType,
-  data,
-  source,
-  userId,
-}: UploadUserAvatarParams) {
+async function uploadAvatar(contentType: string, data: ArrayBuffer, prefix: string, source: string) {
   const extension = getAvatarExtension(contentType)
-
   if (!extension || !isAllowedAvatarSize(data.byteLength)) {
     throw new Error('Invalid avatar file')
   }
 
-  const { bucket, serviceRoleKey, url } = getSupabaseStorageConfig()
-  const path = `users/${userId}/${source}-${Date.now()}.${extension}`
-  const uploadUrl = `${url}/storage/v1/object/${encodeURIComponent(bucket)}/${path
-    .split('/')
-    .map(encodeURIComponent)
-    .join('/')}`
-
-  const response = await fetch(uploadUrl, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${serviceRoleKey}`,
-      'Cache-Control': '31536000',
-      'Content-Type': contentType,
-      apikey: serviceRoleKey,
-      'x-upsert': 'false',
-    },
-    body: data,
-  })
-
-  if (!response.ok) {
-    throw new Error(`Supabase avatar upload failed with status ${response.status}`)
-  }
-
-  return getPublicAvatarUrl(url, bucket, path)
+  const { bucket } = getStorageConfig()
+  const path = `${prefix}/${source}-${Date.now()}.${extension}`
+  await getStorageClient().send(new PutObjectCommand({
+    Bucket: bucket,
+    Key: path,
+    Body: new Uint8Array(data),
+    ContentType: contentType,
+    CacheControl: 'public, max-age=31536000, immutable',
+  }))
+  return `${getPublicAvatarPrefix()}${path.split('/').map(encodeURIComponent).join('/')}`
 }
 
-export async function uploadWorkspaceAvatar({
-  contentType,
-  data,
-  source,
-  workspaceId,
-}: UploadWorkspaceAvatarParams) {
-  const extension = getAvatarExtension(contentType)
-
-  if (!extension || !isAllowedAvatarSize(data.byteLength)) {
-    throw new Error('Invalid workspace image file')
-  }
-
-  const { bucket, serviceRoleKey, url } = getSupabaseStorageConfig()
-  const path = `workspaces/${workspaceId}/${source}-${Date.now()}.${extension}`
-  const uploadUrl = `${url}/storage/v1/object/${encodeURIComponent(bucket)}/${path
-    .split('/')
-    .map(encodeURIComponent)
-    .join('/')}`
-
-  const response = await fetch(uploadUrl, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${serviceRoleKey}`,
-      'Cache-Control': '31536000',
-      'Content-Type': contentType,
-      apikey: serviceRoleKey,
-      'x-upsert': 'false',
-    },
-    body: data,
-  })
-
-  if (!response.ok) {
-    throw new Error(`Supabase workspace image upload failed with status ${response.status}`)
-  }
-
-  return getPublicAvatarUrl(url, bucket, path)
+export async function uploadUserAvatar({ contentType, data, source, userId }: UploadUserAvatarParams) {
+  return uploadAvatar(contentType, data, `users/${userId}`, source)
 }
 
-async function listAvatarPaths(prefix: string) {
-  const { bucket, serviceRoleKey, url } = getSupabaseStorageConfig()
-  const limit = 100
+export async function uploadWorkspaceAvatar({ contentType, data, source, workspaceId }: UploadWorkspaceAvatarParams) {
+  return uploadAvatar(contentType, data, `workspaces/${workspaceId}`, source)
+}
+
+async function deleteAvatarPrefix(prefix: string) {
+  const { bucket } = getStorageConfig()
   const paths: string[] = []
-  let offset = 0
-
-  while (true) {
-    const response = await fetch(
-      `${url}/storage/v1/object/list/${encodeURIComponent(bucket)}`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${serviceRoleKey}`,
-          'Content-Type': 'application/json',
-          apikey: serviceRoleKey,
-        },
-        body: JSON.stringify({ limit, offset, prefix }),
-      },
-    )
-
-    if (!response.ok) {
-      throw new Error(`Supabase avatar list failed with status ${response.status}`)
+  let continuationToken: string | undefined
+  do {
+    const result = await getStorageClient().send(new ListObjectsV2Command({
+      Bucket: bucket,
+      Prefix: prefix,
+      ContinuationToken: continuationToken,
+    }))
+    for (const object of result.Contents ?? []) {
+      if (object.Key) paths.push(object.Key)
     }
+    if (result.IsTruncated && !result.NextContinuationToken) {
+      throw new Error('Neon avatar list returned an incomplete page')
+    }
+    continuationToken = result.IsTruncated ? result.NextContinuationToken : undefined
+  } while (continuationToken)
 
-    const objects: unknown = await response.json()
-    if (!Array.isArray(objects) || objects.length === 0) break
-
-    objects.forEach((object: SupabaseStorageObject) => {
-      if (typeof object.name !== 'string') return
-      paths.push(
-        object.name.startsWith(prefix)
-          ? object.name
-          : `${prefix}${object.name}`,
-      )
-    })
-
-    if (objects.length < limit) break
-    offset += limit
+  for (let offset = 0; offset < paths.length; offset += 1000) {
+    const result = await getStorageClient().send(new DeleteObjectsCommand({
+      Bucket: bucket,
+      Delete: { Objects: paths.slice(offset, offset + 1000).map((Key) => ({ Key })) },
+    }))
+    if (result.Errors?.length) throw new Error('Neon avatar delete failed')
   }
-
-  return paths
-}
-
-async function listUserAvatarPaths(userId: string) {
-  return listAvatarPaths(`users/${userId}/`)
-}
-
-async function listWorkspaceAvatarPaths(workspaceId: string) {
-  return listAvatarPaths(`workspaces/${workspaceId}/`)
 }
 
 export async function deleteAvatarByUrl(imageUrl: string): Promise<void> {
-  const { bucket, serviceRoleKey, url } = getSupabaseStorageConfig()
-  const path = extractStoragePath(imageUrl, url, bucket)
+  const path = extractStoragePath(imageUrl)
   if (!path) return
-
-  const response = await fetch(`${url}/storage/v1/object/${encodeURIComponent(bucket)}`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${serviceRoleKey}`,
-      'Content-Type': 'application/json',
-      apikey: serviceRoleKey,
-    },
-    body: JSON.stringify({ prefixes: [path] }),
-  })
-
-  if (!response.ok) {
-    throw new Error(`Supabase avatar delete failed with status ${response.status}`)
-  }
+  const { bucket } = getStorageConfig()
+  await getStorageClient().send(new DeleteObjectCommand({ Bucket: bucket, Key: path }))
 }
 
 export async function deleteUserAvatars(userId: string) {
-  const { bucket, serviceRoleKey, url } = getSupabaseStorageConfig()
-  const paths = await listUserAvatarPaths(userId)
-
-  if (paths.length === 0) return
-
-  const response = await fetch(`${url}/storage/v1/object/${encodeURIComponent(bucket)}`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${serviceRoleKey}`,
-      'Content-Type': 'application/json',
-      apikey: serviceRoleKey,
-    },
-    body: JSON.stringify({ prefixes: paths }),
-  })
-
-  if (!response.ok) {
-    throw new Error(`Supabase avatar delete failed with status ${response.status}`)
-  }
+  return deleteAvatarPrefix(`users/${userId}/`)
 }
 
 export async function deleteWorkspaceAvatars(workspaceId: string) {
-  const { bucket, serviceRoleKey, url } = getSupabaseStorageConfig()
-  const paths = await listWorkspaceAvatarPaths(workspaceId)
-
-  if (paths.length === 0) return
-
-  const response = await fetch(`${url}/storage/v1/object/${encodeURIComponent(bucket)}`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${serviceRoleKey}`,
-      'Content-Type': 'application/json',
-      apikey: serviceRoleKey,
-    },
-    body: JSON.stringify({ prefixes: paths }),
-  })
-
-  if (!response.ok) {
-    throw new Error(`Supabase workspace avatar delete failed with status ${response.status}`)
-  }
+  return deleteAvatarPrefix(`workspaces/${workspaceId}/`)
 }
 
 export async function importOAuthAvatar(userId: string, imageUrl: string | null | undefined) {

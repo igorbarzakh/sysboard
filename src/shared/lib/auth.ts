@@ -62,9 +62,7 @@ export const authOptions: NextAuthOptions = {
         session.user.profileRole =
           typeof token.profileRole === 'string' ? token.profileRole : null
         session.user.name = typeof token.name === 'string' ? token.name : null
-        if (typeof token.picture === 'string') {
-          session.user.image = token.picture
-        }
+        session.user.image = typeof token.picture === 'string' ? token.picture : null
         session.user.provider = typeof token.provider === 'string' ? token.provider : null
       }
       return session

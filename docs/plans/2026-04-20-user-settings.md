@@ -6,7 +6,7 @@
 
 **Architecture:** Add a nullable `profileRole` field to `User`, expose profile update and account deletion through authenticated route handlers, and reuse the existing avatar upload endpoint. Compose the UI as a feature slice opened from the existing `UserMenu` settings item.
 
-**Tech Stack:** Next.js App Router route handlers, React client components, NextAuth session updates, Prisma, Supabase Storage REST helpers, SCSS Modules, shared UI primitives.
+**Tech Stack:** Next.js App Router route handlers, React client components, NextAuth session updates, Prisma, Neon Object Storage through the AWS S3 SDK, SCSS Modules, shared UI primitives.
 
 ---
 
@@ -37,7 +37,7 @@
 2. Add `PATCH` for authenticated profile updates.
 3. Validate `name` as nullable/trimmed string and `profileRole` as nullable whitelisted value.
 4. Add `DELETE` for authenticated account deletion.
-5. Add a Supabase helper that removes all avatar objects under `users/{userId}/`.
+5. Add a Neon Storage helper that removes all avatar objects under `users/{userId}/`.
 6. Delete avatar objects and then delete the Prisma `User`; rely on existing cascade rules for related records.
 
 ### Task 3: Settings Modal UI
