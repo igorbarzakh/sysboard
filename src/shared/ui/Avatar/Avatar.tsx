@@ -56,7 +56,9 @@ export function Avatar({
       data-size={size}
       data-color={color}
     >
-      <span className={styles.initials}>{getInitials(name, initialsLength)}</span>
+      <span className={styles.initials}>
+        {getInitials(name, initialsLength)}
+      </span>
     </div>
   )
 }
