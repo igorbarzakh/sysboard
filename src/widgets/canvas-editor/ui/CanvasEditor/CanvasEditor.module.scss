@@ -1,4 +1,6 @@
 .canvas {
+  --bg-canvas: #f5f5f5;
+
   position: fixed;
   top: 0;
   left: 0;
@@ -8,6 +10,10 @@
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :global(.tl-container) {
+    --tl-color-background: var(--bg-canvas);
+    --tl-color-brush-fill: #cbdde8;
+    --tl-color-brush-stroke: var(--border-outline);
+    --tl-color-selection-stroke: var(--border-outline);
     --tl-cursor-default: url('/cursors/local-pointer.svg') 1 2, default;
     --tl-cursor-move: var(--tl-cursor-default);
   }

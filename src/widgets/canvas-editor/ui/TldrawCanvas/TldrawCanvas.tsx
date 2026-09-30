@@ -19,6 +19,7 @@ import { connectDocumentSync } from '../../lib/documentSync'
 import { BOARD_IDLE_TIMEOUT_MS } from '../../lib/idleTimer'
 import { connectPresence } from '../../lib/presenceSync'
 import { hasSameDocument } from '../../lib/sameDocument'
+import { BoardBackground } from '../BoardBackground/BoardBackground'
 import { BoardNamePanel } from '../BoardNamePanel/BoardNamePanel'
 import { CollaboratorCursor } from '../CollaboratorCursor/CollaboratorCursor'
 import { RemoteSelections } from '../RemoteSelections/RemoteSelections'
@@ -347,6 +348,7 @@ export function TldrawCanvas({ board, currentUserId }: TldrawCanvasProps) {
       onMount={handleMount}
       options={{ collaboratorInactiveTimeoutMs: BOARD_IDLE_TIMEOUT_MS }}
       components={{
+        Background: BoardBackground,
         CollaboratorCursor,
         CollaboratorShapeIndicator: null,
         OnTheCanvas: RemoteSelections,
