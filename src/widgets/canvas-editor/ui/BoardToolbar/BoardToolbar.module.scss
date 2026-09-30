@@ -1,0 +1,61 @@
+.root {
+  max-width: 100%;
+
+  /* stylelint-disable selector-pseudo-class-no-unknown */
+  :global(.tlui-main-toolbar__lock-button) {
+    display: none;
+  }
+
+  :global(.tlui-main-toolbar__tools) {
+    padding: 6px;
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+    border-radius: 16px;
+    box-shadow: 0 0 0.5px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.15);
+  }
+
+  :global(.tlui-main-toolbar__tools .tlui-row) {
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+  }
+
+  :global(.tlui-main-toolbar__tools .tlui-row > *) {
+    margin: 0;
+  }
+
+  :global(.tlui-main-toolbar__tools .tlui-button) {
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    color: var(--text-primary);
+    border-radius: var(--radius-lg);
+
+    &::after {
+      inset: 0;
+      background: var(--tl-color-muted-2);
+      border-radius: inherit;
+    }
+
+    &[aria-pressed='true'] {
+      color: var(--text-accent);
+
+      &::after {
+        background: var(--accent-soft);
+      }
+    }
+  }
+  /* stylelint-enable selector-pseudo-class-no-unknown */
+}
+
+.shapesTrigger {
+  padding-left: var(--space-1);
+  border-left: 1px solid var(--border-subtle);
+}
+
+.shapesMenu {
+  gap: var(--space-1);
+  padding: var(--space-1);
+  color: var(--text-primary);
+}

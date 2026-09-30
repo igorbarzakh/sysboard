@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { LiveMap, type JsonObject } from '@liveblocks/client'
 import { useRoom } from '@liveblocks/react'
 import { useQueryClient } from '@tanstack/react-query'
-import { Box, Tldraw, type Editor, type TLShapeId } from 'tldraw'
+import { Box, HighlightShapeUtil, Tldraw, type Editor, type TLShapeId, type TLUiOverrides } from 'tldraw'
 import 'tldraw/tldraw.css'
 import {
   BoardPreviewStaleError,
@@ -21,8 +21,10 @@ import { connectPresence } from '../../lib/presenceSync'
 import { hasSameDocument } from '../../lib/sameDocument'
 import { BoardBackground } from '../BoardBackground/BoardBackground'
 import { BoardNamePanel } from '../BoardNamePanel/BoardNamePanel'
+import { BoardToolbar } from '../BoardToolbar/BoardToolbar'
 import { CollaboratorCursor } from '../CollaboratorCursor/CollaboratorCursor'
 import { RemoteSelections } from '../RemoteSelections/RemoteSelections'
+import { ZoomPanel } from '../ZoomPanel/ZoomPanel'
 
 interface TldrawCanvasProps {
   board: Board
@@ -34,6 +36,20 @@ const PREVIEW_IDLE_DELAY_MS = 60_000
 const KEEPALIVE_MAX_BYTES = 60 * 1024
 const PREVIEW_ASPECT_RATIO = 16 / 9
 const PREVIEW_PADDING = 64
+const highlightLayerOpacity = 1 - Math.sqrt(1 - 0.6)
+const shapeUtils = [
+  HighlightShapeUtil.configure({
+    underlayOpacity: highlightLayerOpacity,
+    overlayOpacity: highlightLayerOpacity,
+  }),
+]
+const uiOverrides: TLUiOverrides = {
+  actions(_editor, actions) {
+    const availableActions = { ...actions }
+    delete availableActions['toggle-tool-lock']
+    return availableActions
+  },
+}
 const iconUrls = {
   icons: {
     edit: '/icons/edit.svg',
@@ -226,6 +242,7 @@ export function TldrawCanvas({ board, currentUserId }: TldrawCanvasProps) {
       editor.user.updateUserPreferences({ locale: 'en' })
 
       const disconnectDocument = connectDocumentSync(editor, room, records, board.data)
+      editor.updateInstanceState({ isToolLocked: true })
       const disconnectPresence = connectPresence(editor, room, currentUserId)
 
       function requestPreview() {
@@ -357,6 +374,8 @@ export function TldrawCanvas({ board, currentUserId }: TldrawCanvasProps) {
   return (
     <Tldraw
       assetUrls={iconUrls}
+      shapeUtils={shapeUtils}
+      overrides={uiOverrides}
       onMount={handleMount}
       options={{ collaboratorInactiveTimeoutMs: BOARD_IDLE_TIMEOUT_MS }}
       components={{
@@ -369,6 +388,8 @@ export function TldrawCanvas({ board, currentUserId }: TldrawCanvasProps) {
           <BoardNamePanel name={board.name} workspaceSlug={board.workspace.slug} />
         ),
         SharePanel: null,
+        NavigationPanel: ZoomPanel,
+        Toolbar: BoardToolbar,
       }}
     />
   )

@@ -46,7 +46,7 @@ export function WorkspaceSwitcher() {
         <span className={styles.triggerName}>
           {current?.name ?? 'Select workspace'}
         </span>
-        <ChevronDown size={13} className={styles.triggerChevron} />
+        <ChevronDown size={14} className={styles.triggerChevron} />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent

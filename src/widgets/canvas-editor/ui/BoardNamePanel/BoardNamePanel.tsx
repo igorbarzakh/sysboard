@@ -36,11 +36,11 @@ export function BoardNamePanel({ name, workspaceSlug }: BoardNamePanelProps) {
         aria-label="Go to workspace"
         title="Go to workspace"
       >
-        <House size={20} strokeWidth={1.8} aria-hidden="true" />
+        <House size={20} aria-hidden="true" />
       </Link>
       <span className={styles.name} title={name}>{name}</span>
       <div className={styles.pages}>
-        <Layers2 size={20} strokeWidth={1.8} aria-hidden="true" />
+        <Layers2 size={20} aria-hidden="true" />
         <DefaultPageMenu />
       </div>
     </nav>
