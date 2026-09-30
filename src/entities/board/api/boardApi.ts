@@ -51,7 +51,7 @@ export async function deleteBoard(id: string): Promise<void> {
 
 export async function updateBoard(
   id: string,
-  patch: { name?: string; data?: unknown },
+  patch: { name: string },
 ): Promise<Board> {
   const res = await fetch(`/api/boards/${id}`, {
     method: 'PATCH',
@@ -60,6 +60,41 @@ export async function updateBoard(
   })
   if (!res.ok) throw new Error(await parseError(res))
   return res.json() as Promise<Board>
+}
+
+export async function saveBoardSnapshot(
+  id: string,
+  data: unknown,
+  expectedDataVersion: number,
+): Promise<{ dataVersion: number }> {
+  const res = await fetch(`/api/boards/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ data, expectedDataVersion }),
+  })
+  if (res.status === 409) {
+    const body: unknown = await res.json().catch(() => null)
+    if (
+      typeof body === 'object' && body !== null &&
+      'dataVersion' in body && typeof body.dataVersion === 'number'
+    ) {
+      throw new BoardVersionConflictError(body.dataVersion)
+    }
+  }
+  if (!res.ok) throw new Error(await parseError(res))
+  return res.json() as Promise<{ dataVersion: number }>
+}
+
+export class BoardVersionConflictError extends Error {
+  constructor(readonly dataVersion: number) {
+    super('Board data changed')
+  }
+}
+
+export class BoardPreviewStaleError extends Error {
+  constructor() {
+    super('Preview is stale')
+  }
 }
 
 export interface BoardPreviewResult {
@@ -87,6 +122,7 @@ export async function uploadBoardPreview(
     body: formData,
     keepalive,
   })
+  if (res.status === 409) throw new BoardPreviewStaleError()
   if (!res.ok) throw new Error(await parseError(res))
   return res.json() as Promise<BoardPreviewResult>
 }

@@ -5,4 +5,29 @@
   width: 100vw;
   height: 100vh;
   background: var(--bg-canvas);
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tl-container) {
+    --tl-cursor-default: url('/cursors/local-pointer.svg') 1 2, default;
+    --tl-cursor-move: var(--tl-cursor-default);
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tl-canvas-indicators) {
+    display: none;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tl-selection__fg__outline) {
+    stroke-width: calc(2px * var(--tl-scale));
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tl-corner-handle) {
+    transform: scale(1.25);
+    transform-origin: center;
+    rx: calc(1.6px * var(--tl-scale));
+    stroke-width: calc(1.6px * var(--tl-scale));
+    transform-box: fill-box;
+  }
 }

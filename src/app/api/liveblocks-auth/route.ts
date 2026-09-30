@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+import { LiveblocksError } from '@liveblocks/node'
 import { PLAN_LIMITS } from '@shared/lib'
 import { authOptions, getLiveblocks, prisma } from '@shared/lib/server'
 import type { UserPlan } from '@shared/lib'
@@ -41,7 +42,15 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   const liveblocks = getLiveblocks()
   const limit = PLAN_LIMITS[board.workspace.owner.plan as UserPlan].maxMembersPerBoard
-  const { data: activeUsers } = await liveblocks.getActiveUsers(roomId)
+  let response
+  try {
+    response = await liveblocks.getActiveUsers(roomId)
+  } catch (error) {
+    if (!(error instanceof LiveblocksError) || error.status !== 404) throw error
+    await liveblocks.getOrCreateRoom(roomId, { defaultAccesses: [] })
+    response = await liveblocks.getActiveUsers(roomId)
+  }
+  const { data: activeUsers } = response
   const isAlreadyConnected = activeUsers.some((u) => u.id === session.user.id)
 
   if (!isAlreadyConnected && activeUsers.length >= limit) {

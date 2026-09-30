@@ -1,13 +1,27 @@
 'use client'
 
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { LiveMap, type JsonObject } from '@liveblocks/client'
+import { useRoom } from '@liveblocks/react'
 import { useQueryClient } from '@tanstack/react-query'
-import { Box, Tldraw, type Editor, type TLShapeId, type TLStoreSnapshot } from 'tldraw'
+import { Box, Tldraw, type Editor, type TLShapeId } from 'tldraw'
 import 'tldraw/tldraw.css'
-import { updateBoard, uploadBoardPreview } from '@entities/board/api'
+import {
+  BoardPreviewStaleError,
+  BoardVersionConflictError,
+  getBoard,
+  saveBoardSnapshot,
+  uploadBoardPreview,
+} from '@entities/board/api'
 import { normalizeBoardPreview } from '@entities/board/lib'
 import { boardQueryKeys, type Board } from '@entities/board/model'
+import { connectDocumentSync } from '../../lib/documentSync'
+import { BOARD_IDLE_TIMEOUT_MS } from '../../lib/idleTimer'
+import { connectPresence } from '../../lib/presenceSync'
+import { hasSameDocument } from '../../lib/sameDocument'
 import { BoardNamePanel } from '../BoardNamePanel/BoardNamePanel'
+import { CollaboratorCursor } from '../CollaboratorCursor/CollaboratorCursor'
+import { RemoteSelections } from '../RemoteSelections/RemoteSelections'
 
 interface TldrawCanvasProps {
   board: Board
@@ -42,6 +56,9 @@ function getPreviewBounds(editor: Editor, shapeIds: TLShapeId[]) {
 }
 
 export function TldrawCanvas({ board, currentUserId }: TldrawCanvasProps) {
+  const room = useRoom()
+  const [records, setRecords] = useState<LiveMap<string, JsonObject> | null>(null)
+  const [connectionFailed, setConnectionFailed] = useState(false)
   const queryClient = useQueryClient()
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const previewTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -50,7 +67,28 @@ export function TldrawCanvas({ board, currentUserId }: TldrawCanvasProps) {
   const latestVersion = useRef(board.dataVersion)
   const changeSequence = useRef(0)
   const dirty = useRef(board.previewVersion < board.dataVersion)
+  const saveLeader = useRef(false)
   const cleanupMount = useRef<(() => void) | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    void room.getStorage()
+      .then(({ root }) => {
+        if (cancelled) return
+        const sharedRecords = root.get('records')
+        if (sharedRecords instanceof LiveMap) {
+          setRecords(sharedRecords as LiveMap<string, JsonObject>)
+        } else {
+          setConnectionFailed(true)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setConnectionFailed(true)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [room])
 
   const updatePreviewCache = useCallback(
     (previewUrl: string | null, previewVersion: number) => {
@@ -73,19 +111,40 @@ export function TldrawCanvas({ board, currentUserId }: TldrawCanvasProps) {
   )
 
   const persistSnapshot = useCallback((editor: Editor, sequence: number) => {
-    const snapshot = editor.getSnapshot()
     const pendingSave = saveQueue.current
       .catch(() => {})
       .then(async () => {
-        const updated = await updateBoard(board.id, { data: snapshot })
-        latestVersion.current = updated.dataVersion
-        if (sequence === changeSequence.current) {
-          queryClient.setQueryData<Board>(
-            boardQueryKeys.detail(board.id, currentUserId),
-            (current) => current
-              ? { ...current, data: snapshot, dataVersion: updated.dataVersion }
-              : current,
-          )
+        while (saveLeader.current) {
+          const snapshot = editor.getSnapshot()
+          try {
+            const updated = await saveBoardSnapshot(board.id, snapshot, latestVersion.current)
+            latestVersion.current = updated.dataVersion
+            if (sequence === changeSequence.current) {
+              queryClient.setQueryData<Board>(
+                boardQueryKeys.detail(board.id, currentUserId),
+                (current) => current
+                  ? { ...current, data: snapshot, dataVersion: updated.dataVersion }
+                  : current,
+              )
+            }
+            return
+          } catch (error) {
+            if (!(error instanceof BoardVersionConflictError)) throw error
+            latestVersion.current = error.dataVersion
+            try {
+              const savedBoard = await getBoard(board.id)
+              latestVersion.current = Math.max(latestVersion.current, savedBoard.dataVersion)
+              if (savedBoard.dataVersion >= error.dataVersion &&
+                hasSameDocument(savedBoard.data, snapshot.document.store)) {
+                if (sequence === changeSequence.current) {
+                  dirty.current = savedBoard.previewVersion < savedBoard.dataVersion
+                }
+                return
+              }
+            } catch {
+              // Retry with the version returned by the conflicting save.
+            }
+          }
         }
       })
 
@@ -93,12 +152,12 @@ export function TldrawCanvas({ board, currentUserId }: TldrawCanvasProps) {
     return pendingSave
   }, [board.id, currentUserId, queryClient])
 
-  const flushPreview = useCallback((editor: Editor): Promise<void> => {
-    if (!dirty.current) return Promise.resolve()
+  const flushPreview = useCallback((editor: Editor, onStale: () => void): Promise<void> => {
+    if (!dirty.current || !saveLeader.current) return Promise.resolve()
     if (previewPromise.current) return previewPromise.current
 
     const pendingPreview = (async () => {
-      while (dirty.current) {
+      while (dirty.current && saveLeader.current) {
         const sequence = changeSequence.current
         const shapeIds = [...editor.getCurrentPageShapeIds()]
         const previewBlobPromise = shapeIds.length > 0
@@ -138,7 +197,9 @@ export function TldrawCanvas({ board, currentUserId }: TldrawCanvasProps) {
         if (sequence === changeSequence.current) dirty.current = false
       }
     })()
-      .catch(() => {})
+      .catch((error: unknown) => {
+        if (error instanceof BoardPreviewStaleError && saveLeader.current) onStale()
+      })
       .finally(() => {
         previewPromise.current = null
       })
@@ -150,23 +211,41 @@ export function TldrawCanvas({ board, currentUserId }: TldrawCanvasProps) {
   const handleMount = useCallback(
     (editor: Editor) => {
       cleanupMount.current?.()
+      if (!records) return
 
-      if (board.data && typeof board.data === 'object') {
-        try {
-          editor.loadSnapshot(board.data as TLStoreSnapshot)
-        } catch {
-        }
+      const disconnectDocument = connectDocumentSync(editor, room, records, board.data)
+      const disconnectPresence = connectPresence(editor, room, currentUserId)
+
+      function requestPreview() {
+        void flushPreview(editor, () => {
+          if (!saveTimer.current) {
+            saveTimer.current = setTimeout(() => {
+              saveTimer.current = null
+              void persistSnapshot(editor, changeSequence.current)
+            }, SAVE_DELAY_MS)
+          }
+          if (previewTimer.current) clearTimeout(previewTimer.current)
+          previewTimer.current = setTimeout(() => {
+            previewTimer.current = null
+            requestPreview()
+          }, SAVE_DELAY_MS)
+        })
       }
 
-      const unlisten = editor.store.listen(
-        () => {
-          if (saveTimer.current) clearTimeout(saveTimer.current)
-          if (previewTimer.current) clearTimeout(previewTimer.current)
-
-          dirty.current = true
-          changeSequence.current += 1
-          const sequence = changeSequence.current
-
+      const isCurrentLeader = () => {
+        const self = room.getSelf()
+        return self !== null && room.getOthers().every(
+          (other) => self.connectionId < other.connectionId,
+        )
+      }
+      saveLeader.current = isCurrentLeader()
+      const schedulePersistence = () => {
+        if (saveTimer.current) clearTimeout(saveTimer.current)
+        if (previewTimer.current) clearTimeout(previewTimer.current)
+        dirty.current = true
+        changeSequence.current += 1
+        const sequence = changeSequence.current
+        if (saveLeader.current) {
           saveTimer.current = setTimeout(() => {
             saveTimer.current = null
             void persistSnapshot(editor, sequence)
@@ -174,34 +253,82 @@ export function TldrawCanvas({ board, currentUserId }: TldrawCanvasProps) {
 
           previewTimer.current = setTimeout(() => {
             previewTimer.current = null
-            void flushPreview(editor)
+            requestPreview()
           }, PREVIEW_IDLE_DELAY_MS)
-        },
-        { scope: 'document', source: 'user' },
-      )
+        }
+      }
+      const unlistenSave = editor.store.listen(schedulePersistence, {
+        scope: 'document', source: 'all',
+      })
 
-      if (dirty.current) {
+      let wasLeader = saveLeader.current
+      let leadershipGeneration = 0
+      let disposed = false
+      const reconcilePersistence = () => {
+        const generation = ++leadershipGeneration
+        const sequence = changeSequence.current
+        void getBoard(board.id)
+          .then((savedBoard) => {
+            if (disposed || !saveLeader.current || generation !== leadershipGeneration) return
+            latestVersion.current = Math.max(latestVersion.current, savedBoard.dataVersion)
+            if (sequence !== changeSequence.current) return
+
+            if (hasSameDocument(savedBoard.data, editor.store.serialize('document'))) {
+              dirty.current = savedBoard.previewVersion < savedBoard.dataVersion
+              if (dirty.current && !previewTimer.current) {
+                previewTimer.current = setTimeout(() => {
+                  previewTimer.current = null
+                  requestPreview()
+                }, PREVIEW_IDLE_DELAY_MS)
+              }
+            } else {
+              schedulePersistence()
+            }
+          })
+          .catch(() => {
+            if (!disposed && saveLeader.current && generation === leadershipGeneration &&
+              sequence === changeSequence.current) schedulePersistence()
+          })
+      }
+      const updateLeadership = () => {
+        const isLeader = isCurrentLeader()
+        saveLeader.current = isLeader
+        if (isLeader === wasLeader) return
+        wasLeader = isLeader
+        if (isLeader && (changeSequence.current > 0 || dirty.current)) reconcilePersistence()
+        else leadershipGeneration += 1
+      }
+      const unlistenLeadership = room.subscribe('others', updateLeadership)
+      const unlistenStatus = room.subscribe('status', updateLeadership)
+
+      if (dirty.current && saveLeader.current) {
         previewTimer.current = setTimeout(() => {
           previewTimer.current = null
-          void flushPreview(editor)
+          requestPreview()
         }, PREVIEW_IDLE_DELAY_MS)
       }
 
       const handleVisibilityChange = () => {
-        if (document.visibilityState === 'hidden') void flushPreview(editor)
+        if (document.visibilityState === 'hidden') requestPreview()
       }
-      const handlePageHide = () => void flushPreview(editor)
+      const handlePageHide = () => requestPreview()
       document.addEventListener('visibilitychange', handleVisibilityChange)
       window.addEventListener('pagehide', handlePageHide)
 
       cleanupMount.current = () => {
-        if (dirty.current) void flushPreview(editor)
-        unlisten()
+        disposed = true
+        leadershipGeneration += 1
+        if (dirty.current) requestPreview()
+        unlistenSave()
+        unlistenLeadership()
+        unlistenStatus()
+        disconnectPresence()
+        disconnectDocument()
         document.removeEventListener('visibilitychange', handleVisibilityChange)
         window.removeEventListener('pagehide', handlePageHide)
       }
     },
-    [board.data, flushPreview, persistSnapshot],
+    [board.data, board.id, currentUserId, flushPreview, persistSnapshot, records, room],
   )
 
   useEffect(() => {
@@ -212,10 +339,18 @@ export function TldrawCanvas({ board, currentUserId }: TldrawCanvasProps) {
     }
   }, [])
 
+  if (connectionFailed) return <div role="alert">Unable to connect to the board.</div>
+  if (!records) return null
+
   return (
     <Tldraw
       onMount={handleMount}
+      options={{ collaboratorInactiveTimeoutMs: BOARD_IDLE_TIMEOUT_MS }}
       components={{
+        CollaboratorCursor,
+        CollaboratorShapeIndicator: null,
+        OnTheCanvas: RemoteSelections,
+        ShapeIndicators: null,
         SharePanel: () => <BoardNamePanel name={board.name} />,
       }}
     />

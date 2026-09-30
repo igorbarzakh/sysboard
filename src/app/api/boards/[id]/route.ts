@@ -127,12 +127,38 @@ export async function PATCH(request: Request, { params }: RouteContext): Promise
     if (typeof payload.data !== 'object' || payload.data === null) {
       return NextResponse.json({ error: 'Data must be an object' }, { status: 400 })
     }
+    if (
+      !Number.isSafeInteger(payload.expectedDataVersion) ||
+      (payload.expectedDataVersion as number) < 0
+    ) {
+      return NextResponse.json({ error: 'Invalid data version' }, { status: 400 })
+    }
     updateData.data = payload.data as object
     updateData.dataVersion = { increment: 1 }
   }
 
   if ('name' in payload && !('data' in payload)) {
     updateData.updatedAt = board.updatedAt
+  }
+
+  if ('data' in payload) {
+    const expectedDataVersion = payload.expectedDataVersion as number
+    const result = await prisma.board.updateMany({
+      where: { id, dataVersion: expectedDataVersion },
+      data: updateData,
+    })
+    if (result.count === 0) {
+      const current = await prisma.board.findUnique({
+        where: { id },
+        select: { dataVersion: true },
+      })
+      if (!current) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      return NextResponse.json(
+        { error: 'Board data changed', dataVersion: current.dataVersion },
+        { status: 409 },
+      )
+    }
+    return NextResponse.json({ dataVersion: expectedDataVersion + 1 })
   }
 
   const updated = await prisma.board.update({ where: { id }, data: updateData })
