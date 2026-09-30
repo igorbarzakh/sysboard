@@ -36,4 +36,117 @@
     stroke-width: calc(1.6px * var(--tl-scale));
     transform-box: fill-box;
   }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-popover__content:has(.tlui-page-menu__wrapper)),
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-menu:has([data-testid='page-menu.duplicate'])) {
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    box-shadow: var(--shadow-popup);
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-popover__content:has(.tlui-page-menu__wrapper)) {
+    margin-top: var(--space-2);
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-page-menu__wrapper) {
+    width: 264px;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-page-menu__header) {
+    padding-left: var(--space-4);
+    height: 48px;
+    border-color: var(--border-subtle);
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-page-menu__header__title) {
+    font-size: var(--text-small);
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-page-menu__header [data-testid='page-menu.edit']) {
+    display: none;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-page-menu__list) {
+    box-sizing: border-box;
+    margin: var(--space-1) 0;
+    padding: 0 var(--space-1);
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-page-menu__wrapper .tlui-button),
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-menu:has([data-testid='page-menu.duplicate']) .tlui-button) {
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    color: var(--text-primary);
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-page-menu__wrapper .tlui-icon) {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-page-menu__item__button .tlui-button__label),
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-menu:has([data-testid='page-menu.duplicate']) .tlui-button__label) {
+    font-size: var(--text-small);
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-page-menu__item__button > .tlui-icon) {
+    display: none;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-page-menu__item__button > .tlui-button__label) {
+    margin-left: 0;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-page-menu__item__button:has(> .tlui-icon[data-checked='true'])) {
+    font-weight: 500;
+    color: var(--text-accent);
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-page-menu__item__button:has(> .tlui-icon[data-checked='true'])::after) {
+    background: var(--accent-soft);
+    border-radius: var(--radius-lg);
+    opacity: 1;
+  }
+
+  /* stylelint-disable selector-pseudo-class-no-unknown */
+  &:has(:global(.tlui-page-menu__wrapper)) :global(.tlui-tooltip) {
+    display: none;
+  }
+  /* stylelint-enable selector-pseudo-class-no-unknown */
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-menu:has([data-testid='page-menu.duplicate']) .tlui-menu__group) {
+    border-color: var(--border-subtle);
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-menu:has([data-testid='page-menu.duplicate']) .tlui-button::after),
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tlui-page-menu__wrapper .tlui-button::after) {
+    background: var(--bg-surface-hover);
+    border-radius: var(--radius-md);
+  }
 }

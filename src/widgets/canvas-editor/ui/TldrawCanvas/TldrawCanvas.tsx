@@ -34,6 +34,15 @@ const PREVIEW_IDLE_DELAY_MS = 60_000
 const KEEPALIVE_MAX_BYTES = 60 * 1024
 const PREVIEW_ASPECT_RATIO = 16 / 9
 const PREVIEW_PADDING = 64
+const iconUrls = {
+  icons: {
+    edit: '/icons/edit.svg',
+    plus: '/icons/plus.svg',
+    check: '/icons/check.svg',
+    'dots-vertical': '/icons/dots-vertical.svg',
+    'drag-handle-dots': '/icons/drag-handle-dots.svg',
+  },
+}
 
 function getPreviewBounds(editor: Editor, shapeIds: TLShapeId[]) {
   const contentBounds = editor.getShapesPageBounds(shapeIds)
@@ -214,6 +223,8 @@ export function TldrawCanvas({ board, currentUserId }: TldrawCanvasProps) {
       cleanupMount.current?.()
       if (!records) return
 
+      editor.user.updateUserPreferences({ locale: 'en' })
+
       const disconnectDocument = connectDocumentSync(editor, room, records, board.data)
       const disconnectPresence = connectPresence(editor, room, currentUserId)
 
@@ -345,6 +356,7 @@ export function TldrawCanvas({ board, currentUserId }: TldrawCanvasProps) {
 
   return (
     <Tldraw
+      assetUrls={iconUrls}
       onMount={handleMount}
       options={{ collaboratorInactiveTimeoutMs: BOARD_IDLE_TIMEOUT_MS }}
       components={{
@@ -353,7 +365,10 @@ export function TldrawCanvas({ board, currentUserId }: TldrawCanvasProps) {
         CollaboratorShapeIndicator: null,
         OnTheCanvas: RemoteSelections,
         ShapeIndicators: null,
-        SharePanel: () => <BoardNamePanel name={board.name} />,
+        MenuPanel: () => (
+          <BoardNamePanel name={board.name} workspaceSlug={board.workspace.slug} />
+        ),
+        SharePanel: null,
       }}
     />
   )
