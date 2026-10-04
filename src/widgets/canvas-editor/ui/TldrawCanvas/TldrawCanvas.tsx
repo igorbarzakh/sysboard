@@ -16,6 +16,7 @@ import {
 import { normalizeBoardPreview } from '@entities/board/lib'
 import { boardQueryKeys, type Board } from '@entities/board/model'
 import { connectDocumentSync } from '../../lib/documentSync'
+import { canvasFontUrls } from '../../lib/canvasFonts'
 import { BOARD_IDLE_TIMEOUT_MS } from '../../lib/idleTimer'
 import { connectPresence } from '../../lib/presenceSync'
 import { hasSameDocument } from '../../lib/sameDocument'
@@ -51,6 +52,7 @@ const uiOverrides: TLUiOverrides = {
   },
 }
 const iconUrls = {
+  fonts: canvasFontUrls,
   icons: {
     edit: '/icons/edit.svg',
     plus: '/icons/plus.svg',
