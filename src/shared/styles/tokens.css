@@ -6,6 +6,7 @@
   --bg-surface: #f1f3f5;
   --bg-surface-hover: #e9ecef;
   --bg-elevated: #ffffff;
+  --bg-tool-popup: #1e1e1e;
   --bg-app: var(--bg-base);
 
   /* Borders */

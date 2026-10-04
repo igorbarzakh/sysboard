@@ -20,11 +20,14 @@ import { canvasFontUrls } from '../../lib/canvasFonts'
 import { BOARD_IDLE_TIMEOUT_MS } from '../../lib/idleTimer'
 import { connectPresence } from '../../lib/presenceSync'
 import { hasSameDocument } from '../../lib/sameDocument'
+import { PlaceholderTextShapeUtil } from '../../lib/PlaceholderTextShapeUtil'
 import { BoardBackground } from '../BoardBackground/BoardBackground'
 import { BoardNamePanel } from '../BoardNamePanel/BoardNamePanel'
 import { BoardToolbar } from '../BoardToolbar/BoardToolbar'
+import { BoardTextToolbar } from '../BoardTextToolbar/BoardTextToolbar'
 import { CollaboratorCursor } from '../CollaboratorCursor/CollaboratorCursor'
 import { RemoteSelections } from '../RemoteSelections/RemoteSelections'
+import { TextCursorHint } from '../TextCursorHint/TextCursorHint'
 import { ZoomPanel } from '../ZoomPanel/ZoomPanel'
 
 interface TldrawCanvasProps {
@@ -39,12 +42,22 @@ const PREVIEW_ASPECT_RATIO = 16 / 9
 const PREVIEW_PADDING = 64
 const highlightLayerOpacity = 1 - Math.sqrt(1 - 0.6)
 const shapeUtils = [
+  PlaceholderTextShapeUtil.configure({ showTextOutline: false }),
   HighlightShapeUtil.configure({
     underlayOpacity: highlightLayerOpacity,
     overlayOpacity: highlightLayerOpacity,
   }),
 ]
 const uiOverrides: TLUiOverrides = {
+  tools(editor, tools) {
+    return Object.fromEntries(Object.entries(tools).map(([id, tool]) => [id, {
+      ...tool,
+      onSelect(source) {
+        editor.updateInstanceState({ isToolLocked: id !== 'text' })
+        tool.onSelect(source)
+      },
+    }]))
+  },
   actions(_editor, actions) {
     const availableActions = { ...actions }
     delete availableActions['toggle-tool-lock']
@@ -60,6 +73,10 @@ const iconUrls = {
     'dots-vertical': '/icons/dots-vertical.svg',
     'drag-handle-dots': '/icons/drag-handle-dots.svg',
   },
+}
+
+function OnTheCanvas() {
+  return <><RemoteSelections /><TextCursorHint /></>
 }
 
 function getPreviewBounds(editor: Editor, shapeIds: TLShapeId[]) {
@@ -384,8 +401,9 @@ export function TldrawCanvas({ board, currentUserId }: TldrawCanvasProps) {
         Background: BoardBackground,
         CollaboratorCursor,
         CollaboratorShapeIndicator: null,
-        OnTheCanvas: RemoteSelections,
+        OnTheCanvas,
         ShapeIndicators: null,
+        RichTextToolbar: BoardTextToolbar,
         MenuPanel: () => (
           <BoardNamePanel name={board.name} workspaceSlug={board.workspace.slug} />
         ),

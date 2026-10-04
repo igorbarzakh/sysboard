@@ -1,0 +1,232 @@
+.panel,
+.popover {
+  --bg-elevated: var(--bg-tool-popup);
+  --bg-surface: rgba(255, 255, 255, 0.12);
+  --border-default: #4b4b4b;
+  --border-subtle: #4b4b4b;
+  --text-muted: #b3b3b3;
+  --text-primary: var(--text-on-accent);
+  --tl-color-muted-2: rgba(255, 255, 255, 0.12);
+}
+
+.panel {
+  position: fixed;
+  z-index: var(--tl-layer-menus);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  width: max-content;
+  max-width: calc(100% - 24px);
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border-radius: 16px;
+  box-shadow: 0 0 0.5px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.15);
+  pointer-events: all;
+}
+
+.panel .group {
+  gap: var(--space-1);
+  padding: 0;
+
+  & + .group {
+    padding-left: var(--space-2);
+  }
+
+  > * {
+    margin: 0;
+  }
+}
+
+.panel .formatting {
+  gap: var(--space-2);
+}
+
+.group > .popoverRoot + .popoverRoot {
+  padding-left: var(--space-2);
+}
+
+.panel .group + .group,
+.group > .popoverRoot + .popoverRoot {
+  position: relative;
+
+  &::before {
+    position: absolute;
+    top: calc(-1 * var(--space-2));
+    bottom: calc(-1 * var(--space-2));
+    left: 0;
+    width: 1px;
+    background: var(--border-subtle);
+    content: '';
+  }
+}
+
+.menu {
+  gap: var(--space-1);
+  padding: var(--space-2);
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+
+  > * {
+    margin: 0;
+  }
+}
+
+.panel .button,
+.panel .trigger,
+.menu .button,
+.menu .option,
+.menu .colorButton {
+  flex-shrink: 0;
+  gap: var(--space-1);
+  padding: 0;
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+  font-size: var(--text-control);
+  color: var(--text-primary);
+  border-radius: var(--radius-lg);
+  transition: color var(--duration-base) var(--ease-standard);
+
+  &::after {
+    inset: 0;
+    background: var(--tl-color-muted-2);
+    border-radius: inherit;
+    transition:
+      background var(--duration-base) var(--ease-standard),
+      opacity var(--duration-base) var(--ease-standard);
+  }
+
+  &[aria-pressed='true'] {
+    color: var(--text-on-accent);
+
+    &::after {
+      background: var(--accent);
+      opacity: 1;
+    }
+  }
+}
+
+.panel .button,
+.panel .trigger {
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+}
+
+.panel .button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.panel .trigger {
+  padding: 0 var(--space-1);
+  width: auto;
+}
+
+.panel .trigger .fontPreview {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+  font-synthesis: none;
+}
+
+.menu .option {
+  justify-content: space-between;
+  padding: 0 var(--space-2);
+  width: 160px;
+}
+
+.check {
+  visibility: hidden;
+}
+
+.option[aria-pressed='true'] .check {
+  visibility: visible;
+}
+
+.colors {
+  display: grid;
+  overflow-x: auto;
+  grid-template-rows: repeat(2, 32px);
+  grid-auto-flow: column;
+  gap: var(--space-1);
+  padding: 6px;
+  max-width: calc(100vw - 24px);
+  background: var(--bg-tool-popup);
+}
+
+.swatch {
+  box-sizing: border-box;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 50%;
+}
+
+.colors .swatch {
+  width: 24px;
+  height: 24px;
+}
+
+.menu .colorButton {
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+}
+
+.menu .colorButton[aria-pressed='true']::after {
+  inset: 0;
+  background: transparent;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+}
+
+.linkForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 6px;
+  width: 240px;
+  max-width: calc(100vw - 24px);
+  font-family: var(--font-body);
+}
+
+.linkInput {
+  flex: 1;
+  padding: var(--space-1) var(--space-2);
+  width: auto;
+  height: 28px;
+  font-size: var(--text-control);
+
+  &:focus-visible {
+    box-shadow: none;
+  }
+}
+
+@layer reset {
+  .linkInput:focus-visible {
+    outline: none !important;
+  }
+}
+
+.linkActions {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--space-1);
+}
+
+.popoverPositioner {
+  z-index: var(--tl-layer-menus);
+}
+
+.popover {
+  overflow: hidden;
+  background: var(--bg-elevated);
+  border-radius: 16px;
+  box-shadow: 0 0 0.5px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.15);
+}

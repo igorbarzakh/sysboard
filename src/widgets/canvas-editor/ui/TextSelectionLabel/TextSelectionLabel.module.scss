@@ -1,0 +1,14 @@
+.root {
+  display: contents;
+
+  /* stylelint-disable selector-pseudo-class-no-unknown */
+  &[data-text-fully-selected='true'] :global(.tl-text-shape-label .tl-text-input) {
+    background: color-mix(in srgb, var(--border-outline) 25%, transparent);
+  }
+
+  &[data-text-fully-selected='true'] :global(.tl-text-shape-label .tl-text-input)::selection,
+  &[data-text-fully-selected='true'] :global(.tl-text-shape-label .tl-text-input *)::selection {
+    background: transparent;
+  }
+  /* stylelint-enable selector-pseudo-class-no-unknown */
+}

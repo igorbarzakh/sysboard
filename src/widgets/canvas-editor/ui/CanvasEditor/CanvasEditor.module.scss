@@ -23,6 +23,54 @@
     display: none;
   }
 
+  /* Apply the same indentation to displayed text and tldraw's measurement element. */
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tl-rich-text ul) {
+    padding-left: 2ch;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tl-text-shape-label[data-isediting='true'][data-hastext='false'] .tl-text-input)::before {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: max-content;
+    font-family: var(--tl-font-sans);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1;
+    white-space: nowrap;
+    color: var(--text-muted);
+    pointer-events: none;
+    transform: translateY(-50%);
+    content: 'Add text';
+    text-shadow: none;
+  }
+
+  @layer reset {
+    /* Override the global important focus outline within its cascade layer. */
+    /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+    :global(.tl-text-shape-label .tl-text-input [contenteditable='true']:focus-visible) {
+      outline: none !important;
+    }
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tl-text-shape-label[data-isediting='true'] .tl-text-input) {
+    overflow: clip;
+    outline: calc(2px * var(--tl-scale)) solid var(--border-outline);
+    outline-offset: 0;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tl-text-shape-label .tl-text-input)::selection,
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global(.tl-text-shape-label .tl-text-input *)::selection {
+    color: inherit;
+    background: color-mix(in srgb, var(--border-outline) 25%, transparent);
+    text-shadow: none;
+  }
+
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :global(.tl-selection__fg__outline) {
     stroke-width: calc(2px * var(--tl-scale));
