@@ -11,7 +11,7 @@
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :global(.tl-container) {
     --tl-color-background: var(--bg-canvas);
-    --tl-color-brush-fill: #cbdde8;
+    --tl-color-brush-fill: color-mix(in srgb, var(--border-outline) 25%, transparent);
     --tl-color-brush-stroke: var(--border-outline);
     --tl-color-selection-stroke: var(--border-outline);
     --tl-cursor-default: url('/cursors/local-pointer.svg') 1 2, default;
@@ -83,6 +83,24 @@
     rx: calc(1.6px * var(--tl-scale));
     stroke-width: calc(1.6px * var(--tl-scale));
     transform-box: fill-box;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global([data-selection-corners]) {
+    display: contents;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global([data-selection-corners='hidden'] .tl-corner-handle),
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global([data-selection-corners='hidden'] [data-testid^='selection.target.']) {
+    display: none;
+  }
+
+  /* Keep all four corners until our smaller threshold is reached. */
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global([data-selection-corners='visible'] .tl-selection__fg:has(.tl-corner-handle:not(.tl-hidden)) .tl-corner-handle.tl-hidden) {
+    opacity: 1;
   }
 
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */

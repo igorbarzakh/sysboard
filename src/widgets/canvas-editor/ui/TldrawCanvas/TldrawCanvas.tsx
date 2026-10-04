@@ -27,6 +27,7 @@ import { BoardToolbar } from '../BoardToolbar/BoardToolbar'
 import { BoardTextToolbar } from '../BoardTextToolbar/BoardTextToolbar'
 import { CollaboratorCursor } from '../CollaboratorCursor/CollaboratorCursor'
 import { RemoteSelections } from '../RemoteSelections/RemoteSelections'
+import { SelectionForeground } from '../SelectionForeground/SelectionForeground'
 import { TextCursorHint } from '../TextCursorHint/TextCursorHint'
 import { ZoomPanel } from '../ZoomPanel/ZoomPanel'
 
@@ -403,6 +404,7 @@ export function TldrawCanvas({ board, currentUserId }: TldrawCanvasProps) {
         CollaboratorShapeIndicator: null,
         OnTheCanvas,
         ShapeIndicators: null,
+        SelectionForeground,
         RichTextToolbar: BoardTextToolbar,
         MenuPanel: () => (
           <BoardNamePanel name={board.name} workspaceSlug={board.workspace.slug} />
