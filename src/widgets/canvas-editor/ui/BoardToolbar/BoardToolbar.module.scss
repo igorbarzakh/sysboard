@@ -57,5 +57,16 @@
 .shapesMenu {
   gap: var(--space-1);
   padding: var(--space-1);
-  color: var(--text-primary);
+  color: var(--text-on-accent);
+  background: var(--bg-tool-popup);
+  --tl-color-muted-2: rgba(255, 255, 255, 0.12);
+  --tl-color-selected: var(--accent);
+  --tl-color-selected-contrast: var(--text-on-accent);
+  --tl-color-text: var(--text-on-accent);
+  --tl-color-text-1: var(--text-on-accent);
+}
+
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+:global(.tlui-popover__content):has(.shapesMenu) {
+  background: var(--bg-tool-popup);
 }

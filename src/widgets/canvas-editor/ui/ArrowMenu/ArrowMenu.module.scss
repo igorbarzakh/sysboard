@@ -2,8 +2,8 @@
   gap: var(--space-2);
   padding: var(--space-2);
   font-family: var(--font-body);
-  color: var(--text-primary);
-  background: var(--bg-elevated);
+  color: var(--text-on-accent);
+  background: var(--bg-tool-popup);
 
   > * {
     margin: 0;
@@ -16,20 +16,20 @@
   width: 24px;
   min-width: 24px;
   height: 24px;
-  color: var(--text-primary);
+  color: var(--text-on-accent);
   border-radius: var(--radius-lg);
 
   &::after {
     inset: 0;
-    background: var(--tl-color-muted-2);
+    background: rgba(255, 255, 255, 0.12);
     border-radius: inherit;
   }
 
   &[aria-pressed='true'] {
-    color: var(--text-accent);
+    color: var(--text-on-accent);
 
     &::after {
-      background: var(--accent-soft);
+      background: var(--accent);
       opacity: 1;
     }
   }
@@ -37,6 +37,7 @@
 
 /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
 :global(.tlui-popover__content):has(.panel) {
+  background: var(--bg-tool-popup);
   border-radius: 16px;
   box-shadow: 0 0 0.5px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.15);
 }

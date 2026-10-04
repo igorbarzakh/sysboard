@@ -36,8 +36,8 @@
     cursor: default;
     user-select: none;
     transition:
-      background var(--duration-fast) var(--ease-standard),
-      color var(--duration-fast) var(--ease-standard);
+      background var(--duration-base) var(--ease-standard),
+      color var(--duration-base) var(--ease-standard);
 
     &:focus {
       background: var(--bg-surface);

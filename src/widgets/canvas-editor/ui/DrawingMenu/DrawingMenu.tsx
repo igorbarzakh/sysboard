@@ -153,7 +153,7 @@ export function DrawingMenu() {
               <TldrawUiToolbarButton
                 key={value}
                 type="tool"
-                className={styles.button}
+                className={`${styles.button} ${styles.thicknessButton}`}
                 title={label}
                 aria-pressed={(size === 'l' ? 'l' : 's') === value}
                 disabled={isErasing}
@@ -166,7 +166,6 @@ export function DrawingMenu() {
                       : 'M6.50018 15C7.5501 12.0755 10.2888 9 11.5002 9C13.4008 9 12.2682 13.9943 14.3245 13.9943C15.7902 13.9943 17.5002 12 17.5002 12'}
                     stroke="currentColor"
                     strokeWidth={strokeWidth}
-                    strokeOpacity={value === 's' ? 1 : 0.5}
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
@@ -185,7 +184,10 @@ export function DrawingMenu() {
                 disabled={isErasing}
                 onClick={() => editor.setStyleForNextShapes(DefaultColorStyle, value)}
               >
-                <span className={styles.swatch} style={{ backgroundColor: hex }} />
+                <span className={styles.swatch} style={{
+                  backgroundColor: hex,
+                  borderColor: toolId === 'highlight' ? undefined : markerColors.find((option) => option.value === value)?.border,
+                }} />
               </TldrawUiToolbarButton>
             ))}
           </TldrawUiToolbar>
