@@ -23,6 +23,11 @@
     display: none;
   }
 
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+  :global([data-testid='tl-watermark-unlicensed']) {
+    display: none;
+  }
+
   /* Apply the same indentation to displayed text and tldraw's measurement element. */
   /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
   :global(.tl-rich-text ul) {
@@ -231,4 +236,10 @@
     background: var(--bg-surface-hover);
     border-radius: var(--radius-md);
   }
+}
+
+/* Liveblocks inserts its badge directly into document.body. */
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+:global(#liveblocks-badge) {
+  display: none !important;
 }

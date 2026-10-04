@@ -62,6 +62,7 @@ const uiOverrides: TLUiOverrides = {
   actions(_editor, actions) {
     const availableActions = { ...actions }
     delete availableActions['toggle-tool-lock']
+    delete availableActions['back-to-content']
     return availableActions
   },
 }
@@ -406,6 +407,7 @@ export function TldrawCanvas({ board, currentUserId }: TldrawCanvasProps) {
         ShapeIndicators: null,
         SelectionForeground,
         RichTextToolbar: BoardTextToolbar,
+        StylePanel: null,
         MenuPanel: () => (
           <BoardNamePanel name={board.name} workspaceSlug={board.workspace.slug} />
         ),
